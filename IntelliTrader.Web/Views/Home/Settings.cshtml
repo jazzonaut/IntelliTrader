@@ -1,0 +1,59 @@
+﻿@model SettingsViewModel
+@{
+    ViewData["Title"] = "Settings";
+    ViewData["Instance"] = Model.InstanceName;
+    ViewData["CustomPageHeader"] = true;
+}
+
+@section AddToHead{
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Vendor/jsoneditor.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Views/settings.css")">
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Vendor/jsoneditor.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Views/settings.js")"></script>
+}
+
+<div style="clear: both">
+    @using (Html.BeginForm())
+    {
+    <div class="settings">
+        <div>@Html.CheckBoxFor(model => model.BuyEnabled)@Html.LabelFor(model => model.BuyEnabled)</div>
+        <div>@Html.CheckBoxFor(model => model.BuyDCAEnabled)@Html.LabelFor(model => model.BuyDCAEnabled)</div>
+        <div>@Html.CheckBoxFor(model => model.SellEnabled)@Html.LabelFor(model => model.SellEnabled)</div>
+        <div>@Html.CheckBoxFor(model => model.HealthCheckEnabled)@Html.LabelFor(model => model.HealthCheckEnabled)</div>
+        <div>@Html.CheckBoxFor(model => model.TradingSuspended)@Html.LabelFor(model => model.TradingSuspended)</div>
+        <input type="submit" value="Save" class="btn btn-primary" onclick="return confirm('Save settings?');" />
+    </div>
+    }
+    <button class="btn btn-info settings-btn" onclick="logout();">Log Out</button>
+    <button class="btn btn-info settings-btn" onclick="refreshAccount();">Refresh Account</button>
+    <button class="btn btn-info settings-btn" onclick="restartServices();">Restart Services</button>
+
+    <div class="configs">
+        <h2>Advanced</h2>
+
+        <ul class="nav nav-pills bg-dark">
+            @foreach (var configName in Model.Configs.Keys)
+            {
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#tab_@configName" role="tab">@configName</a>
+            </li>
+            }
+        </ul>
+
+        <div class="tab-content">
+        @foreach (var kvp in Model.Configs)
+        {
+            <div class="tab-pane" id="tab_@kvp.Key">
+                <div class="config-container">
+                    <div class="config-value" id="@Html.Raw(kvp.Key + "Value")" data-config="@kvp.Key">@Html.Raw(kvp.Value)</div>
+                    <div class="config-editor" id="@Html.Raw(kvp.Key + "Editor")" data-config="@kvp.Key"></div>
+                </div>
+                <div class="config-options bg-dark">
+                    <span class="save-config-status" id="saveConfigStatus"></span>
+                    <button class="btn btn-primary" onclick="saveConfig(this);">Save</button>
+                </div>
+            </div>
+        }
+        </div>
+    </div>
+</div>

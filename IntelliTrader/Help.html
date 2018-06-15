@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>
+        IntelliTrader - Help
+    </title>
+    <link rel="icon" type="image/png" href="https://hackmd.io/favicon.png">
+    <link rel="apple-touch-icon" href="https://hackmd.io/apple-touch-icon.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" integrity="sha256-3iu9jgsy9TpTwXKb7bNQzqWekRX7pPK+2OLj3R922fo=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css" integrity="sha256-QiWfLIsCT02Sdwkogf6YMiQlj4NE84MKkzEMkZnMGdg=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css" integrity="sha256-vtR0hSWRc3Tb26iuN2oZHt3KRUomwTufNIf5/4oeCyg=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/github-gist.min.css" integrity="sha256-tAflq+ymku3Khs+I/WcAneIlafYgDiOQ9stIHH985Wo=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojify.js/1.1.0/css/basic/emojify.min.css" integrity="sha256-UOrvMOsSDSrW6szVLe8ZDZezBxh5IoIfgTwdNDgTjiU=" crossorigin="anonymous" />
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,300italic,300|Source+Serif+Pro|Source+Code+Pro:400,300,500&subset=latin,latin-ext);.markdown-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;word-wrap:break-word}.markdown-body:after,.markdown-body:before{display:table;content:""}.markdown-body:after{clear:both}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a:not([href]){color:inherit;text-decoration:none}.markdown-body .absent{color:#c00}.markdown-body .anchor{float:left;padding-right:4px;margin-left:-20px;line-height:1}.markdown-body .anchor:focus{outline:none}.markdown-body blockquote,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin-top:0;margin-bottom:16px}.markdown-body hr{height:.25em;padding:0;margin:24px 0;background-color:#e7e7e7;border:0}.markdown-body blockquote{padding:0 1em;color:#777;border-left:.25em solid #ddd}.markdown-body blockquote>:first-child{margin-top:0}.markdown-body blockquote>:last-child{margin-bottom:0}.markdown-body .loweralpha{list-style-type:lower-alpha}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{margin-top:24px;margin-bottom:16px;font-weight:600;line-height:1.25}.markdown-body h1 .octicon-link,.markdown-body h2 .octicon-link,.markdown-body h3 .octicon-link,.markdown-body h4 .octicon-link,.markdown-body h5 .octicon-link,.markdown-body h6 .octicon-link{color:#000;vertical-align:middle;visibility:hidden}.markdown-body h1:hover .anchor,.markdown-body h2:hover .anchor,.markdown-body h3:hover .anchor,.markdown-body h4:hover .anchor,.markdown-body h5:hover .anchor,.markdown-body h6:hover .anchor{text-decoration:none}.markdown-body h1:hover .anchor .octicon-link,.markdown-body h2:hover .anchor .octicon-link,.markdown-body h3:hover .anchor .octicon-link,.markdown-body h4:hover .anchor .octicon-link,.markdown-body h5:hover .anchor .octicon-link,.markdown-body h6:hover .anchor .octicon-link{visibility:visible}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{font-size:inherit}.markdown-body h1{font-size:2em}.markdown-body h1,.markdown-body h2{padding-bottom:.3em;border-bottom:1px solid #eee}.markdown-body h2{font-size:1.5em}.markdown-body h3{font-size:1.25em}.markdown-body h4{font-size:1em}.markdown-body h5{font-size:.875em}.markdown-body h6{font-size:.85em;color:#777}.markdown-body ol,.markdown-body ul{padding-left:2em}.markdown-body ol.no-list,.markdown-body ul.no-list{padding:0;list-style-type:none}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-top:0;margin-bottom:0}.markdown-body li>p{margin-top:16px}.markdown-body li+li{margin-top:.25em}.markdown-body dl{padding:0}.markdown-body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}.markdown-body dl dd{padding:0 16px;margin-bottom:16px}.markdown-body table{display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}.markdown-body table th{font-weight:700}.markdown-body table td,.markdown-body table th{padding:6px 13px;border:1px solid #ddd}.markdown-body table tr{background-color:#fff;border-top:1px solid #ccc}.markdown-body table tr:nth-child(2n){background-color:#f8f8f8}.markdown-body img{max-width:100%;box-sizing:content-box;background-color:#fff}.markdown-body img[align=right]{padding-left:20px}.markdown-body img[align=left]{padding-right:20px}.markdown-body .emoji{max-width:none;vertical-align:text-top;background-color:transparent}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{display:block;float:left;width:auto;padding:7px;margin:13px 0 0;overflow:hidden;border:1px solid #ddd}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{display:block;padding:5px 0 0;clear:both;color:#333}.markdown-body span.align-center{display:block;overflow:hidden;clear:both}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{display:block;overflow:hidden;clear:both}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{padding:0;padding-top:.2em;padding-bottom:.2em;margin:0;font-size:85%;background-color:rgba(0,0,0,.04);border-radius:3px}.markdown-body code:after,.markdown-body code:before,.markdown-body tt:after,.markdown-body tt:before{letter-spacing:-.2em;content:"\A0"}.markdown-body code br,.markdown-body tt br{display:none}.markdown-body del code{text-decoration:inherit}.markdown-body pre{word-wrap:normal}.markdown-body pre>code{padding:0;margin:0;font-size:100%;word-break:normal;white-space:pre;background:transparent;border:0}.markdown-body .highlight{margin-bottom:16px}.markdown-body .highlight pre{margin-bottom:0;word-break:normal}.markdown-body .highlight pre,.markdown-body pre{padding:16px;overflow:auto;font-size:85%;line-height:1.45;background-color:#f7f7f7;border-radius:3px}.markdown-body pre code,.markdown-body pre tt{display:inline;max-width:auto;padding:0;margin:0;overflow:visible;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}.markdown-body pre code:after,.markdown-body pre code:before,.markdown-body pre tt:after,.markdown-body pre tt:before{content:normal}.markdown-body .csv-data td,.markdown-body .csv-data th{padding:5px;overflow:hidden;font-size:12px;line-height:1;text-align:left;white-space:nowrap}.markdown-body .csv-data .blob-line-num{padding:10px 8px 9px;text-align:right;background:#fff;border:0}.markdown-body .csv-data tr{border-top:0}.markdown-body .csv-data th{font-weight:700;background:#f8f8f8;border-top:0}.markdown-body kbd{display:inline-block;padding:3px 5px;font-size:11px;line-height:10px;color:#555;vertical-align:middle;background-color:#fcfcfc;border:1px solid #ccc;border-bottom-color:#bbb;border-radius:3px;box-shadow:inset 0 -1px 0 #bbb}.news .alert .markdown-body blockquote{padding:0 0 0 40px;border:0 none}.activity-tab .news .alert .commits,.activity-tab .news .markdown-body blockquote{padding-left:0}.task-list-item{list-style-type:none}.task-list-item label{font-weight:400}.task-list-item.enabled label{cursor:pointer}.task-list-item+.task-list-item{margin-top:3px}.task-list-item-checkbox{float:left;margin:.31em 0 .2em -1.3em!important;vertical-align:middle;cursor:default!important}.markdown-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;padding-top:40px;padding-bottom:40px;max-width:758px;overflow:visible!important}.markdown-body pre{border:inherit!important}.markdown-body code{color:inherit!important}.markdown-body pre code .wrapper{display:-moz-inline-flex;display:-ms-inline-flex;display:-o-inline-flex;display:inline-flex}.markdown-body pre code .gutter{float:left;overflow:hidden;-webkit-user-select:none;user-select:none}.markdown-body pre code .gutter.linenumber{text-align:right;position:relative;display:inline-block;cursor:default;z-index:4;padding:0 8px 0 0;min-width:20px;box-sizing:content-box;color:#afafaf!important;border-right:3px solid #6ce26c!important}.markdown-body pre code .gutter.linenumber>span:before{content:attr(data-linenumber)}.markdown-body pre code .code{float:left;margin:0 0 0 16px}.markdown-body .gist .line-numbers{border-left:none;border-top:none;border-bottom:none}.markdown-body .gist .line-data{border:none}.markdown-body .gist table{border-spacing:0;border-collapse:inherit!important}.markdown-body code[data-gist-id]{background:none;padding:0}.markdown-body code[data-gist-id]:after,.markdown-body code[data-gist-id]:before{content:""}.markdown-body code[data-gist-id] .blob-num{border:unset}.markdown-body code[data-gist-id] table{overflow:unset;margin-bottom:unset}.markdown-body code[data-gist-id] table tr{background:unset}.markdown-body[dir=rtl] pre{direction:ltr}.markdown-body[dir=rtl] code{direction:ltr;unicode-bidi:embed}.markdown-body .alert>p{margin-bottom:0}.markdown-body pre.abc,.markdown-body pre.flow-chart,.markdown-body pre.graphviz,.markdown-body pre.mermaid,.markdown-body pre.sequence-diagram{text-align:center;background-color:inherit;border-radius:0;white-space:inherit}.markdown-body pre.abc>code,.markdown-body pre.flow-chart>code,.markdown-body pre.graphviz>code,.markdown-body pre.mermaid>code,.markdown-body pre.sequence-diagram>code{text-align:left}.markdown-body pre.abc>svg,.markdown-body pre.flow-chart>svg,.markdown-body pre.graphviz>svg,.markdown-body pre.mermaid>svg,.markdown-body pre.sequence-diagram>svg{max-width:100%;height:100%}.markdown-body pre>code.wrap{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word}.markdown-body .alert>p,.markdown-body .alert>ul{margin-bottom:0}.markdown-body summary{display:list-item}.markdown-body summary:focus{outline:none}.markdown-body details summary{cursor:pointer}.markdown-body details:not([open])>:not(summary){display:none}.markdown-body figure{margin:1em 40px}.vimeo,.youtube{cursor:pointer;display:table;text-align:center;background-position:50%;background-repeat:no-repeat;background-size:contain;background-color:#000;overflow:hidden}.vimeo,.youtube{position:relative;width:100%}.youtube{padding-bottom:56.25%}.vimeo img{width:100%;object-fit:contain;z-index:0}.youtube img{object-fit:cover;z-index:0}.vimeo iframe,.youtube iframe,.youtube img{width:100%;height:100%;position:absolute;top:0;left:0}.vimeo iframe,.youtube iframe{vertical-align:middle;z-index:1}.vimeo .icon,.youtube .icon{position:absolute;height:auto;width:auto;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;opacity:.3;transition:opacity .2s;z-index:0}.vimeo:hover .icon,.youtube:hover .icon{opacity:.6;transition:opacity .2s}.slideshare .inner,.speakerdeck .inner{position:relative;width:100%}.slideshare .inner iframe,.speakerdeck .inner iframe{position:absolute;top:0;bottom:0;left:0;right:0;width:100%;height:100%}.MJX_Assistive_MathML{display:none}.ui-infobar{position:relative;z-index:2;max-width:758px;margin-top:25px;margin-bottom:-25px;color:#777}.ui-toc{position:fixed;bottom:20px;z-index:10000}.ui-toc-label{opacity:.3;background-color:#ccc;border:none;transition:opacity .2s}.ui-toc .open .ui-toc-label{opacity:1;color:#fff;transition:opacity .2s}.ui-toc-label:focus{opacity:.3;background-color:#ccc;color:#000}.ui-toc-label:hover{opacity:1;background-color:#ccc;transition:opacity .2s}.ui-toc-dropdown{margin-top:23px;margin-bottom:20px;padding-left:10px;padding-right:10px;max-width:45vw;width:25vw;max-height:70vh;overflow:auto;text-align:inherit}.ui-toc-dropdown>.toc{max-height:calc(70vh - 100px);overflow:auto}.ui-toc-dropdown[dir=rtl] .nav{padding-right:0;letter-spacing:.0029em}.ui-toc-dropdown a{overflow:hidden;text-overflow:ellipsis;white-space:pre}.ui-toc-dropdown .nav>li>a{display:block;padding:4px 20px;font-size:13px;font-weight:500;color:#767676}.ui-toc-dropdown .nav>li:first-child:last-child > ul,.ui-toc-dropdown .toc.expand ul{display:block}.ui-toc-dropdown .nav>li>a:focus,.ui-toc-dropdown .nav>li>a:hover{padding-left:19px;color:#000;text-decoration:none;background-color:transparent;border-left:1px solid #000}.ui-toc-dropdown[dir=rtl] .nav>li>a:focus,.ui-toc-dropdown[dir=rtl] .nav>li>a:hover{padding-right:19px;border-left:none;border-right:1px solid #000}.ui-toc-dropdown .nav>.active:focus>a,.ui-toc-dropdown .nav>.active:hover>a,.ui-toc-dropdown .nav>.active>a{padding-left:18px;font-weight:700;color:#000;background-color:transparent;border-left:2px solid #000}.ui-toc-dropdown[dir=rtl] .nav>.active:focus>a,.ui-toc-dropdown[dir=rtl] .nav>.active:hover>a,.ui-toc-dropdown[dir=rtl] .nav>.active>a{padding-right:18px;border-left:none;border-right:2px solid #000}.ui-toc-dropdown .nav .nav{display:none;padding-bottom:10px}.ui-toc-dropdown .nav>.active>ul{display:block}.ui-toc-dropdown .nav .nav>li>a{padding-top:1px;padding-bottom:1px;padding-left:30px;font-size:12px;font-weight:400}.ui-toc-dropdown[dir=rtl] .nav .nav>li>a{padding-right:30px}.ui-toc-dropdown .nav .nav>li>ul>li>a{padding-top:1px;padding-bottom:1px;padding-left:40px;font-size:12px;font-weight:400}.ui-toc-dropdown[dir=rtl] .nav .nav>li>ul>li>a{padding-right:40px}.ui-toc-dropdown .nav .nav>li>a:focus,.ui-toc-dropdown .nav .nav>li>a:hover{padding-left:29px}.ui-toc-dropdown[dir=rtl] .nav .nav>li>a:focus,.ui-toc-dropdown[dir=rtl] .nav .nav>li>a:hover{padding-right:29px}.ui-toc-dropdown .nav .nav>li>ul>li>a:focus,.ui-toc-dropdown .nav .nav>li>ul>li>a:hover{padding-left:39px}.ui-toc-dropdown[dir=rtl] .nav .nav>li>ul>li>a:focus,.ui-toc-dropdown[dir=rtl] .nav .nav>li>ul>li>a:hover{padding-right:39px}.ui-toc-dropdown .nav .nav>.active:focus>a,.ui-toc-dropdown .nav .nav>.active:hover>a,.ui-toc-dropdown .nav .nav>.active>a{padding-left:28px;font-weight:500}.ui-toc-dropdown[dir=rtl] .nav .nav>.active:focus>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active:hover>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active>a{padding-right:28px}.ui-toc-dropdown .nav .nav>.active>.nav>.active:focus>a,.ui-toc-dropdown .nav .nav>.active>.nav>.active:hover>a,.ui-toc-dropdown .nav .nav>.active>.nav>.active>a{padding-left:38px;font-weight:500}.ui-toc-dropdown[dir=rtl] .nav .nav>.active>.nav>.active:focus>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active>.nav>.active:hover>a,.ui-toc-dropdown[dir=rtl] .nav .nav>.active>.nav>.active>a{padding-right:38px}.markdown-body[lang^=ja]{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,Arial,Hiragino Kaku Gothic Pro,\\30D2\30E9\30AE\30CE\89D2\30B4 Pro W3,Osaka,Meiryo,\\30E1\30A4\30EA\30AA,MS Gothic,"\FF2D\FF33   \30B4\30B7\30C3\30AF",sans-serif}.ui-toc-dropdown[lang^=ja]{font-family:Source Sans Pro,Helvetica,Arial,Meiryo UI,MS PGothic,"\FF2D\FF33   \FF30\30B4\30B7\30C3\30AF",sans-serif}.markdown-body[lang=zh-tw]{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,Arial,PingFang TC,Microsoft JhengHei,\\5FAE\8EDF\6B63\9ED1,sans-serif}.ui-toc-dropdown[lang=zh-tw]{font-family:Source Sans Pro,Helvetica,Arial,Microsoft JhengHei UI,\\5FAE\8EDF\6B63\9ED1UI,sans-serif}.markdown-body[lang=zh-cn]{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Helvetica,Arial,PingFang SC,Microsoft YaHei,\\5FAE\8F6F\96C5\9ED1,sans-serif}.ui-toc-dropdown[lang=zh-cn]{font-family:Source Sans Pro,Helvetica,Arial,Microsoft YaHei UI,\\5FAE\8F6F\96C5\9ED1UI,sans-serif}.ui-affix-toc{position:fixed;top:0;max-width:15vw;max-height:70vh;overflow:auto}.back-to-top,.expand-toggle,.go-to-bottom{display:block;padding:4px 10px;margin-top:10px;margin-left:10px;font-size:12px;font-weight:500;color:#999}.back-to-top:focus,.back-to-top:hover,.expand-toggle:focus,.expand-toggle:hover,.go-to-bottom:focus,.go-to-bottom:hover{color:#563d7c;text-decoration:none}.back-to-top,.go-to-bottom{margin-top:0}.ui-user-icon{width:20px;height:20px;display:block;border-radius:3px;margin-top:2px;margin-bottom:2px;margin-right:5px;background-position:50%;background-repeat:no-repeat;background-size:contain}.ui-user-icon.small{width:18px;height:18px;display:inline-block;vertical-align:middle;margin:0 0 .2em}.ui-infobar>small>span{line-height:22px}.ui-infobar>small .dropdown{display:inline-block}.ui-infobar>small .dropdown a:focus,.ui-infobar>small .dropdown a:hover{text-decoration:none}.unselectable{-moz-user-select:none;-webkit-user-select:none;-o-user-select:none;user-select:none}@media print{blockquote,div,img,pre,table{page-break-inside:avoid!important}a[href]:after{font-size:12px!important}}.markdown-body.slides{position:relative;z-index:1;color:#222}.markdown-body.slides:before{content:"";display:block;position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;background-color:currentColor;box-shadow:0 0 0 50vw}.markdown-body.slides section[data-markdown]{position:relative;margin-bottom:1.5em;background-color:#fff;text-align:center}.markdown-body.slides section[data-markdown] code{text-align:left}.markdown-body.slides section[data-markdown]:before{content:"";display:block;padding-bottom:56.23%}.markdown-body.slides section[data-markdown]>div:first-child{position:absolute;top:50%;left:1em;right:1em;transform:translateY(-50%);max-height:100%;overflow:hidden}.markdown-body.slides section[data-markdown]>ul{display:inline-block}.markdown-body.slides>section>section+section:after{content:"";position:absolute;top:-1.5em;right:1em;height:1.5em;border:3px solid #777}body{font-smoothing:subpixel-antialiased!important;-webkit-font-smoothing:subpixel-antialiased!important;-moz-osx-font-smoothing:auto!important;text-shadow:0 0 1em transparent,1px 1px 1.2px rgba(0,0,0,.004);-webkit-overflow-scrolling:touch;font-family:Source Sans Pro,Helvetica,Arial,sans-serif;letter-spacing:.025em}.focus,:focus{outline:none!important}::-moz-focus-inner{border:0!important}body.modal-open{overflow-y:auto;padding-right:0!important}
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" integrity="sha256-3Jy/GbSLrg0o9y5Z5n1uw0qxZECH7C6OQpVBgNFYa0g=" crossorigin="anonymous"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js" integrity="sha256-g6iAfvZp+nDQ2TdTR/VVKJf3bGro4ub5fvWSWVRi2NE=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.9/es5-shim.min.js" integrity="sha256-8E4Is26QH0bD52WoQpcB+R/tcWQtpzlCojrybUd7Mxo=" crossorigin="anonymous"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div id="doc" class="markdown-body container-fluid" style="position: relative;"><h1 id="IntelliTrader"><a class="anchor hidden-xs" href="#IntelliTrader" title="IntelliTrader"><span class="octicon octicon-link"></span></a>IntelliTrader</h1><h2 id="Getting-Started"><a class="anchor hidden-xs" href="#Getting-Started" title="Getting-Started"><span class="octicon octicon-link"></span></a>Getting Started</h2><h4 id="Prerequisites"><a class="anchor hidden-xs" href="#Prerequisites" title="Prerequisites"><span class="octicon octicon-link"></span></a>Prerequisites</h4><h6 id="Windows-Linux-amp-MacOS"><a class="anchor hidden-xs" href="#Windows-Linux-amp-MacOS" title="Windows-Linux-amp-MacOS"><span class="octicon octicon-link"></span></a>Windows, Linux &amp; MacOS</h6><p>Download and install .NET Core Runtime 2.1 from <a href="https://www.microsoft.com/net/download/all" target="_blank">Microsoft</a>.</p><h4 id="Setting-Up"><a class="anchor hidden-xs" href="#Setting-Up" title="Setting-Up"><span class="octicon octicon-link"></span></a>Setting Up</h4><p>The bot should just run with out of the box settings. By default, it is configured for virtual trading, so there is no need to provide any API keys at the start. The only thing you might want to change is the default port for the web interface (7000).<br>
+Refer to <a href="#Web-Configuration">web configuration</a> section for information on how to do this.</p><h4 id="Supported-Exchanges"><a class="anchor hidden-xs" href="#Supported-Exchanges" title="Supported-Exchanges"><span class="octicon octicon-link"></span></a>Supported Exchanges</h4><p>Currenly only Binance Exchange is supported.</p><h4 id="Running"><a class="anchor hidden-xs" href="#Running" title="Running"><span class="octicon octicon-link"></span></a>Running</h4><h6 id="Windows"><a class="anchor hidden-xs" href="#Windows" title="Windows"><span class="octicon octicon-link"></span></a>Windows</h6><p>Simply run Start-IntelliTrader.bat to start the bot.</p><h6 id="Linux-amp-MacOS"><a class="anchor hidden-xs" href="#Linux-amp-MacOS" title="Linux-amp-MacOS"><span class="octicon octicon-link"></span></a>Linux &amp; MacOS</h6><p>Copy the *.sh files from the linux directory supplied with the package to the root directory of the package and run them.</p><h2 id="Configuration"><a class="anchor hidden-xs" href="#Configuration" title="Configuration"><span class="octicon octicon-link"></span></a>Configuration</h2><p>All changes to the configuration files will take effect immediately.</p><p>Configuration quick links:<br>
+<a href="#Value-Types">Value Types</a>, <a href="#Core-Configuration">Core</a>, <a href="#Web-Configuration">Web</a>, <a href="#Signals-Configuration">Signals</a>, <a href="#Trading-Configuration">Trading</a>, <a href="#Rules-Configuration">Rules</a>, <a href="#Notification-Configuration">Notification</a>, <a href="#Backtesting-Configuration">Backtesting</a>, <a href="#Other-Configuration">Other</a></p><h4 id="Value-Types"><a class="anchor hidden-xs" href="#Value-Types" title="Value-Types"><span class="octicon octicon-link"></span></a>Value Types</h4><table>
+<thead>
+<tr>
+<th>Type</th>
+<th style="text-align:center">Example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Number</td>
+<td style="text-align:center">0.40</td>
+<td>Numeric value</td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td style="text-align:center">true</td>
+<td>Boolean value (true/false)</td>
+</tr>
+<tr>
+<td>String</td>
+<td style="text-align:center">Market</td>
+<td>String value</td>
+</tr>
+<tr>
+<td>Array</td>
+<td style="text-align:center">[ “BNBBTC”, “ETHBTC” ]</td>
+<td>Array of numbers, booleans or strings</td>
+</tr>
+<tr>
+<td>Object</td>
+<td style="text-align:center">{ “Key”: “Value” }</td>
+<td>Json object</td>
+</tr>
+</tbody>
+</table><h4 id="Core-Configuration"><a class="anchor hidden-xs" href="#Core-Configuration" title="Core-Configuration"><span class="octicon octicon-link"></span></a>Core Configuration</h4><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DebugMode</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable debug mode</td>
+</tr>
+<tr>
+<td>PasswordProtected</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Use password authentication</td>
+</tr>
+<tr>
+<td>Password</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">MD5 hash</td>
+<td>MD5-encrypted password</td>
+</tr>
+<tr>
+<td>InstanceName</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">Main</td>
+<td>Must be alphanumeric and should not contain spaces. Used by the web interface &amp; notification service to distinguish between different bot instances (when running multiple)</td>
+</tr>
+<tr>
+<td>TimezoneOffset</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1</td>
+<td>Timezone offset from UTC (in hours), used by stats</td>
+</tr>
+<tr>
+<td>HealthCheckEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable health check</td>
+</tr>
+<tr>
+<td>HealthCheckInterval</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">180</td>
+<td>Interval to check that all the data is up to date and services are running correctly (in seconds)</td>
+</tr>
+<tr>
+<td>HealthCheckSuspendTradingTimeout</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">900</td>
+<td>Suspend trading (disable sells and buys) if any of the health checks did not pass in a specified period of time (in seconds). Set to 0 to continue trading even after health check fails</td>
+</tr>
+<tr>
+<td>HealthCheckFailuresToRestartServices</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">3</td>
+<td>Restart all services when health check fails for a specified number of times in a row. Set to 0 to disable restart</td>
+</tr>
+</tbody>
+</table><h4 id="Web-Configuration"><a class="anchor hidden-xs" href="#Web-Configuration" title="Web-Configuration"><span class="octicon octicon-link"></span></a>Web Configuration</h4><p>Read more about how web interface works in the <a href="#Web-Interface">web</a> section.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DebugMode</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable debug mode</td>
+</tr>
+<tr>
+<td>Enabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable web interface</td>
+</tr>
+<tr>
+<td>Port</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">7000</td>
+<td>Port on which to host the web interface</td>
+</tr>
+</tbody>
+</table><h4 id="Signals-Configuration"><a class="anchor hidden-xs" href="#Signals-Configuration" title="Signals-Configuration"><span class="octicon octicon-link"></span></a>Signals Configuration</h4><p>Read more about how signals work in the <a href="#Signals">signals</a> section.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable signals</td>
+</tr>
+<tr>
+<td>GlobalRatingSignals</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">“TV-5mins”,“TV-15mins”,“TV-60mins”</td>
+<td>Signals to calculate the Global Rating from</td>
+</tr>
+<tr>
+<td>Definitions</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center"><a href="#Signal-Definitions">Signal Definitions</a></td>
+<td>Signal source definitions</td>
+</tr>
+</tbody>
+</table><h6 id="Signal-Definitions"><a class="anchor hidden-xs" href="#Signal-Definitions" title="Signal-Definitions"><span class="octicon octicon-link"></span></a>Signal Definitions</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“TV-15mins”</td>
+<td>Signal name</td>
+</tr>
+<tr>
+<td>Receiver</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“TradingViewCryptoSignalReceiver”</td>
+<td>Signal receiver name</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:center"><a href="#Signal-Receiver-Configuration">Signal Receiver Configuration</a></td>
+<td>Signal receiver configuration</td>
+</tr>
+</tbody>
+</table><h6 id="Signal-Receiver-Configuration"><a class="anchor hidden-xs" href="#Signal-Receiver-Configuration" title="Signal-Receiver-Configuration"><span class="octicon octicon-link"></span></a>Signal Receiver Configuration</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th>Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PollingInterval</td>
+<td style="text-align:center">Number</td>
+<td>7</td>
+<td>How often to check for latest signals (in seconds)</td>
+</tr>
+<tr>
+<td>SignalPeriod</td>
+<td style="text-align:center">Number</td>
+<td>15</td>
+<td>Signal period (in minutes). Possible values: 5, 15, 60, 240, 1440</td>
+</tr>
+<tr>
+<td>VolatilityPeriod</td>
+<td style="text-align:center">String</td>
+<td>“Day”</td>
+<td>Volatility period. Possible values: Day, Week, Month</td>
+</tr>
+<tr>
+<td>RequestUrl</td>
+<td style="text-align:center">String</td>
+<td>“<a href="https://scanner.tradingview.com/crypto/scan" target="_blank">https://scanner.tradingview.com/crypto/scan</a>”</td>
+<td>Request url</td>
+</tr>
+<tr>
+<td>RequestData</td>
+<td style="text-align:center">String</td>
+<td>“{“filter”:[{“left”:“exchange”,“operation”:“equal”,“right”:”%EXCHANGE%"},{“left”:“name”,“operation”:“match”,“right”:"%MARKET%"}],“columns”:[“name”,“close%PERIOD%”,“change%PERIOD%”,“volume%PERIOD%”,“Recommend.All%PERIOD%”,“Volatility%VOLATILITY%”],“options”:{“lang”:“en”},“range”:[0,500]}"</td>
+<td>Request data</td>
+</tr>
+</tbody>
+</table><h4 id="Trading-Configuration"><a class="anchor hidden-xs" href="#Trading-Configuration" title="Trading-Configuration"><span class="octicon octicon-link"></span></a>Trading Configuration</h4><p>Read more about how trading works in the <a href="#Trading">trading</a> section.</p><h6 id="General"><a class="anchor hidden-xs" href="#General" title="General"><span class="octicon octicon-link"></span></a>General</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable trading</td>
+</tr>
+<tr>
+<td>Market</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“BTC”</td>
+<td>Market to trade on - BTC, ETH, USDT, etc.</td>
+</tr>
+<tr>
+<td>Exchange</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Binance”</td>
+<td>Exchange to trade on</td>
+</tr>
+<tr>
+<td>MaxPairs</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">16</td>
+<td>Maximum pairs to trade with</td>
+</tr>
+<tr>
+<td>MinCost</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.000999</td>
+<td>Ignore pairs with the specified market value or lower (dust)</td>
+</tr>
+<tr>
+<td>ExcludedPairs</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">[ “BNBBTC” ]</td>
+<td>Pairs excluded from trading</td>
+</tr>
+</tbody>
+</table><h6 id="Buying"><a class="anchor hidden-xs" href="#Buying" title="Buying"><span class="octicon octicon-link"></span></a>Buying</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BuyEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable buying</td>
+</tr>
+<tr>
+<td>BuyType</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Market”</td>
+<td>Supported types: Market. Limit is not currently supported</td>
+</tr>
+<tr>
+<td>BuyMaxCost</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.0012</td>
+<td>Maximum cost when buying a new pair</td>
+</tr>
+<tr>
+<td>BuyMultiplier</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1</td>
+<td>Maximum cost multiplier</td>
+</tr>
+<tr>
+<td>BuyMinBalance</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0</td>
+<td>Minimum account balance to buy new pairs</td>
+</tr>
+<tr>
+<td>BuySamePairTimeout</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">900</td>
+<td>Rebuy same pair timeout (in seconds)</td>
+</tr>
+<tr>
+<td>BuyTrailing</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">-0.15</td>
+<td>Buy trailing percentage (should be a negative number, set to 0 to disable trailing)</td>
+</tr>
+<tr>
+<td>BuyTrailingStopMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.05</td>
+<td>Stop trailing and place buy order immediately when margin hits the specified value</td>
+</tr>
+<tr>
+<td>BuyTrailingStopAction</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Buy”</td>
+<td>Action to take after hitting the StopMargin. Possible values: Buy, Cancel</td>
+</tr>
+</tbody>
+</table><h6 id="Buying-DCA"><a class="anchor hidden-xs" href="#Buying-DCA" title="Buying-DCA"><span class="octicon octicon-link"></span></a>Buying DCA</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BuyDCAEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable buying DCA</td>
+</tr>
+<tr>
+<td>BuyDCAMultiplier</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1</td>
+<td>Current cost multiplier. To double down set to 1</td>
+</tr>
+<tr>
+<td>BuyDCAMinBalance</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0</td>
+<td>Minimum account balance to DCA</td>
+</tr>
+<tr>
+<td>BuyDCASamePairTimeout</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">4200</td>
+<td>Rebuy same pair timeout (in seconds)</td>
+</tr>
+<tr>
+<td>BuyDCATrailing</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">-1.50</td>
+<td>Buy trailing percentage (should be a negative number, set to 0 to disable trailing)</td>
+</tr>
+<tr>
+<td>BuyDCATrailingStopMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.40</td>
+<td>Stop trailing and place buy order immediately when margin hits the specified value</td>
+</tr>
+<tr>
+<td>BuyDCATrailingStopAction</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Cancel”</td>
+<td>Action to take after hitting the StopMargin. Possible values: Buy, Cancel</td>
+</tr>
+</tbody>
+</table><h6 id="Selling"><a class="anchor hidden-xs" href="#Selling" title="Selling"><span class="octicon octicon-link"></span></a>Selling</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SellEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable selling</td>
+</tr>
+<tr>
+<td>SellType</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Market”</td>
+<td>Supported types: Market. Limit is not currently supported</td>
+</tr>
+<tr>
+<td>SellMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">2.00</td>
+<td>Minimum percentage increase to start trailing</td>
+</tr>
+<tr>
+<td>SellTrailing</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.70</td>
+<td>Sell trailing percentage (should be a positive number, set to 0 to disable trailing)</td>
+</tr>
+<tr>
+<td>SellTrailingStopMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1.70</td>
+<td>Stop trailing and place sell order immediately when margin hits the specified value</td>
+</tr>
+<tr>
+<td>SellTrailingStopAction</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Sell”</td>
+<td>Action to take after hitting the StopMargin. Possible values: Sell, Cancel</td>
+</tr>
+<tr>
+<td>SellStopLossEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">false</td>
+<td>Enable / disable stop loss trigger</td>
+</tr>
+<tr>
+<td>SellStopLossAfterDCA</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Trigger stop loss only after all DCA levels has been reached</td>
+</tr>
+<tr>
+<td>SellStopLossMinAge</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">3.0</td>
+<td>Minimum number of days needed before triggering the stop loss</td>
+</tr>
+<tr>
+<td>SellStopLossMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">-20</td>
+<td>Trigger stop loss and immediately place sell order at the specified percentage decrease</td>
+</tr>
+</tbody>
+</table><h6 id="Selling-DCA"><a class="anchor hidden-xs" href="#Selling-DCA" title="Selling-DCA"><span class="octicon octicon-link"></span></a>Selling DCA</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SellDCAMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1.50</td>
+<td>Minimum percentage increase to start trailing</td>
+</tr>
+<tr>
+<td>SellDCATrailing</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.50</td>
+<td>Sell trailing percentage (set to 0 to disable trailing)</td>
+</tr>
+<tr>
+<td>SellDCATrailingStopMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1.25</td>
+<td>Stop trailing and place sell order immediately when margin hits the specified value</td>
+</tr>
+<tr>
+<td>SellDCATrailingStopAction</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Sell”</td>
+<td>Action to take after hitting the StopMargin. Possible values: Sell, Cancel</td>
+</tr>
+<tr>
+<td>RepeatLastDCALevel</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">fasle</td>
+<td>Repeat the last DCA Level indefinitely, essentially making the DCA level number unlimited</td>
+</tr>
+<tr>
+<td>DCALevels</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center"><a href="#DCA-Levels">DCA Levels</a></td>
+<td>Action to take after hitting the StopMargin. Possible values: Sell, Cancel</td>
+</tr>
+</tbody>
+</table><h6 id="DCA-Levels"><a class="anchor hidden-xs" href="#DCA-Levels" title="DCA-Levels"><span class="octicon octicon-link"></span></a>DCA Levels</h6><p>Read more about how DCA works in the <a href="#DCA">DCA</a> section.</p><p>DCALevels setting is an array of DCA levels. There is no limit to the number of levels. The only mandatory setting for each level is Margin, which specifies when to trigger the DCA. All other settings are optional and when omitted will use the default values as defined above.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Margin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">-1.50</td>
+<td>When to trigger the DCA</td>
+</tr>
+<tr>
+<td>BuyMultiplier</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">BuyDCAMultiplier</td>
+<td>Current cost multiplier. To double down set to 1 (Optional)</td>
+</tr>
+<tr>
+<td>BuySamePairTimeout</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">BuyDCASamePairTimeout</td>
+<td>Rebuy same pair timeout (in seconds) (Optional)</td>
+</tr>
+<tr>
+<td>BuyTrailing</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">BuyDCATrailing</td>
+<td>Buy trailing percentage (should be a negative number, set to 0 to disable trailing) (Optional)</td>
+</tr>
+<tr>
+<td>BuyTrailingStopMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">BuyDCATrailingStopMargin</td>
+<td>Stop trailing and place buy order immediately when margin hits the specified value. (Optional)</td>
+</tr>
+<tr>
+<td>BuyTrailingStopAction</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">BuyDCATrailingStopAction</td>
+<td>Action to take after hitting the StopMargin. Possible values: Buy, Cancel (Optional)</td>
+</tr>
+<tr>
+<td>SellMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">SellDCAMargin</td>
+<td>Minimum percentage increase to start trailing (Optional)</td>
+</tr>
+<tr>
+<td>SellTrailing</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">SellDCATrailing</td>
+<td>Sell trailing percentage (set to 0 to disable trailing) (Optional)</td>
+</tr>
+<tr>
+<td>SellTrailingStopMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">SellDCATrailingStopMargin</td>
+<td>Stop trailing and place buy order immediately when margin hits the specified value. (Optional)</td>
+</tr>
+<tr>
+<td>SellTrailingStopAction</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">SellDCATrailingStopAction</td>
+<td>Action to take after hitting the StopMargin. Possible values: Sell, Cancel (Optional)</td>
+</tr>
+</tbody>
+</table><h6 id="Accounts"><a class="anchor hidden-xs" href="#Accounts" title="Accounts"><span class="octicon octicon-link"></span></a>Accounts</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TradingCheckInterval</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1</td>
+<td>Tickers check frequency (in seconds)</td>
+</tr>
+<tr>
+<td>AccountRefreshInterval</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">360</td>
+<td>Exchange account refresh interval (in seconds)</td>
+</tr>
+<tr>
+<td>AccountInitialBalance</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.12</td>
+<td>Initial balance on the account, used for stats calculations</td>
+</tr>
+<tr>
+<td>AccountInitialBalanceDate</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“2018-04-08T00:00:00+00:00”</td>
+<td>Date of the initial balance snapshot</td>
+</tr>
+<tr>
+<td>AccountFilePath</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“data/exchange-account.json”</td>
+<td>Path to the account file</td>
+</tr>
+<tr>
+<td>VirtualTrading</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable virtual trading</td>
+</tr>
+<tr>
+<td>VirtualAccountInitialBalance</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">0.12</td>
+<td>Initial balance on the virtual account, used for stats calculations</td>
+</tr>
+<tr>
+<td>VirtualAccountFilePath</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“data/virtual-account.json”</td>
+<td>Path to the virtual account file</td>
+</tr>
+</tbody>
+</table><h4 id="Rules-Configuration"><a class="anchor hidden-xs" href="#Rules-Configuration" title="Rules-Configuration"><span class="octicon octicon-link"></span></a>Rules Configuration</h4><p>Read more about how rules work in the <a href="#Rules">rules</a> section.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modules</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center"><a href="#Module">Module</a></td>
+<td>Rule Modules</td>
+</tr>
+</tbody>
+</table><h6 id="Module"><a class="anchor hidden-xs" href="#Module" title="Module"><span class="octicon octicon-link"></span></a>Module</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Module</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“Module”</td>
+<td>Module name</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:center"><a href="#Module-Configuration">Module Configuration</a></td>
+<td>Module configuration</td>
+</tr>
+<tr>
+<td>Entries</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center"><a href="#Rules-Configuration">Rules Configuration</a></td>
+<td>Rules configuration</td>
+</tr>
+</tbody>
+</table><h6 id="Module-Configuration"><a class="anchor hidden-xs" href="#Module-Configuration" title="Module-Configuration"><span class="octicon octicon-link"></span></a>Module Configuration</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ProcessingMode</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">“AllMatches”</td>
+<td>Available modes: AllMatches (all enabled rules will get processed) or FirstMatch (stop processing at the first rule that is satisfied)</td>
+</tr>
+<tr>
+<td>CheckInterval</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">3</td>
+<td>Rules check frequency (in seconds)</td>
+</tr>
+</tbody>
+</table><h6 id="Rules-Configuration1"><a class="anchor hidden-xs" href="#Rules-Configuration1" title="Rules-Configuration1"><span class="octicon octicon-link"></span></a>Rules Configuration</h6><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enaled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable rule</td>
+</tr>
+<tr>
+<td>Name</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">Default</td>
+<td>Rule name</td>
+</tr>
+<tr>
+<td>Modifiers</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:center"><a href="#Rule-Modifiers">Rule Modifiers</a></td>
+<td>Rule modifiers</td>
+</tr>
+<tr>
+<td>Conditions</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center"><a href="#Rule-Conditions">Rule Conditions</a></td>
+<td>Rule conditions</td>
+</tr>
+<tr>
+<td>Trailing</td>
+<td style="text-align:center">Object</td>
+<td style="text-align:center"><a href="#Rule-Trailing">Rule trailing</a></td>
+<td>Rule trailing</td>
+</tr>
+</tbody>
+</table><h6 id="Rule-Modifiers"><a class="anchor hidden-xs" href="#Rule-Modifiers" title="Rule-Modifiers"><span class="octicon octicon-link"></span></a>Rule Modifiers</h6><p>All modifiers (both signal and trading) are optional and can be omitted.<br>
+Signal modifiers currently only support the <em>CostMultiplier</em> (MaxCost multiplier)<br>
+Trading modifiers support any trading setting that begins with Buy, Sell or DCALevels in addition to the following trading-rule specific modifiers:</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SwapEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Swap badly performing pairs for better performing ones</td>
+</tr>
+<tr>
+<td>SwapSignalRules</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">[ “Swap” ]</td>
+<td>Rules used to buy the replacement pair with</td>
+</tr>
+<tr>
+<td>SwapTimeout</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">10800</td>
+<td>How long to wait before making a swap (in seconds)</td>
+</tr>
+</tbody>
+</table><h6 id="Rule-Conditions"><a class="anchor hidden-xs" href="#Rule-Conditions" title="Rule-Conditions"><span class="octicon octicon-link"></span></a>Rule Conditions</h6><p>Rule is considered satisfied when all the conditions are met. When trailing is enabled, its conditions must be met first.<br>
+You can have multiple sets of conditions within a single rule.<br>
+Is is not necessary to specify a Signal if none of the conditions are signal-specific.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Signal Specific</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Signal</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">N/A</td>
+<td>Signal with which to calculate signal-specific conditions</td>
+</tr>
+<tr>
+<td>MinGlobalRating</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimal global rating calculated from all individual coins ratings. Is a value between -1 and 1. Value -0.2 is considered a bearish market</td>
+</tr>
+<tr>
+<td>MaxGlobalRating</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maximum global rating calculated from all individual coins ratings. Is a value between -1 and 1. Value +0.2 is considered a bullish market</td>
+</tr>
+<tr>
+<td>MinRating</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Minimal rating of a coin within the specified signal’s period. Expect a value between -1 and 1. A good place to start is 0.3+</td>
+</tr>
+<tr>
+<td>MaxRating</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Maximal ration of a coin within the specified signal’s period. Expect a value between -1 and 1. In a normal market do not expect it to go over 0.6</td>
+</tr>
+<tr>
+<td>MinRatingChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>The minimal rate of change of coins rating (percentage). For a reference values let the bot run and then have a look in the dashboard</td>
+</tr>
+<tr>
+<td>MaxRatingChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>The maximal rate of change of coins rating (percentage). For a reference values let the bot run and then have a look in the dashboard</td>
+</tr>
+<tr>
+<td>MinPrice</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Minimum current price of the coin</td>
+</tr>
+<tr>
+<td>MaxPrice</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Maxmimum current price of the coin</td>
+</tr>
+<tr>
+<td>MinPriceChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>The minimal rate of change of price withing specified period frame (percentage)</td>
+</tr>
+<tr>
+<td>MaxPriceChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>The maximal rate of change of price withing specified period frame (percentage)</td>
+</tr>
+<tr>
+<td>MinVolume</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Minimum coin volume within the specified signal’s period. Do not expect 24h volume in this category</td>
+</tr>
+<tr>
+<td>MaxVolume</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Maxmimum coin volume within the specified signal’s period. Do not expect 24h volume in this category</td>
+</tr>
+<tr>
+<td>MinVolumeChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>The minimal rate of change of volume withing specified period frame (percentage)</td>
+</tr>
+<tr>
+<td>MaxVolumeChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>The maximal rate of change of volume withing specified period frame (percentage)</td>
+</tr>
+<tr>
+<td>MinVolatility</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Minimum average volatility of a coin within its own specified timeframe</td>
+</tr>
+<tr>
+<td>MaxVolatility</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">Yes</td>
+<td>Maximum average volatility of a coin within its own specified timeframe</td>
+</tr>
+<tr>
+<td>MinAge</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimum trading pair’s age (in days, e.g. 1.5 is 36 hours)</td>
+</tr>
+<tr>
+<td>MaxAge</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maxmimum trading pair’s age (in days, e.g. 1.5 is 36 hours)</td>
+</tr>
+<tr>
+<td>MinLastBuyAge</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimum trading pair’s age since last buy (in days, e.g. 1.5 is 36 hours)</td>
+</tr>
+<tr>
+<td>MaxLastBuyAge</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maxmimum trading pair’s age since last buy (in days, e.g. 1.5 is 36 hours)</td>
+</tr>
+<tr>
+<td>MinMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimum trading pair’s margin</td>
+</tr>
+<tr>
+<td>MaxMargin</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maximum trading pair’s margin</td>
+</tr>
+<tr>
+<td>MinMarginChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimum trading pair’s margin change since last buy</td>
+</tr>
+<tr>
+<td>MaxMarginChange</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maximum trading pair’s margin change since last buy</td>
+</tr>
+<tr>
+<td>MinAmount</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimum trading pair’s total purchase amount</td>
+</tr>
+<tr>
+<td>MaxAmount</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maximum trading pair’s total purchase amount</td>
+</tr>
+<tr>
+<td>MinCost</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimum trading pair’s total current cost</td>
+</tr>
+<tr>
+<td>MaxCost</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maximum trading pair’s total current cost</td>
+</tr>
+<tr>
+<td>MinDCALevel</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Minimum trading pair’s DCA level</td>
+</tr>
+<tr>
+<td>MaxDCALevel</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">No</td>
+<td>Maximum trading pair’s DCA level</td>
+</tr>
+<tr>
+<td>Pairs</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">No</td>
+<td>List of pairs to directly apply the rule to</td>
+</tr>
+<tr>
+<td>SignalRules</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center">No</td>
+<td>List of signal rules that were used to buy a pair</td>
+</tr>
+</tbody>
+</table><h6 id="Rule-Trailing"><a class="anchor hidden-xs" href="#Rule-Trailing" title="Rule-Trailing"><span class="octicon octicon-link"></span></a>Rule Trailing</h6><p>Trailing is optional and is only supported by the Signal Rules.<br>
+Trailing starts when all the Rule Trailing StartConditions are met.<br>
+Trailing ends when all the conditions of the rule are met, at any point between MinDuration and MaxDuration.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable / disable trailing</td>
+</tr>
+<tr>
+<td>MinDuration</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">25</td>
+<td>Minimum trail duration (in seconds)</td>
+</tr>
+<tr>
+<td>MaxDuration</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">240</td>
+<td>Maximum trail duration (in seconds)</td>
+</tr>
+<tr>
+<td>StartConditions</td>
+<td style="text-align:center">Array</td>
+<td style="text-align:center"><a href="#Rule-Conditions">Rule Conditions</a></td>
+<td>Begin trailing when all the below conditions are met.</td>
+</tr>
+</tbody>
+</table><h4 id="Notification-Configuration"><a class="anchor hidden-xs" href="#Notification-Configuration" title="Notification-Configuration"><span class="octicon octicon-link"></span></a>Notification Configuration</h4><p>Read more about how nofitications work in the <a href="#Notifications">notifications</a> section.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">false</td>
+<td>Enable / disable notifications</td>
+</tr>
+<tr>
+<td>TelegramEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enabled / disable Telegram notifications</td>
+</tr>
+<tr>
+<td>TelegramBotToken</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">-</td>
+<td>Your Telegram bot’s token</td>
+</tr>
+<tr>
+<td>TelegramChatId</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">-</td>
+<td>Your Telegram chat id</td>
+</tr>
+<tr>
+<td>TelegramAlertsEnabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Enable phone alerts with Telegram messages</td>
+</tr>
+</tbody>
+</table><h4 id="Backtesting-Configuration"><a class="anchor hidden-xs" href="#Backtesting-Configuration" title="Backtesting-Configuration"><span class="octicon octicon-link"></span></a>Backtesting Configuration</h4><p>Read more about how backtesting works in the <a href="#Backtesting">backtesting</a> section.</p><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:center">Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">false</td>
+<td>Enable / disable backtesting</td>
+</tr>
+<tr>
+<td>Replay</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">false</td>
+<td>Enabled / disable snapshots replay</td>
+</tr>
+<tr>
+<td>ReplayOutput</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">true</td>
+<td>Display replay output in the log</td>
+</tr>
+<tr>
+<td>ReplaySpeed</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">500</td>
+<td>Replay speed (1 = SnapshotInterval speed)</td>
+</tr>
+<tr>
+<td>ReplayStartIndex</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">null</td>
+<td>Snapshot index to start replay with</td>
+</tr>
+<tr>
+<td>ReplayEndIndex</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">null</td>
+<td>Snapshot index to end replay with</td>
+</tr>
+<tr>
+<td>DeleteLogs</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">false</td>
+<td>Delete all existing logs before running backtesting</td>
+</tr>
+<tr>
+<td>DeleteAccountData</td>
+<td style="text-align:center">Boolean</td>
+<td style="text-align:center">false</td>
+<td>Delete account data before running backtesting</td>
+</tr>
+<tr>
+<td>CopyAccountDataPath</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">null</td>
+<td>Path to copy existing account data file from for backtesting</td>
+</tr>
+<tr>
+<td>SnapshotsInterval</td>
+<td style="text-align:center">Number</td>
+<td style="text-align:center">1</td>
+<td>How often to take snapshots (in seconds)</td>
+</tr>
+<tr>
+<td>SnapshotsPath</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">data/backtesting</td>
+<td>Where to save the new snapshots or to load existing ones when replaying</td>
+</tr>
+</tbody>
+</table><h4 id="Other-Configuration"><a class="anchor hidden-xs" href="#Other-Configuration" title="Other-Configuration"><span class="octicon octicon-link"></span></a>Other Configuration</h4><h6 id="Exchange"><a class="anchor hidden-xs" href="#Exchange" title="Exchange"><span class="octicon octicon-link"></span></a>Exchange</h6><p>Exchange-specific configuration. Don’t change the default values unless you know what you’re doing.</p><h6 id="Logging"><a class="anchor hidden-xs" href="#Logging" title="Logging"><span class="octicon octicon-link"></span></a>Logging</h6><p>Logging configuration. Here you can disable logging completely, change the default log file paths, verbosity and format.</p><h6 id="Paths"><a class="anchor hidden-xs" href="#Paths" title="Paths"><span class="octicon octicon-link"></span></a>Paths</h6><p>Paths to all the configuration files. Do not change unless you know what you’re doing.</p><h6 id="Caching"><a class="anchor hidden-xs" href="#Caching" title="Caching"><span class="octicon octicon-link"></span></a>Caching</h6><p>Currently not in use.</p><h6 id="Integration"><a class="anchor hidden-xs" href="#Integration" title="Integration"><span class="octicon octicon-link"></span></a>Integration</h6><p>Currently not in use.</p><h2 id="Trading"><a class="anchor hidden-xs" href="#Trading" title="Trading"><span class="octicon octicon-link"></span></a>Trading</h2><p>There are two ways you can trade with IntelliTrader. Virtual trading is enabled on by default.<br>
+DO NOT switch to live trading until you are fully confident with the bot and are familiar with the way it does trading.<br>
+Conceptually there is no difference between virtual and live trading, so virtual trading is a very good way to learn the ins and outs, experiment, and try out new settings.</p><h4 id="Virtual-Trading"><a class="anchor hidden-xs" href="#Virtual-Trading" title="Virtual-Trading"><span class="octicon octicon-link"></span></a>Virtual Trading</h4><p>Virtual trading is enabled by default. You don’t need to provide your API Key to virtual trade.<br>
+To enable virtual trading, set <em>VirtualTrading</em> to true in config\trading.json.<br>
+You might want to change <em>VirtualAccountInitialBalance</em> to reflect your starting balance for testing.</p><h4 id="Live-Trading"><a class="anchor hidden-xs" href="#Live-Trading" title="Live-Trading"><span class="octicon octicon-link"></span></a>Live Trading</h4><p>To trade on an exchange, first you need to create an encrypted file that will hold your API keys.<br>
+Open Encrypt-Keys.bat and change publickey to your API key and privatekey to your API secret, then run it.<br>
+You should now have the generated keys.bin file in your IntelliTrader directory. This file contains your encrypted API keys and it is only valid for the current user and only on the computer it is created on.<br>
+Important: Make sure to remove your keys from Encrypt-Keys.bat file after generating the keys.bin. Now change <em>VirtualTrading</em> to false in config\trading.json.<br>
+Also, to make the profit stats accurate, you need to set <em>AccountInitialBalance</em> to your current BTC/ETH balance (depending on the market you use).<br>
+That’s it, you are ready for exchange trading!</p><h4 id="Trailing"><a class="anchor hidden-xs" href="#Trailing" title="Trailing"><span class="octicon octicon-link"></span></a>Trailing</h4><p>When all the buy conditions are true, then the bot is in its final phase where it tries to find the bottom with the help of trailing. The bot is watching the price of a coin closely. The price needs to fall and then rise by at least the percentage specified for trailing in order to make a buy.</p><p>Example trailing story for value -1 (percent):</p><p><em>The coin keeps falling more than 3 percent. It then rises by 0.7 percent. This move is smaller than 1 percent, meaning the bot does nothing and the trailing continues. After another drop the coin jumps 1.5 percent, so the bot will buy because the trailing has exceeded our buy value.</em></p><h4 id="Signals"><a class="anchor hidden-xs" href="#Signals" title="Signals"><span class="octicon octicon-link"></span></a>Signals</h4><p>Signals are used to buy new pairs based on the predefined rules.</p><p>Read more about how signal rules work in the <a href="#Signal-Rules">signal rules</a> section.</p><h4 id="Global-Rating"><a class="anchor hidden-xs" href="#Global-Rating" title="Global-Rating"><span class="octicon octicon-link"></span></a>Global Rating</h4><p>An average value of all the ratings combined (for current market &amp; exchange)</p><h4 id="DCA"><a class="anchor hidden-xs" href="#DCA" title="DCA"><span class="octicon octicon-link"></span></a>DCA</h4><p>Buy additional position at a lower price than the original purchase price. This brings the average price you’ve paid the pair down.</p><h4 id="Stop-Loss"><a class="anchor hidden-xs" href="#Stop-Loss" title="Stop-Loss"><span class="octicon octicon-link"></span></a>Stop Loss</h4><p>Sell a pair at a specified negative margin to avoid it dipping even lower.</p><h4 id="Pair-Swapping"><a class="anchor hidden-xs" href="#Pair-Swapping" title="Pair-Swapping"><span class="octicon octicon-link"></span></a>Pair Swapping</h4><p>Swap badly performing pairs for better performing ones.<br>
+You would need at least one signal rule and one trading rule to enable this feature. The trading rule will enable swapping feature for the specific pairs (e.g. when the pair is old, has low margin, low rating, etc.) and the signal rule will determine the conditions for which pairs to buy instead of the swapped ones.</p><h4 id="Backtesting"><a class="anchor hidden-xs" href="#Backtesting" title="Backtesting"><span class="octicon octicon-link"></span></a>Backtesting</h4><p>Backtesting works by taking snapshots of signals and exchange tickers over a period of time (the longer the period the better) and then replaing them at high speed to the bot. Essentially what this means is that you could snapshot a week’s worth of data and then replay it in 10 minutes, saving yourself a lot of time. Snapshots can be reused for as many times as you like and with any settings you wish.</p><h2 id="Rules"><a class="anchor hidden-xs" href="#Rules" title="Rules"><span class="octicon octicon-link"></span></a>Rules</h2><h4 id="Signal-Rules"><a class="anchor hidden-xs" href="#Signal-Rules" title="Signal-Rules"><span class="octicon octicon-link"></span></a>Signal Rules</h4><p>Signal Rules are used to buy new pairs based on the specific conditions. This can also optionally have trailing.<br>
+If enabled then Signal Trailing in IntelliTrader is the first stage of buying where it will trail a coin based on the settings you specify for the time duration’s you specify. If a coin matches the trailing conditions it then checks the conditions of the coin and buys the coin if these are met.<br>
+If trailing isn’t enabled it buys based only on the specific conditions set.</p><p>Add “Action”: “Swap” if you want the signal rule to only be used for pair swapping.</p><h4 id="Trading-Rules"><a class="anchor hidden-xs" href="#Trading-Rules" title="Trading-Rules"><span class="octicon octicon-link"></span></a>Trading Rules</h4><p>Trading Rules apply to Pairs you already hold. Trailing is not available for trading rules. Conditions for Trading rules work the same way as in signal rules.<br>
+Available modifiers for Trading Rules are any trading.json setting that begins with Buy, Sell or DCALevels.<br>
+This is also where you would setup your Swap Specific Rules.</p><h2 id="Web-Interface"><a class="anchor hidden-xs" href="#Web-Interface" title="Web-Interface"><span class="octicon octicon-link"></span></a>Web Interface</h2><p>To access the web interface, simply open <a href="http://localhost:7000" target="_blank">http://localhost:7000</a> in your browser (or replace 7000 with the port you have configured).</p><h4 id="Status-Bar"><a class="anchor hidden-xs" href="#Status-Bar" title="Status-Bar"><span class="octicon octicon-link"></span></a>Status Bar</h4><p>Status bar contains information about your available balance, current global rating, trailing buys/sells/signals and the current status. Hover over the status icon (ON) to see the latest health check information.</p><h4 id="Dashboard"><a class="anchor hidden-xs" href="#Dashboard" title="Dashboard"><span class="octicon octicon-link"></span></a>Dashboard</h4><p>This is the default screen that IntelliTrader starts at. The table shows all the pairs that you currently hold. The data automatically refreshes every 5 seconds.</p><p>Columns can be adjusted. You can reorder them, move them around and even remove the ones that you don’t need. There are some options for exporting the data: you can copy or export it to a spreadsheet.</p><p>You can click on the table rows to expand them and access additional options. From there you can manually buy, sell or view the current pair’s settings.</p><p>The log button will display the last 5 lines from the log file.</p><table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>More</td>
+<td>Displayed on low resolution screens and when clicked shows additional data</td>
+</tr>
+<tr>
+<td>Pair #1</td>
+<td>Pair’s name</td>
+</tr>
+<tr>
+<td>Pair #2</td>
+<td>Pair’s name, including the current DCA level</td>
+</tr>
+<tr>
+<td>DCA</td>
+<td>Current DCA level</td>
+</tr>
+<tr>
+<td>Margin</td>
+<td>Current profit percentage. If you sold right now, this is what you would make, approximately</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>Target sell point in profit. Also known as the profit margin</td>
+</tr>
+<tr>
+<td>Rating</td>
+<td>Pair’s current rating based on the signals source, Green means it is currently higher than the purchase rating</td>
+</tr>
+<tr>
+<td>Rating Bought</td>
+<td>Rating that the pair was purchased at</td>
+</tr>
+<tr>
+<td>Age</td>
+<td>How long a pair has been held for</td>
+</tr>
+<tr>
+<td>Amount</td>
+<td>Total amount of the pair you currently hold</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>Current value of the pair</td>
+</tr>
+<tr>
+<td>Cost Bought</td>
+<td>Purchase value of the pair</td>
+</tr>
+<tr>
+<td>Price</td>
+<td>Current price of the pair on the exchange</td>
+</tr>
+<tr>
+<td>Price Bought</td>
+<td>Price paid on purchase</td>
+</tr>
+<tr>
+<td>Signal Rule</td>
+<td>Signal rule used to buy the pair</td>
+</tr>
+<tr>
+<td>Trading Rules</td>
+<td>Trading rules currently applied to the pair</td>
+</tr>
+<tr>
+<td>Order Dates</td>
+<td>The dates of the purchase orders</td>
+</tr>
+<tr>
+<td>Order IDs</td>
+<td>The order Ids on the exchange</td>
+</tr>
+</tbody>
+</table><p>Along the bottom of the main area you will find useful information regarding the current pairs, Total Pairs, Average Margin, Average Rating, Average Age, and Total Cost of all pairs together.</p><h4 id="Market"><a class="anchor hidden-xs" href="#Market" title="Market"><span class="octicon octicon-link"></span></a>Market</h4><p>This is the current market information page. The table shows all the pairs that are currently available on the exchange along with a variety of data. The data automatically refreshes every 5 seconds.</p><p>Columns can be adjust. You can reorder them, move them around and even remove the ones that you don’t need. There are some options for exporting the data: you can copy or export it to a spreadsheet.</p><p>You can click on the table rows to expand them and access additional options. From there you can manually buy, buy default (buys at the max cost) or view the current pair’s settings.</p><p>The log button will display the last 5 lines from the log file.</p><table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>More</td>
+<td>Displayed on low resolution screens and when clicked shows additional data</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>Pair’s name</td>
+</tr>
+<tr>
+<td>Rating</td>
+<td>Ratings for each signal</td>
+</tr>
+<tr>
+<td>% Rating Change</td>
+<td>Percentage rating change for each signal</td>
+</tr>
+<tr>
+<td>Price</td>
+<td>Current pair’s price (same for every signal)</td>
+</tr>
+<tr>
+<td>% Price Change</td>
+<td>Percentage price change for each signal</td>
+</tr>
+<tr>
+<td>Volume</td>
+<td>Volume for each signal</td>
+</tr>
+<tr>
+<td>% Volume Change</td>
+<td>Percentage volume change for each signal</td>
+</tr>
+<tr>
+<td>Volatility</td>
+<td>Volatility for each signal</td>
+</tr>
+<tr>
+<td>Trading Rules</td>
+<td>Currently applied trading rules</td>
+</tr>
+<tr>
+<td>Signal Rules</td>
+<td>Currently applied signal rules</td>
+</tr>
+</tbody>
+</table><h4 id="Stats"><a class="anchor hidden-xs" href="#Stats" title="Stats"><span class="octicon octicon-link"></span></a>Stats</h4><p>Here you can see your total overall profit and current account balance.<br>
+There is also a breakdown of profits by day, along with other information, like average margin.</p><p>You can click on the number of trades to see information about the orders completed on that particular day.</p><h4 id="Settings"><a class="anchor hidden-xs" href="#Settings" title="Settings"><span class="octicon octicon-link"></span></a>Settings</h4><p>Here you can temporarily enable or disable a small subset of bot options.</p><p>If you would like to make permanent changes to settings, you can use the Advanced panel. Saving the changes there will take immediate and permanent effect. In the advanced editor you can switch between different editing modes (Tree, Code, Form, Text, View).</p><p>There are also three options available on that page:</p><ul>
+<li>Restart Services: this will restarts all the bot’s services (core, trading, signals, rules, etc.). Useful when something went wrong and you don’t have access to your machine / VPS.</li>
+<li>Refresh Account: you could use this option if you have made a manual trade on an exchange and would like to update your account immediately. Hoewever, remember that there is a period account refresh (every 6 minutes by default), so this is rarely necessary.</li>
+<li>Log Out: log out of IntelliTrader</li>
+</ul><h4 id="Log"><a class="anchor hidden-xs" href="#Log" title="Log"><span class="octicon octicon-link"></span></a>Log</h4><p>Displays the last 500 lines from the log file.</p><h4 id="Help"><a class="anchor hidden-xs" href="#Help" title="Help"><span class="octicon octicon-link"></span></a>Help</h4><p>This page</p><h2 id="Notifications"><a class="anchor hidden-xs" href="#Notifications" title="Notifications"><span class="octicon octicon-link"></span></a>Notifications</h2><h4 id="Telegram"><a class="anchor hidden-xs" href="#Telegram" title="Telegram"><span class="octicon octicon-link"></span></a>Telegram</h4><p>In the config\notification.json change <em>Enabled</em> to true, set <em>TelegramBotToken</em> to your bot’s token and <em>TelegramChatId</em> to your chat id to enable Telegram notifications. Set <em>TelegramAlertsEnabled</em> to <em>false</em> if you don’t want to receive alerts with notifications.</p><p>Talk to @botfather to create a new bot and then talk to @FalconGate_Bot to get your telegram chat id (type /get_my_id).</p><h2 id="Health-Checks"><a class="anchor hidden-xs" href="#Health-Checks" title="Health-Checks"><span class="octicon octicon-link"></span></a>Health Checks</h2><p>Health check is a periodic test of all the bot’s services to make sure that every single one of them is running smoothly and with no interruptions. Trading gets suspended if at least one of the health checks fails until it passes again. If notifications are enabled, you will get a notification for both occasions.</p><h2 id="Troubleshooting"><a class="anchor hidden-xs" href="#Troubleshooting" title="Troubleshooting"><span class="octicon octicon-link"></span></a>Troubleshooting</h2><h4 id="IntelliTrader-is-not-starting-or-crashing-on-startup"><a class="anchor hidden-xs" href="#IntelliTrader-is-not-starting-or-crashing-on-startup" title="IntelliTrader-is-not-starting-or-crashing-on-startup"><span class="octicon octicon-link"></span></a>IntelliTrader is not starting or crashing on startup</h4><p>Please made sure that your system meets all the requirements and that you have all the prerequisites. Also check if there are any errors in the log/*-general.log file.</p><h4 id="IntelliTrader-is-not-trading-or-is-behaving-weirdly-in-general"><a class="anchor hidden-xs" href="#IntelliTrader-is-not-trading-or-is-behaving-weirdly-in-general" title="IntelliTrader-is-not-trading-or-is-behaving-weirdly-in-general"><span class="octicon octicon-link"></span></a>IntelliTrader is not trading or is behaving weirdly in general</h4><p>Again, check the log file for any errors, it is very likely that there will be a clue there.</p><h2 id="License-amp-Disclaimer"><a class="anchor hidden-xs" href="#License-amp-Disclaimer" title="License-amp-Disclaimer"><span class="octicon octicon-link"></span></a>License &amp; Disclaimer</h2><p>By using, or simply downloading IntelliTrader (the Software), you understand and accept the following:</p><p>Licensing</p><p>The Software is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International licence. Full terms of the licence can be found by following this link:</p><p><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode" target="_blank">https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode</a></p><p>A full copy of the license is also included with the download.</p><p>Limitation Of Liability</p><p>In no event shall liability be accepted for any indirect, incidental, special, consequential or punitive damages, including, without limitation, loss of profits, funds, data, use, goodwill, or other tangible and intangible losses, resulting from:</p><pre><code>(i) your access to, or use of, or inability to access or use the Software; 
+(ii) any content of any third party used with the Software; 
+(iii) any content obtained from the Software; and 
+(iv) unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage, and even if a remedy set forth herein is found to have failed of its essential purpose.
+</code></pre><p>We do not refund losses.</p><p>Disclaimer</p><p>Your use of the Software is at your sole risk. The Software is provided on an “AS IS” and “AS AVAILABLE” basis. The Software is provided without warranties of any kind, whether expressed or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement or course of performance.</p><p>No warranty of any kind is expressed or implied, that:</p><pre><code>a) the Software will function, be secure or operate on any nominated platform; 
+b) any errors or defects will be corrected; 
+c) the Software is free of viruses or other harmful components; or 
+d) the results of using the Software will meet your requirements.
+</code></pre><p>If you do not agree with any of the above, please do not download or use the Software.</p><div class="resize-sensor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"><div class="resize-sensor-expand" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"></div></div><div class="resize-sensor-shrink" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%"></div></div></div></div>
+    <div class="ui-toc dropup unselectable hidden-print" style="display:none;">
+        <div class="pull-right dropdown">
+            <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="Table of content">
+                <i class="fa fa-bars"></i>
+            </a>
+            <ul id="ui-toc" class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+                <div class="toc"><ul class="nav"><li class=""><a href="#IntelliTrader" title="IntelliTrader">IntelliTrader</a><ul class="nav"><li class=""><a href="#Getting-Started" title="Getting Started">Getting Started</a><ul class="nav"><li><a href="#Prerequisites" title="Prerequisites">Prerequisites</a></li><li><a href="#Setting-Up" title="Setting Up">Setting Up</a></li><li><a href="#Supported-Exchanges" title="Supported Exchanges">Supported Exchanges</a></li><li><a href="#Running" title="Running">Running</a></li></ul></li><li><a href="#Configuration" title="Configuration">Configuration</a><ul class="nav"><li><a href="#Value-Types" title="Value Types">Value Types</a></li><li><a href="#Core-Configuration" title="Core Configuration">Core Configuration</a></li><li><a href="#Web-Configuration" title="Web Configuration">Web Configuration</a></li><li><a href="#Signals-Configuration" title="Signals Configuration">Signals Configuration</a></li><li><a href="#Trading-Configuration" title="Trading Configuration">Trading Configuration</a></li><li><a href="#Rules-Configuration" title="Rules Configuration">Rules Configuration</a></li><li><a href="#Notification-Configuration" title="Notification Configuration">Notification Configuration</a></li><li><a href="#Backtesting-Configuration" title="Backtesting Configuration">Backtesting Configuration</a></li><li><a href="#Other-Configuration" title="Other Configuration">Other Configuration</a></li></ul></li><li><a href="#Trading" title="Trading">Trading</a><ul class="nav"><li><a href="#Virtual-Trading" title="Virtual Trading">Virtual Trading</a></li><li><a href="#Live-Trading" title="Live Trading">Live Trading</a></li><li><a href="#Trailing" title="Trailing">Trailing</a></li><li><a href="#Signals" title="Signals">Signals</a></li><li><a href="#Global-Rating" title="Global Rating">Global Rating</a></li><li><a href="#DCA" title="DCA">DCA</a></li><li><a href="#Stop-Loss" title="Stop Loss">Stop Loss</a></li><li><a href="#Pair-Swapping" title="Pair Swapping">Pair Swapping</a></li><li><a href="#Backtesting" title="Backtesting">Backtesting</a></li></ul></li><li><a href="#Rules" title="Rules">Rules</a><ul class="nav"><li><a href="#Signal-Rules" title="Signal Rules">Signal Rules</a></li><li><a href="#Trading-Rules" title="Trading Rules">Trading Rules</a></li></ul></li><li><a href="#Web-Interface" title="Web Interface">Web Interface</a><ul class="nav"><li><a href="#Status-Bar" title="Status Bar">Status Bar</a></li><li><a href="#Dashboard" title="Dashboard">Dashboard</a></li><li><a href="#Market" title="Market">Market</a></li><li><a href="#Stats" title="Stats">Stats</a></li><li><a href="#Settings" title="Settings">Settings</a></li><li><a href="#Log" title="Log">Log</a></li><li><a href="#Help" title="Help">Help</a></li></ul></li><li><a href="#Notifications" title="Notifications">Notifications</a><ul class="nav"><li><a href="#Telegram" title="Telegram">Telegram</a></li></ul></li><li><a href="#Health-Checks" title="Health Checks">Health Checks</a></li><li><a href="#Troubleshooting" title="Troubleshooting">Troubleshooting</a><ul class="nav"><li><a href="#IntelliTrader-is-not-starting-or-crashing-on-startup" title="IntelliTrader is not starting or crashing on startup">IntelliTrader is not starting or crashing on startup</a></li><li><a href="#IntelliTrader-is-not-trading-or-is-behaving-weirdly-in-general" title="IntelliTrader is not trading or is behaving weirdly in general">IntelliTrader is not trading or is behaving weirdly in general</a></li></ul></li><li><a href="#License-amp-Disclaimer" title="License &amp; Disclaimer">License &amp; Disclaimer</a></li></ul></li></ul></div><div class="toc-menu"><a class="expand-toggle" href="#">Expand all</a><a class="back-to-top" href="#">Back to top</a><a class="go-to-bottom" href="#">Go to bottom</a></div>
+            </ul>
+        </div>
+    </div>
+    <div id="ui-toc-affix" class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="top:17px;display:none;"  >
+        <div class="toc"><ul class="nav"><li class=""><a href="#IntelliTrader" title="IntelliTrader">IntelliTrader</a><ul class="nav"><li class=""><a href="#Getting-Started" title="Getting Started">Getting Started</a><ul class="nav"><li><a href="#Prerequisites" title="Prerequisites">Prerequisites</a></li><li><a href="#Setting-Up" title="Setting Up">Setting Up</a></li><li><a href="#Supported-Exchanges" title="Supported Exchanges">Supported Exchanges</a></li><li><a href="#Running" title="Running">Running</a></li></ul></li><li><a href="#Configuration" title="Configuration">Configuration</a><ul class="nav"><li><a href="#Value-Types" title="Value Types">Value Types</a></li><li><a href="#Core-Configuration" title="Core Configuration">Core Configuration</a></li><li><a href="#Web-Configuration" title="Web Configuration">Web Configuration</a></li><li><a href="#Signals-Configuration" title="Signals Configuration">Signals Configuration</a></li><li><a href="#Trading-Configuration" title="Trading Configuration">Trading Configuration</a></li><li><a href="#Rules-Configuration" title="Rules Configuration">Rules Configuration</a></li><li><a href="#Notification-Configuration" title="Notification Configuration">Notification Configuration</a></li><li><a href="#Backtesting-Configuration" title="Backtesting Configuration">Backtesting Configuration</a></li><li><a href="#Other-Configuration" title="Other Configuration">Other Configuration</a></li></ul></li><li><a href="#Trading" title="Trading">Trading</a><ul class="nav"><li><a href="#Virtual-Trading" title="Virtual Trading">Virtual Trading</a></li><li><a href="#Live-Trading" title="Live Trading">Live Trading</a></li><li><a href="#Trailing" title="Trailing">Trailing</a></li><li><a href="#Signals" title="Signals">Signals</a></li><li><a href="#Global-Rating" title="Global Rating">Global Rating</a></li><li><a href="#DCA" title="DCA">DCA</a></li><li><a href="#Stop-Loss" title="Stop Loss">Stop Loss</a></li><li><a href="#Pair-Swapping" title="Pair Swapping">Pair Swapping</a></li><li><a href="#Backtesting" title="Backtesting">Backtesting</a></li></ul></li><li><a href="#Rules" title="Rules">Rules</a><ul class="nav"><li><a href="#Signal-Rules" title="Signal Rules">Signal Rules</a></li><li><a href="#Trading-Rules" title="Trading Rules">Trading Rules</a></li></ul></li><li><a href="#Web-Interface" title="Web Interface">Web Interface</a><ul class="nav"><li><a href="#Status-Bar" title="Status Bar">Status Bar</a></li><li><a href="#Dashboard" title="Dashboard">Dashboard</a></li><li><a href="#Market" title="Market">Market</a></li><li><a href="#Stats" title="Stats">Stats</a></li><li><a href="#Settings" title="Settings">Settings</a></li><li><a href="#Log" title="Log">Log</a></li><li><a href="#Help" title="Help">Help</a></li></ul></li><li><a href="#Notifications" title="Notifications">Notifications</a><ul class="nav"><li><a href="#Telegram" title="Telegram">Telegram</a></li></ul></li><li><a href="#Health-Checks" title="Health Checks">Health Checks</a></li><li><a href="#Troubleshooting" title="Troubleshooting">Troubleshooting</a><ul class="nav"><li><a href="#IntelliTrader-is-not-starting-or-crashing-on-startup" title="IntelliTrader is not starting or crashing on startup">IntelliTrader is not starting or crashing on startup</a></li><li><a href="#IntelliTrader-is-not-trading-or-is-behaving-weirdly-in-general" title="IntelliTrader is not trading or is behaving weirdly in general">IntelliTrader is not trading or is behaving weirdly in general</a></li></ul></li><li><a href="#License-amp-Disclaimer" title="License &amp; Disclaimer">License &amp; Disclaimer</a></li></ul></li></ul></div><div class="toc-menu"><a class="expand-toggle" href="#">Expand all</a><a class="back-to-top" href="#">Back to top</a><a class="go-to-bottom" href="#">Go to bottom</a></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gist-embed/2.6.0/gist-embed.min.js" integrity="sha256-KyF2D6xPIJUW5sUDSs93vWyZm+1RzIpKCexxElmxl8g=" crossorigin="anonymous" defer></script>
+    <script>
+        var markdown = $(".markdown-body");
+        //smooth all hash trigger scrolling
+        function smoothHashScroll() {
+            var hashElements = $("a[href^='#']").toArray();
+            for (var i = 0; i < hashElements.length; i++) {
+                var element = hashElements[i];
+                var $element = $(element);
+                var hash = element.hash;
+                if (hash) {
+                    $element.on('click', function (e) {
+                        // store hash
+                        var hash = this.hash;
+                        if ($(hash).length <= 0) return;
+                        // prevent default anchor click behavior
+                        e.preventDefault();
+                        // animate
+                        $('body, html').stop(true, true).animate({
+                            scrollTop: $(hash).offset().top
+                        }, 100, "linear", function () {
+                            // when done, add hash to url
+                            // (default click behaviour)
+                            window.location.hash = hash;
+                        });
+                    });
+                }
+            }
+        }
+
+        smoothHashScroll();
+        var toc = $('.ui-toc');
+        var tocAffix = $('.ui-affix-toc');
+        var tocDropdown = $('.ui-toc-dropdown');
+        //toc
+        tocDropdown.click(function (e) {
+            e.stopPropagation();
+        });
+
+        var enoughForAffixToc = true;
+
+        function generateScrollspy() {
+            $(document.body).scrollspy({
+                target: ''
+            });
+            $(document.body).scrollspy('refresh');
+            if (enoughForAffixToc) {
+                toc.hide();
+                tocAffix.show();
+            } else {
+                tocAffix.hide();
+                toc.show();
+            }
+            $(document.body).scroll();
+        }
+
+        function windowResize() {
+            //toc right
+            var paddingRight = parseFloat(markdown.css('padding-right'));
+            var right = ($(window).width() - (markdown.offset().left + markdown.outerWidth() - paddingRight));
+            toc.css('right', right + 'px');
+            //affix toc left
+            var newbool;
+            var rightMargin = (markdown.parent().outerWidth() - markdown.outerWidth()) / 2;
+            //for ipad or wider device
+            if (rightMargin >= 133) {
+                newbool = true;
+                var affixLeftMargin = (tocAffix.outerWidth() - tocAffix.width()) / 2;
+                var left = markdown.offset().left + markdown.outerWidth() - affixLeftMargin;
+                tocAffix.css('left', left + 'px');
+            } else {
+                newbool = false;
+            }
+            if (newbool != enoughForAffixToc) {
+                enoughForAffixToc = newbool;
+                generateScrollspy();
+            }
+        }
+        $(window).resize(function () {
+            windowResize();
+        });
+        $(document).ready(function () {
+            windowResize();
+            generateScrollspy();
+        });
+
+        //remove hash
+        function removeHash() {
+            window.location.hash = '';
+        }
+
+        var backtotop = $('.back-to-top');
+        var gotobottom = $('.go-to-bottom');
+
+        backtotop.click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (scrollToTop)
+                scrollToTop();
+            removeHash();
+        });
+        gotobottom.click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (scrollToBottom)
+                scrollToBottom();
+            removeHash();
+        });
+
+        var toggle = $('.expand-toggle');
+        var tocExpand = false;
+
+        checkExpandToggle();
+        toggle.click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            tocExpand = !tocExpand;
+            checkExpandToggle();
+        })
+
+        function checkExpandToggle () {
+            var toc = $('.ui-toc-dropdown .toc');
+            var toggle = $('.expand-toggle');
+            if (!tocExpand) {
+                toc.removeClass('expand');
+                toggle.text('Expand all');
+            } else {
+                toc.addClass('expand');
+                toggle.text('Collapse all');
+            }
+        }
+
+        function scrollToTop() {
+            $('body, html').stop(true, true).animate({
+                scrollTop: 0
+            }, 100, "linear");
+        }
+
+        function scrollToBottom() {
+            $('body, html').stop(true, true).animate({
+                scrollTop: $(document.body)[0].scrollHeight
+            }, 100, "linear");
+        }
+    </script>
+</body>
+
+</html>

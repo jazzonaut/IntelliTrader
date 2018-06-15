@@ -1,0 +1,37 @@
+By using, or simply downloading IntelliTrader (the Software), you understand and accept the following:
+
+
+Licensing
+
+The Software is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International licence. Full terms of the licence can be found by following this link:
+
+https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+A full copy of the license is also included with the download.
+
+
+Limitation Of Liability
+
+In no event shall liability be accepted for any indirect, incidental, special, consequential or punitive damages, including, without limitation, loss of profits, funds, data, use, goodwill, or other tangible and intangible losses, resulting from:
+
+	(i) your access to, or use of, or inability to access or use the Software; 
+	(ii) any content of any third party used with the Software; 
+	(iii) any content obtained from the Software; and 
+	(iv) unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage, and even if a remedy set forth herein is found to have failed of its essential purpose.
+
+We do not refund losses.
+
+
+Disclaimer
+
+Your use of the Software is at your sole risk. The Software is provided on an “AS IS” and “AS AVAILABLE” basis. The Software is provided without warranties of any kind, whether expressed or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement or course of performance.
+
+No warranty of any kind is expressed or implied, that:
+
+	a) the Software will function, be secure or operate on any nominated platform; 
+	b) any errors or defects will be corrected; 
+	c) the Software is free of viruses or other harmful components; or 
+	d) the results of using the Software will meet your requirements.
+
+
+If you do not agree with any of the above, please do not download or use the Software.

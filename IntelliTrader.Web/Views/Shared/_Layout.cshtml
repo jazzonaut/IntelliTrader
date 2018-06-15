@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @if (User.Identity.IsAuthenticated)
+    {
+        <title>@ViewData["Title"] - IntelliTrader (@ViewData["Instance"])</title>
+    }
+    else
+    {
+        <title>@ViewData["Title"] - IntelliTrader</title>
+    }
+
+    <link rel="icon" href="@Url.Content("~/Static/favicon.ico")" type="image/x-icon" />
+    <link rel="shortcut icon" href="@Url.Content("~/Static/favicon.ico")" type="image/x-icon" />
+
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Vendor/bootstrap.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Vendor/bootstrap-theme.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Vendor/fontawesome-all.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Vendor/datatables.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/intellitrader.css")">
+
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Vendor/jquery-3.3.1.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Vendor/popper.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Vendor/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Vendor/datatables.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/intellitrader.js")"></script>
+
+    @if (IsSectionDefined("AddToHead"))
+    {
+        @RenderSection("AddToHead", required: false)
+    }
+
+    <script>
+        var isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLowerInvariant();
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <a class="navbar-brand" href="/">IntelliTrader</a>
+
+        } else {
+            <a class="navbar-brand" href="/">IntelliTrader (@ViewData["Instance"])</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link" href="/">Dashboard</a>
+                    <a class="nav-item nav-link" href="/Market">Market</a>
+                    <a class="nav-item nav-link" href="/Stats">Stats</a>
+                    <a class="nav-item nav-link" href="/Settings">Settings</a>
+                    <a class="nav-item nav-link" href="/Log">Log</a>
+                    <a class="nav-item nav-link" href="/Help">Help</a>
+                    <span class="nav-item nav-link text-muted" title="Lovingly handcrafted by Jazzo"><text>v</text>@Model.Version</span>
+                </div>
+            </div>
+            <div class="navbar-text status-bar">
+                <span title="Available Balance">B:</span> <span class="text-success" id="accountBalance" title="Available Balance">0</span> |
+                <span title="Global Rating">R:</span> <span id="globalRating" title="Global Rating">N/A</span> |
+                <span title="Trailing">T:</span> <span class="text-info" id="trailingBuys">0</span>/<span class="text-info" id="trailingSells">0</span>/<span class="text-info" id="trailingSignals">0</span> |
+                <span title="Status">S:</span> <span class="badge badge-pill badge-success" id="healthChecks">ON</span>
+                <div class="status-icons">
+                    <i class="fas fa-spinner text-info status-icon" id="statusRefreshIcon" title="Getting Status Info..."></i>
+                    <i class="fas fa-exclamation-triangle text-warning status-icon" id="statusWarningIcon" title="Connection Error" style="display: none"></i>
+                </div>
+            </div>
+        }
+    </nav>
+    <div>
+        <div class="container-fluid">
+            @if (!ViewData.ContainsKey("CustomPageHeader")) { <h2 class="page-header">@ViewData["Title"]</h2> }
+            <div class="collapse log-entries" id="logEntries"></div>
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>

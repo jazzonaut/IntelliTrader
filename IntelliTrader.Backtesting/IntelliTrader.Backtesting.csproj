@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZeroFormatter" Version="1.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntelliTrader.Core\IntelliTrader.Core.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Exchange.Base\IntelliTrader.Exchange.Base.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Signals.Base\IntelliTrader.Signals.Base.csproj" />
+  </ItemGroup>
+
+</Project>

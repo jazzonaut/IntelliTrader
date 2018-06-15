@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="virtual-account.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntelliTrader.Backtesting\IntelliTrader.Backtesting.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Core\IntelliTrader.Core.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Exchange.Base\IntelliTrader.Exchange.Base.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Exchange.Binance\IntelliTrader.Exchange.Binance.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Rules\IntelliTrader.Rules.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Signals.Base\IntelliTrader.Signals.Base.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Signals.TradingView\IntelliTrader.Signals.TradingView.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Trading\IntelliTrader.Trading.csproj" />
+    <ProjectReference Include="..\IntelliTrader.Web\IntelliTrader.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="config\core.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="config\exchange.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="config\logging.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="config\paths.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="config\signals.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="config\trading.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="IntelliTrader.Web.deps.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Start-IntelliTrader.bat">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="data\" />
+    <Folder Include="log\" />
+  </ItemGroup>
+
+</Project>

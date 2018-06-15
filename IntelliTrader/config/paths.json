@@ -1,0 +1,13 @@
+﻿{
+  "Paths": {
+    "Core": "core.json",
+    "Logging": "logging.json",
+    "Trading": "trading.json",
+    "Exchange": "exchange.json",
+    "Signals": "signals.json",
+    "Rules": "rules.json",
+    "Notification": "notification.json",
+    "Web": "web.json",
+    "Backtesting": "backtesting.json"
+  }
+}

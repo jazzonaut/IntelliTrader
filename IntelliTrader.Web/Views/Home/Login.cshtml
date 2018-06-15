@@ -1,0 +1,23 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div style="clear: both; width: 300px;">
+    <form method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label for="Password">Password </label>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">
+                @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                Remember Me
+             </label>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Login</button>
+        @Html.AntiForgeryToken()
+    </form>
+</div>

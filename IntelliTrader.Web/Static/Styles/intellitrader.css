@@ -1,0 +1,71 @@
+﻿body {
+    padding-top: 100px;
+}
+
+input[type=search], input[type=text], input[type=password], input[type=search]:focus, input[type=text]:focus, input[type=password]:focus {
+    background-color: #2e3740;
+    color: #ebebeb;
+    border: 1px solid #ced4da;
+    padding: 4px;
+}
+
+.page-header {
+    float: left;
+}
+
+.status-bar {
+    font-weight: bold;
+}
+
+.status-bar-btn {
+    border: none;
+    padding: 1px 6px;
+}
+
+.status-icons {
+    display: inline-block; 
+    width:25px;
+}
+
+.status-icon {
+    margin-left: 10px;
+}
+
+.log-entries {
+    font-size: 12px;
+    float: left;
+    padding: 0 20px 20px 20px;
+}
+
+table.dataTable {
+    border-collapse: collapse !important;
+}
+
+table.dataTable td, table.dataTable th {
+    padding: 2px;
+}
+
+table.dataTable td {
+    border-top: 1px solid #696969;
+}
+
+table.dataTable th {
+    border: none;
+}
+
+table.dataTable a.btn {
+    padding: 0 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.dt-buttons {
+    float: right;
+    margin-left: 15px;
+    margin-bottom: 15px;
+}
+
+.dataTables_filter {
+    float: right;
+    margin-bottom: 15px;
+}

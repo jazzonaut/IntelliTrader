@@ -1,0 +1,4 @@
+[submodule "Submodules/ExchangeSharp"]
+	path = Submodules/ExchangeSharp
+	url = https://github.com/jazzonaut/ExchangeSharp
+	branch = master

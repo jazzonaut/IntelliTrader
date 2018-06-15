@@ -1,0 +1,15 @@
+﻿@model LogViewModel
+@{
+    ViewData["Title"] = "Log";
+    ViewData["Instance"] = Model.InstanceName;
+}
+
+<div style="clear: both; font-size: smaller">
+    <hr />
+    <div class="log">
+        @foreach (var entry in Model.LogEntries) {
+        <div>@Html.Raw(entry)</div>
+        }
+    </div>
+    <hr />
+</div>

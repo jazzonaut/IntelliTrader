@@ -1,0 +1,66 @@
+﻿body {
+
+}
+
+#marketPairsTable tr.even, #marketPairsTable tr.odd {
+    cursor: pointer;
+}
+
+.row-details {
+    padding: 10px;
+}
+
+.row-details-name {
+    width: 100px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.row-details-value {
+}
+
+.additional-details {
+    float: left;
+    margin-bottom: 10px;
+}
+
+.show-settings {
+    float: right;
+}
+
+.manual-order {
+    float: right;
+    margin-right: 15px;
+}
+
+.manual-order input[type=text] {
+    width: 100px;
+    padding: 2px;
+}
+
+.signals-filter {
+    float: right;
+    margin-left: 10px;
+}
+
+.signal-filter-option label {
+    color: white !important;
+}
+
+.signal-details {
+
+}
+
+.signal-name {
+    display: inline-block;
+    width: 100px;
+}
+
+.signal-value {
+
+}
+
+.filter {
+    display: block;
+    margin-bottom: 10px;
+}

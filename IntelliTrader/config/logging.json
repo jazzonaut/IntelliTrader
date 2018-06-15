@@ -1,0 +1,72 @@
+{
+  "Logging": {
+    "Enabled": true,
+    "MinimumLevel": {
+      "Default": "Verbose",
+      "Override": {
+        "System": "Warning",
+        "Microsoft": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Logger",
+        "Args": {
+          "configureLogger": {
+            "WriteTo": [
+              {
+                "Name": "Console",
+                "Args": {
+                  "outputTemplate": "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}",
+                  "theme": "Serilog.Sinks.SystemConsole.Themes.SystemConsoleTheme::Literate, Serilog.Sinks.Console",
+                  "restrictedToMinimumLevel": "Information"
+                }
+              },
+              {
+                "Name": "RollingFile",
+                "Args": {
+                  "outputTemplate": "[{Timestamp:HH:mm:ss}] [{Level:u3}] {Message}{NewLine}{Exception}",
+                  "pathFormat": "log/{Date}-general.txt",
+                  "retainedFileCountLimit": 1000
+                }
+              }
+            ],
+            "Filter": [
+              {
+                "Name": "ByIncludingOnly",
+                "Args": {
+                  "expression": "Trade is null"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Name": "Logger",
+        "Args": {
+          "configureLogger": {
+            "WriteTo": [
+              {
+                "Name": "RollingFile",
+                "Args": {
+                  "outputTemplate": "[{Timestamp:HH:mm:ss}] {Message}{NewLine}",
+                  "pathFormat": "log/{Date}-trades.txt",
+                  "retainedFileCountLimit": 1000
+                }
+              }
+            ],
+            "Filter": [
+              {
+                "Name": "ByIncludingOnly",
+                "Args": {
+                  "expression": "Trade is not null"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

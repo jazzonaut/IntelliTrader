@@ -1,0 +1,109 @@
+﻿@model StatsViewModel
+@{
+    ViewData["Title"] = "Stats";
+    ViewData["Instance"] = Model.InstanceName;
+}
+
+@section AddToHead{
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Views/stats.css")">
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Views/stats.js")"></script>
+}
+
+<div>
+    <div class="sub-header">Total Profit: @Model.Trades.Values.Sum(trades => trades.Where(t => !t.IsSwap).Sum(t => t.Profit)).ToString("0.00000000") (@Model.Trades.Values.Sum(trades => trades.Where(t => !t.IsSwap).Sum(t => t.Profit) / Model.AccountInitialBalance * 100).ToString("0.00")%) , Account Balance: @Model.AccountBalance.ToString("0.00000000") @Model.Market</div>
+
+    <table class="table table-hover table-striped" id="statsTable" style="width: 100%">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Trades</th>
+                <th>Profit</th>
+                <th>% Profit</th>
+                <th>Avg. Margin</th>
+                <th>Avg. Margin DCA</th>
+                <th>Avg. Rating Bought</th>
+                <th>Avg. Rating Sold</th>
+                <th>Avg. Gl. Rating Bought</th>
+                <th>Avg. Gl. Rating Sold</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var kvp in Model.Trades.OrderByDescending(t => t.Key).Take(30))
+            {
+                <tr>
+                    <td>@kvp.Key.ToString("yyyy-MM-dd")</td>
+                    <td>@Html.ActionLink(kvp.Value.Count.ToString(), "Trades", "Home", new { id = kvp.Key.ToString("o") }, new { @class = "btn btb-sm btn-success trades-link" })</td>
+                    <td>@kvp.Value.Where(t => !t.IsSwap).Sum(t => t.Profit).ToString("0.00000000")</td>
+                    <td>@{ var percentage = kvp.Value.Where(t => !t.IsSwap).Sum(t => t.Profit) / Model.Balances[kvp.Key] * 100; @Html.Raw(percentage.ToString("0.00")); }</td>
+                    <td>
+                        @{ var trades = kvp.Value.Where(t => !t.IsSwap && t.OrderDates != null && t.OrderDates.Count == 1); if (trades.Count() > 0)
+                            {
+                                var avgMargin = trades.Average(t => t.Profit / (t.AverageCost + (t.Metadata?.AdditionalCosts ?? 0)) * 100);
+                                @Html.Raw(avgMargin.ToString("0.00"));
+                            } else
+                            {
+                                @Html.Raw("N/A");
+                            }
+                        }
+                    </td>
+                    <td>
+                        @{ var tradesDCA = kvp.Value.Where(t => !t.IsSwap && t.OrderDates != null && t.OrderDates.Count > 1); if (tradesDCA.Count() > 0)
+                            {
+                                var avgMargin = tradesDCA.Average(t => t.Profit / (t.AverageCost + (t.Metadata?.AdditionalCosts ?? 0)) * 100);
+                                @Html.Raw(avgMargin.ToString("0.00"));
+                            } else
+                            {
+                                @Html.Raw("N/A");
+                            }
+                        }
+                    </td>
+                    <td>
+                        @{ var tradesRatingBought = kvp.Value.Where(t => t.Metadata?.BoughtRating != null); if (tradesRatingBought.Count() > 0)
+                            {
+                                var avgRatingBought = tradesRatingBought.Average(t => t.Metadata.BoughtRating.Value);
+                                @Html.Raw(avgRatingBought.ToString("0.000"));
+                            } else
+                            {
+                                @Html.Raw("N/A");
+                            }
+                        }
+                    </td>
+                    <td>
+                        @{ var tradesRatingSold = kvp.Value.Where(t => t.Metadata?.CurrentRating != null); if (tradesRatingSold.Count() > 0)
+                            {
+                                var avgRatingSold = tradesRatingSold.Average(t => t.Metadata.CurrentRating.Value);
+                                @Html.Raw(avgRatingSold.ToString("0.000"));
+                            } else
+                            {
+                                @Html.Raw("N/A");
+                            }
+                        }
+                    </td>
+                    <td>
+                        @{ var tradesGlobalRatingBought = kvp.Value.Where(t => t.Metadata?.BoughtGlobalRating != null); if (tradesGlobalRatingBought.Count() > 0)
+                            {
+                                var avgGlobalRatingBought = tradesGlobalRatingBought.Average(t => t.Metadata.BoughtGlobalRating.Value);
+                                @Html.Raw(avgGlobalRatingBought.ToString("0.000"));
+                            } else
+                            {
+                                @Html.Raw("N/A");
+                            }
+                        }
+                    </td>
+                    <td>
+                        @{ var tradesGlobalRatingSold = kvp.Value.Where(t => t.Metadata?.CurrentGlobalRating != null); if (tradesGlobalRatingSold.Count() > 0)
+                            {
+                                var avgGlobalRatingSold = tradesGlobalRatingSold.Average(t => t.Metadata.CurrentGlobalRating.Value);
+                                @Html.Raw(avgGlobalRatingSold.ToString("0.000"));
+                            } else
+                            {
+                                @Html.Raw("N/A");
+                            }
+                        }
+                    </td>
+                </tr>
+    }
+        </tbody>
+    </table>
+    <hr />
+</div>

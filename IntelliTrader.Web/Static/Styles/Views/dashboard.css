@@ -1,0 +1,39 @@
+﻿body {
+}
+
+#tradingPairsTable tr.even, #tradingPairsTable tr.odd {
+    cursor: pointer;
+}
+
+.row-details {
+    padding: 10px;
+}
+
+.row-details-name {
+    width: 115px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.row-details-value {
+
+}
+
+.additional-details {
+    float: left;
+    margin-bottom: 10px;
+}
+
+.show-settings {
+    float: right;
+}
+
+.manual-order {
+    float: right;
+    margin-right: 15px;
+}
+
+.manual-order input[type=text] {
+    width: 100px;
+    padding: 2px;
+}

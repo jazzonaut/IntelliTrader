@@ -1,4 +1,4 @@
-IntelliTrader
+Help
 ===========
 
 Getting Started
@@ -11,7 +11,7 @@ Download and install .NET Core Runtime 2.1 from [Microsoft](https://www.microsof
 
 #### Setting Up
 The bot should just run with out of the box settings. By default, it is configured for virtual trading, so there is no need to provide any API keys at the start. The only thing you might want to change is the default port for the web interface (7000).
-Refer to [web configuration](#Web-Configuration) section for information on how to do this.
+Refer to [web configuration](#Web_Configuration) section for information on how to do this.
 
 #### Supported Exchanges
 Currenly only Binance Exchange is supported.
@@ -29,7 +29,7 @@ Configuration
 All changes to the configuration files will take effect immediately.
 
 Configuration quick links:
-[Value Types](#Value-Types), [Core](#Core-Configuration), [Web](#Web-Configuration), [Signals](#Signals-Configuration), [Trading](#Trading-Configuration), [Rules](#Rules-Configuration), [Notification](#Notification-Configuration), [Backtesting](#Backtesting-Configuration), [Other](#Other-Configuration)
+[Value Types](#Value_Types), [Core](#Core_Configuration), [Web](#Web_Configuration), [Signals](#Signals_Configuration), [Trading](#Trading_Configuration), [Rules](#Rules_Configuration), [Notification](#Notification_Configuration), [Backtesting](#Backtesting_Configuration), [Other](#Other_Configuration)
 
 #### Value Types
 
@@ -57,7 +57,7 @@ Configuration quick links:
 
 #### Web Configuration
 
-Read more about how web interface works in the [web](#Web-Interface) section.
+Read more about how web interface works in the [web](#Web_Interface) section.
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
@@ -73,7 +73,7 @@ Read more about how signals work in the [signals](#Signals) section.
 |-|:-:|:-:|-|
 |Enabled|Boolean|true|Enable / disable signals|
 |GlobalRatingSignals|Array|"TV-5mins","TV-15mins","TV-60mins"|Signals to calculate the Global Rating from|
-|Definitions|Array|[Signal Definitions](#Signal-Definitions)|Signal source definitions|
+|Definitions|Array|[Signal Definitions](#Signal_Definitions)|Signal source definitions|
 
 ###### Signal Definitions
 
@@ -81,7 +81,7 @@ Read more about how signals work in the [signals](#Signals) section.
 |-|:-:|:-:|-|
 |Name|String|"TV-15mins"|Signal name|
 |Receiver|String|"TradingViewCryptoSignalReceiver"|Signal receiver name|
-|Configuration|Object|[Signal Receiver Configuration](#Signal-Receiver-Configuration)|Signal receiver configuration|
+|Configuration|Object|[Signal Receiver Configuration](#Signal_Receiver_Configuration)|Signal receiver configuration|
 
 ###### Signal Receiver Configuration
 
@@ -158,7 +158,7 @@ Read more about how trading works in the [trading](#Trading) section.
 |SellDCATrailingStopMargin|Number|1.25|Stop trailing and place sell order immediately when margin hits the specified value|
 |SellDCATrailingStopAction|String|"Sell"|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
 |RepeatLastDCALevel|Boolean|fasle|Repeat the last DCA Level indefinitely, essentially making the DCA level number unlimited|
-|DCALevels|Array|[DCA Levels](#DCA-Levels)|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
+|DCALevels|Array|[DCA Levels](#DCA_Levels)|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
 
 ###### DCA Levels
 
@@ -204,8 +204,8 @@ Read more about how rules work in the [rules](#Rules) section.
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
 |Module|String|"Module"|Module name|
-|Configuration|Object|[Module Configuration](#Module-Configuration)|Module configuration|
-|Entries|Array|[Rules Configuration](#Rules-Configuration)|Rules configuration|
+|Configuration|Object|[Module Configuration](#Module_Configuration)|Module configuration|
+|Entries|Array|[Rules Configuration](#Rules_Configuration)|Rules configuration|
 
 ###### Module Configuration
 
@@ -220,9 +220,9 @@ Read more about how rules work in the [rules](#Rules) section.
 |-|:-:|:-:|-|
 |Enaled|Boolean|true|Enable / disable rule|
 |Name|String|Default|Rule name|
-|Modifiers|Object|[Rule Modifiers](#Rule-Modifiers)|Rule modifiers|
-|Conditions|Array|[Rule Conditions](#Rule-Conditions)|Rule conditions|
-|Trailing|Object|[Rule trailing](#Rule-Trailing)|Rule trailing|
+|Modifiers|Object|[Rule Modifiers](#Rule_Modifiers)|Rule modifiers|
+|Conditions|Array|[Rule Conditions](#Rule_Conditions)|Rule conditions|
+|Trailing|Object|[Rule trailing](#Rule_Trailing)|Rule trailing|
 
 ###### Rule Modifiers
 
@@ -289,7 +289,7 @@ Trailing ends when all the conditions of the rule are met, at any point between 
 |Enabled|Boolean|true|Enable / disable trailing|
 |MinDuration|Number|25|Minimum trail duration (in seconds)|
 |MaxDuration|Number|240|Maximum trail duration (in seconds)|
-|StartConditions|Array|[Rule Conditions](#Rule-Conditions)|Begin trailing when all the below conditions are met.|
+|StartConditions|Array|[Rule Conditions](#Rule_Conditions)|Begin trailing when all the below conditions are met.|
 
 #### Notification Configuration
 
@@ -377,7 +377,7 @@ Example trailing story for value -1 (percent):
 
 Signals are used to buy new pairs based on the predefined rules.
 
-Read more about how signal rules work in the [signal rules](#Signal-Rules) section.
+Read more about how signal rules work in the [signal rules](#Signal_Rules) section.
 
 #### Global Rating
 
@@ -561,7 +561,7 @@ We do not refund losses.
 
 Disclaimer
 
-Your use of the Software is at your sole risk. The Software is provided on an ‚ÄúAS IS‚Äù and ‚ÄúAS AVAILABLE‚Äù basis. The Software is provided without warranties of any kind, whether expressed or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement or course of performance.
+Your use of the Software is at your sole risk. The Software is provided on an ìAS ISî and ìAS AVAILABLEî basis. The Software is provided without warranties of any kind, whether expressed or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement or course of performance.
 
 No warranty of any kind is expressed or implied, that:
 

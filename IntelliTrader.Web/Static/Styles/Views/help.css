@@ -1,0 +1,41 @@
+﻿#md-page-menu a {
+    color: #5bc0de;
+}
+
+#md-content table a {
+    color: #DF691A;
+    text-decoration: none;
+}
+
+#md-content table tr:nth-child(odd) td {
+    padding: 8px;
+    background: #35495d;
+}
+
+#md-content table tr:nth-child(even) td {
+    padding: 8px;
+}
+
+#md-content table th {
+    border: 1px solid #5f7286;
+    background: #4d6a86;
+}
+
+#md-content table td {
+    border: 1px solid #5f7286;
+}
+
+h2.md-inpage-anchor {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #4E5D6C;
+}
+
+h4.md-inpage-anchor {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+h6.md-inpage-anchor {
+    padding-top: 5px;
+    color: #88e4ff;
+}

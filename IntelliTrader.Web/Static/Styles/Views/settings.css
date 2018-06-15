@@ -1,0 +1,58 @@
+﻿body {
+}
+
+.settings {
+    float: left;
+}
+
+.settings div {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.settings label {
+    margin-left: 3px;
+}
+
+.settings-btn {
+    float: right;
+    margin-left: 10px;
+}
+
+.configs {
+    clear: both;
+    padding-top: 20px;
+}
+
+.config-container {
+    background-color: white;
+}
+
+.config-value {
+    display: none;
+}
+
+.config-editor {
+    
+}
+
+.config-options {
+    text-align: right;
+    padding: 5px;
+}
+
+.save-config-status {
+    margin-right: 10px;
+}
+
+.tab-content {
+    margin-bottom: 20px;
+}
+
+div.jsoneditor {
+    border: 1px solid #4a4a4a;
+}
+
+div.jsoneditor-menu {
+    background-color: #4E5D6C;
+}

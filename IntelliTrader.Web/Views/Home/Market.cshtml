@@ -1,0 +1,88 @@
+﻿@model MarketViewModel
+@{
+    ViewData["Title"] = "Market";
+    ViewData["Instance"] = Model.InstanceName;
+}
+
+@section AddToHead{
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Vendor/bootstrap-multiselect.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Views/market.css")">
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Vendor/bootstrap-multiselect.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Views/market.js")"></script>
+}
+
+<div>
+    <table class="table table-hover table-striped" id="marketPairsTable" style="width: 100%">
+        <thead>
+            <tr>
+                <th>More</th>
+                <th>Name</th>
+                <th>Rating</th>
+                <th>% Rating Change</th>
+                <th>Price</th>
+                <th>% Price Change</th>
+                <th>Volume</th>
+                <th>% Volume Change</th>
+                <th>Volatility</th>
+                <th>Trading Rules</th>
+                <th>Signal Rules</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body" id="modalContent"></div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="rowDetails">
+        <div>
+            <div class="row-details">
+                <input type="hidden" id="pair" />
+                <div class="additional-details">
+                    <div>
+                        <span class="row-details-name">Signal Rules:</span>&nbsp;&nbsp;<span class="row-details-value" id="signalRules"></span>
+                    </div>
+                    <div>
+                        <span class="row-details-name">Trading Rules:</span>&nbsp;&nbsp;<span class="row-details-value" id="tradingRules"></span>
+                    </div>
+                </div>
+                <div class="show-settings">
+                    <button class="btn btn-sm btn-success" onclick="showSettings(this);">Show Settings</button>
+                </div>
+                <div class="manual-order">
+                    <span>Amount:</span>&nbsp;&nbsp;<input type="text" id="amount" value="0" />
+                    <button class="btn btn-sm btn-warning" onclick="buyPair(this);">Buy</button>
+                    <button class="btn btn-sm btn-warning" onclick="buyPairDefault(this);">Buy Default</button>
+                </div>
+            </div>
+        </div>
+    </script>
+</div>
