@@ -10,7 +10,7 @@ namespace IntelliTrader.Core
         /// Raised on unhandled exception
         /// </summary>
         public event UnhandledExceptionEventHandler UnhandledException;
-        
+
         /// <summary>
         /// Delay before starting the task in [ms]
         /// </summary>
@@ -27,9 +27,9 @@ namespace IntelliTrader.Core
         public ThreadPriority Priorty { get; set; } = ThreadPriority.Normal;
 
         /// <summary>
-        /// Restart the timer periodically to prevent precision problems in [s]
+        /// User the same Stopwatch amongst different tasks to synchronize their execution
         /// </summary>
-        public double TimerCorrectionInterval { get; set; } = 3600;
+        public Stopwatch SyncedStopWatch { get; set; }
 
         /// <summary>
         /// True when task is enabled
@@ -68,19 +68,24 @@ namespace IntelliTrader.Core
                 timerThread = new Thread(() =>
                 {
                     double nextRun = StartDelay + RunInterval;
-                    Stopwatch stopWatch = Stopwatch.StartNew();
+                    long startMilliseconds = 0;
+
+                    if (SyncedStopWatch == null)
+                    {
+                        SyncedStopWatch = Stopwatch.StartNew();
+                    }
+                    else
+                    {
+                        if (!SyncedStopWatch.IsRunning)
+                        {
+                            SyncedStopWatch.Restart();
+                        }
+                        startMilliseconds = SyncedStopWatch.ElapsedMilliseconds;
+                    }
 
                     while (IsEnabled)
                     {
-                        var waitTime = nextRun - stopWatch.ElapsedMilliseconds;
-
-                        // Restart the timer periodically to prevent precision problems
-                        if (stopWatch.Elapsed.TotalSeconds >= TimerCorrectionInterval)
-                        {
-                            stopWatch.Restart();
-                            nextRun = waitTime;
-                        }
-
+                        var waitTime = nextRun - (SyncedStopWatch.ElapsedMilliseconds - startMilliseconds);
                         if (waitTime > 0)
                         {
                             if (resetEvent.WaitOne((int)waitTime))

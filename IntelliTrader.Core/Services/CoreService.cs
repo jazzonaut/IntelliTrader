@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,8 +16,6 @@ namespace IntelliTrader.Core
 
         public string Version { get; private set; }
 
-        public bool Running { get; private set; }
-
         private readonly ILoggingService loggingService;
         private readonly INotificationService notificationService;
         private readonly IHealthCheckService healthCheckService;
@@ -27,6 +24,7 @@ namespace IntelliTrader.Core
         private readonly IBacktestingService backtestingService;
 
         private ConcurrentDictionary<string, HighResolutionTimedTask> timedTasks;
+        private Stopwatch syncStopSwatch;
 
         public CoreService(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, ITradingService tradingService, IWebService webService, IBacktestingService backtestingService)
         {
@@ -38,6 +36,7 @@ namespace IntelliTrader.Core
             this.backtestingService = backtestingService;
 
             this.timedTasks = new ConcurrentDictionary<string, HighResolutionTimedTask>();
+            this.syncStopSwatch = new Stopwatch();
 
             // Log unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -54,6 +53,7 @@ namespace IntelliTrader.Core
         public void Start()
         {
             loggingService.Info($"Start Core service (Version: {Version})...");
+
             if (backtestingService.Config.Enabled)
             {
                 backtestingService.Start();
@@ -140,6 +140,7 @@ namespace IntelliTrader.Core
         public void RemoveAllTasks()
         {
             timedTasks.Clear();
+            syncStopSwatch.Stop();
         }
 
         public void StartTask(string name)
@@ -147,6 +148,7 @@ namespace IntelliTrader.Core
             if (timedTasks.TryGetValue(name, out HighResolutionTimedTask task))
             {
                 task.UnhandledException += OnUnhandledException;
+                task.SyncedStopWatch = syncStopSwatch;
                 task.Start();
             }
         }
@@ -156,6 +158,7 @@ namespace IntelliTrader.Core
             if (timedTasks.TryGetValue(name, out HighResolutionTimedTask task))
             {
                 task.Stop();
+                task.SyncedStopWatch = null;
                 task.UnhandledException -= OnUnhandledException;
             }
         }
@@ -174,6 +177,7 @@ namespace IntelliTrader.Core
             {
                 StopTask(taskName);
             }
+            syncStopSwatch.Stop();
         }
 
         public HighResolutionTimedTask GetTask(string name)

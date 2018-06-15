@@ -10,6 +10,219 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Static\favicon.ico" />
+    <None Remove="Static\Help\index.md" />
+    <None Remove="Static\Help\navigation.md" />
+    <None Remove="Static\Scripts\intellitrader.js" />
+    <None Remove="Static\Scripts\Vendor\bootstrap-multiselect.min.js" />
+    <None Remove="Static\Scripts\Vendor\bootstrap.min.js" />
+    <None Remove="Static\Scripts\Vendor\datatables.min.js" />
+    <None Remove="Static\Scripts\Vendor\highlight.min.js" />
+    <None Remove="Static\Scripts\Vendor\jquery-3.3.1.min.js" />
+    <None Remove="Static\Scripts\Vendor\jquery.colorbox.min.js" />
+    <None Remove="Static\Scripts\Vendor\jsoneditor.min.js" />
+    <None Remove="Static\Scripts\Vendor\mdwiki.js" />
+    <None Remove="Static\Scripts\Vendor\mdwiki.min.js" />
+    <None Remove="Static\Scripts\Vendor\popper.min.js" />
+    <None Remove="Static\Scripts\Views\dashboard.js" />
+    <None Remove="Static\Scripts\Views\market.js" />
+    <None Remove="Static\Scripts\Views\settings.js" />
+    <None Remove="Static\Scripts\Views\stats.js" />
+    <None Remove="Static\Scripts\Views\trades.js" />
+    <None Remove="Static\Styles\intellitrader.css" />
+    <None Remove="Static\Styles\Vendor\bootstrap-multiselect.min.css" />
+    <None Remove="Static\Styles\Vendor\bootstrap-theme.min.css" />
+    <None Remove="Static\Styles\Vendor\bootstrap.min.css" />
+    <None Remove="Static\Styles\Vendor\colorbox.min.css" />
+    <None Remove="Static\Styles\Vendor\datatables.min.css" />
+    <None Remove="Static\Styles\Vendor\fontawesome-all.min.css" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-brands-400.eot" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-brands-400.svg" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-brands-400.ttf" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-brands-400.woff" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-brands-400.woff2" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-regular-400.eot" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-regular-400.svg" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-regular-400.ttf" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-regular-400.woff" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-regular-400.woff2" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-solid-900.eot" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-solid-900.svg" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-solid-900.ttf" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-solid-900.woff" />
+    <None Remove="Static\Styles\Vendor\Fonts\fa-solid-900.woff2" />
+    <None Remove="Static\Styles\Vendor\highlight.min.css" />
+    <None Remove="Static\Styles\Vendor\img\jsoneditor-icons.svg" />
+    <None Remove="Static\Styles\Vendor\jsoneditor.min.css" />
+    <None Remove="Static\Styles\Vendor\mdwiki.min.css" />
+    <None Remove="Static\Styles\Views\dashboard.css" />
+    <None Remove="Static\Styles\Views\help.css" />
+    <None Remove="Static\Styles\Views\market.css" />
+    <None Remove="Static\Styles\Views\settings.css" />
+    <None Remove="Static\Styles\Views\stats.css" />
+    <None Remove="Static\Styles\Views\trades.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Static\Scripts\Vendor\mdwiki.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Static\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Help\index.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Help\navigation.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\intellitrader.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\bootstrap-multiselect.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\bootstrap.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\datatables.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\highlight.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\jquery-3.3.1.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\jquery.colorbox.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\jsoneditor.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\mdwiki.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Vendor\popper.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Views\dashboard.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Views\market.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Views\settings.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Views\stats.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Views\trades.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\intellitrader.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\bootstrap-multiselect.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\bootstrap-theme.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\bootstrap.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\colorbox.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\datatables.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\fontawesome-all.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-brands-400.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-brands-400.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-brands-400.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-brands-400.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-brands-400.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-regular-400.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-regular-400.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-regular-400.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-regular-400.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-regular-400.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-solid-900.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-solid-900.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-solid-900.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-solid-900.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\Fonts\fa-solid-900.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\highlight.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\img\jsoneditor-icons.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\jsoneditor.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Vendor\mdwiki.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Views\dashboard.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Views\help.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Views\market.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Views\settings.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Views\stats.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Styles\Views\trades.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.0" />
@@ -20,6 +233,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IntelliTrader.Core\IntelliTrader.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Static\Help\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

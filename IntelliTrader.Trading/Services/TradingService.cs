@@ -95,7 +95,7 @@ namespace IntelliTrader.Trading
 
             tradingTimedTask = new TradingTimedTask(loggingService, notificationService, healthCheckService, signalsService, this);
             tradingTimedTask.RunInterval = (float)(Config.TradingCheckInterval * 1000 / Application.Speed);
-            tradingTimedTask.StartDelay = Constants.TimedTasks.StandardDelay / Application.Speed;
+            tradingTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
             tradingTimedTask.LoggingEnabled = !isReplayingSnapshots;
             Application.Resolve<ICoreService>().AddTask(nameof(TradingTimedTask), tradingTimedTask);
 

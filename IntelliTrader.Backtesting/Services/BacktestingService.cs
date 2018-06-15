@@ -41,13 +41,13 @@ namespace IntelliTrader.Backtesting
             {
                 backtestingLoadSnapshotsTimedTask = new BacktestingLoadSnapshotsTimedTask(loggingService, healthCheckService, tradingService, this);
                 backtestingLoadSnapshotsTimedTask.RunInterval = (float)(Config.SnapshotsInterval / Config.ReplaySpeed * 1000);
-                backtestingLoadSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay / Config.ReplaySpeed;
+                backtestingLoadSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
                 Application.Resolve<ICoreService>().AddTask(nameof(BacktestingLoadSnapshotsTimedTask), backtestingLoadSnapshotsTimedTask);
             }
 
             backtestingSaveSnapshotsTimedTask = new BacktestingSaveSnapshotsTimedTask(loggingService, healthCheckService, tradingService, signalsService, this);
             backtestingSaveSnapshotsTimedTask.RunInterval = Config.SnapshotsInterval * 1000;
-            backtestingSaveSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay / Config.ReplaySpeed;
+            backtestingSaveSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
             Application.Resolve<ICoreService>().AddTask(nameof(BacktestingSaveSnapshotsTimedTask), backtestingSaveSnapshotsTimedTask);
 
             if (Config.DeleteLogs)
