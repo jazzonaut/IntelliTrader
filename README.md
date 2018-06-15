@@ -11,7 +11,7 @@ Download and install .NET Core Runtime 2.1 from [Microsoft](https://www.microsof
 
 #### Setting Up
 The bot should just run with out of the box settings. By default, it is configured for virtual trading, so there is no need to provide any API keys at the start. The only thing you might want to change is the default port for the web interface (7000).
-Refer to [web configuration](#Web-Configuration) section for information on how to do this.
+Refer to [web configuration](#web-configuration) section for information on how to do this.
 
 #### Supported Exchanges
 Currenly only Binance Exchange is supported.
@@ -29,7 +29,7 @@ Configuration
 All changes to the configuration files will take effect immediately.
 
 Configuration quick links:
-[Value Types](#Value-Types), [Core](#Core-Configuration), [Web](#Web-Configuration), [Signals](#Signals-Configuration), [Trading](#Trading-Configuration), [Rules](#Rules-Configuration), [Notification](#Notification-Configuration), [Backtesting](#Backtesting-Configuration), [Other](#Other-Configuration)
+[Value Types](#value-types), [Core](#core-configuration), [Web](#web-configuration), [Signals](#signals-configuration), [Trading](#trading-configuration), [Rules](#rules-configuration), [Notification](#notification-configuration), [Backtesting](#backtesting-configuration), [Other](#other-configuration)
 
 #### Value Types
 
@@ -57,7 +57,7 @@ Configuration quick links:
 
 #### Web Configuration
 
-Read more about how web interface works in the [web](#Web-Interface) section.
+Read more about how web interface works in the [web](#web-interface) section.
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
@@ -67,13 +67,13 @@ Read more about how web interface works in the [web](#Web-Interface) section.
 
 #### Signals Configuration
 
-Read more about how signals work in the [signals](#Signals) section.
+Read more about how signals work in the [signals](#signals) section.
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
 |Enabled|Boolean|true|Enable / disable signals|
 |GlobalRatingSignals|Array|"TV-5mins","TV-15mins","TV-60mins"|Signals to calculate the Global Rating from|
-|Definitions|Array|[Signal Definitions](#Signal-Definitions)|Signal source definitions|
+|Definitions|Array|[Signal Definitions](#signal-definitions)|Signal source definitions|
 
 ###### Signal Definitions
 
@@ -81,7 +81,7 @@ Read more about how signals work in the [signals](#Signals) section.
 |-|:-:|:-:|-|
 |Name|String|"TV-15mins"|Signal name|
 |Receiver|String|"TradingViewCryptoSignalReceiver"|Signal receiver name|
-|Configuration|Object|[Signal Receiver Configuration](#Signal-Receiver-Configuration)|Signal receiver configuration|
+|Configuration|Object|[Signal Receiver Configuration](#signal-receiver-configuration)|Signal receiver configuration|
 
 ###### Signal Receiver Configuration
 
@@ -95,7 +95,7 @@ Read more about how signals work in the [signals](#Signals) section.
 
 #### Trading Configuration
 
-Read more about how trading works in the [trading](#Trading) section.
+Read more about how trading works in the [trading](#trading) section.
 
 ###### General
 
@@ -158,11 +158,11 @@ Read more about how trading works in the [trading](#Trading) section.
 |SellDCATrailingStopMargin|Number|1.25|Stop trailing and place sell order immediately when margin hits the specified value|
 |SellDCATrailingStopAction|String|"Sell"|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
 |RepeatLastDCALevel|Boolean|fasle|Repeat the last DCA Level indefinitely, essentially making the DCA level number unlimited|
-|DCALevels|Array|[DCA Levels](#DCA-Levels)|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
+|DCALevels|Array|[DCA Levels](#dca-levels)|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
 
 ###### DCA Levels
 
-Read more about how DCA works in the [DCA](#DCA) section.
+Read more about how DCA works in the [DCA](#dca) section.
 
 DCALevels setting is an array of DCA levels. There is no limit to the number of levels. The only mandatory setting for each level is Margin, which specifies when to trigger the DCA. All other settings are optional and when omitted will use the default values as defined above.
 
@@ -193,19 +193,19 @@ DCALevels setting is an array of DCA levels. There is no limit to the number of 
 
 #### Rules Configuration
 
-Read more about how rules work in the [rules](#Rules) section.
+Read more about how rules work in the [rules](#rules) section.
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
-|Modules|Array|[Module](#Module)|Rule Modules|
+|Modules|Array|[Module](#module)|Rule Modules|
 
 ###### Module
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
 |Module|String|"Module"|Module name|
-|Configuration|Object|[Module Configuration](#Module-Configuration)|Module configuration|
-|Entries|Array|[Rules Configuration](#Rules-Configuration)|Rules configuration|
+|Configuration|Object|[Module Configuration](#module-configuration)|Module configuration|
+|Entries|Array|[Rules Configuration](#rules-configuration)|Rules configuration|
 
 ###### Module Configuration
 
@@ -220,9 +220,9 @@ Read more about how rules work in the [rules](#Rules) section.
 |-|:-:|:-:|-|
 |Enaled|Boolean|true|Enable / disable rule|
 |Name|String|Default|Rule name|
-|Modifiers|Object|[Rule Modifiers](#Rule-Modifiers)|Rule modifiers|
-|Conditions|Array|[Rule Conditions](#Rule-Conditions)|Rule conditions|
-|Trailing|Object|[Rule trailing](#Rule-Trailing)|Rule trailing|
+|Modifiers|Object|[Rule Modifiers](#rule-modifiers)|Rule modifiers|
+|Conditions|Array|[Rule Conditions](#rule-conditions)|Rule conditions|
+|Trailing|Object|[Rule trailing](#rule-trailing)|Rule trailing|
 
 ###### Rule Modifiers
 
@@ -289,11 +289,11 @@ Trailing ends when all the conditions of the rule are met, at any point between 
 |Enabled|Boolean|true|Enable / disable trailing|
 |MinDuration|Number|25|Minimum trail duration (in seconds)|
 |MaxDuration|Number|240|Maximum trail duration (in seconds)|
-|StartConditions|Array|[Rule Conditions](#Rule-Conditions)|Begin trailing when all the below conditions are met.|
+|StartConditions|Array|[Rule Conditions](#rule-conditions)|Begin trailing when all the below conditions are met.|
 
 #### Notification Configuration
 
-Read more about how nofitications work in the [notifications](#Notifications) section.
+Read more about how nofitications work in the [notifications](#notifications) section.
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
@@ -305,7 +305,7 @@ Read more about how nofitications work in the [notifications](#Notifications) se
 
 #### Backtesting Configuration
 
-Read more about how backtesting works in the [backtesting](#Backtesting) section.
+Read more about how backtesting works in the [backtesting](#backtesting) section.
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
@@ -377,7 +377,7 @@ Example trailing story for value -1 (percent):
 
 Signals are used to buy new pairs based on the predefined rules.
 
-Read more about how signal rules work in the [signal rules](#Signal-Rules) section.
+Read more about how signal rules work in the [signal rules](#signal-rules) section.
 
 #### Global Rating
 
