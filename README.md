@@ -6,7 +6,7 @@ Overview
 
 IntelliTrader is a fully featured, highly configurable trading bot for cryptocurrency exchanges. It is completely free, so please use it at your own risk. Always start by [virtual trading](#virtual-trading) first. Join our [Discord channel](https://discord.gg/rqfpn5a) to get additional help, support and participate in discussions.
 
-##### Main Features #####
+##### Main Features
 
 * Cross-platform
 * Highly configurable
@@ -15,7 +15,7 @@ IntelliTrader is a fully featured, highly configurable trading bot for cryptocur
 * Virtual/paper trading support
 * Backtesting support
 
-##### Additional Resources #####
+##### Additional Resources
 * <img src="http://intellitrader.io/img/logo.png" alt="logo" width="20" height="22"> [Official Website](http://intellitrader.io)
 * <img src="http://intellitrader.io/img/discord_icon.png" alt="logo" width="20" height="22"> [Discord Channel](https://discord.gg/rqfpn5a)
 * <img src="http://intellitrader.io/img/youtube_icon.png" alt="logo" width="20" height="22"> [Youtube Channel](https://www.youtube.com/channel/UC8Gvv0ArdF9a2CHUPTdqkjg)
@@ -29,12 +29,18 @@ Getting Started
 ###### Windows, Linux & MacOS
 Download and install .NET Core Runtime 2.1 from [Microsoft](https://www.microsoft.com/net/download/all).
 
+#### Building
+
+You don't usually need to build the bot yourself, in most cases it's easier to grab the latest published released from [the releases page](https://github.com/jazzonaut/IntelliTrader/releases). But if you are feeling particularly adventurous, here are the steps:
+
+1. Clone the IntelliTrader repository locally
+2. From Git terminal, run 'git submodule update --init --recursive' to pull all the necessary submodules
+3. Run Publish.bat (or Publish.sh if you are on Linux) and it should generate the bin folder in the Publish directory.
+4. That should be it, try running the bot with Start-IntelliTrader to see if it worked.
+
 #### Setting Up
 The bot should just run with out of the box settings. By default, it is configured for virtual trading, so there is no need to provide any API keys at the start. The only thing you might want to change is the default port for the web interface (7000).
 Refer to [web configuration](#web-configuration) section for information on how to do this.
-
-#### Supported Exchanges
-Currenly only Binance Exchange is supported.
 
 #### Running
 
@@ -42,6 +48,9 @@ Currenly only Binance Exchange is supported.
 Simply run Start-IntelliTrader.bat to start the bot.
 ###### Linux & MacOS
 Copy the *.sh files from the linux directory supplied with the package to the root directory of the package and run them.
+
+#### Supported Exchanges
+Currenly only Binance Exchange is supported.
 
 Configuration
 -------------
