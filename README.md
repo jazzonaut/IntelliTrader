@@ -16,10 +16,10 @@ IntelliTrader is a fully featured, highly configurable trading bot for cryptocur
 * Backtesting support
 
 ##### Additional Resources #####
-* [Official Website](http://intellitrader.io)
-* [Discord Channel](https://discord.gg/rqfpn5a)
-* [Youtube Channel](https://www.youtube.com/channel/UC8Gvv0ArdF9a2CHUPTdqkjg)
-* [Medium](https://medium.com/@intellitrader.io/)
+* <img src="http://intellitrader.io/img/logo.png" alt="logo" width="20" height="22"> [Official Website](http://intellitrader.io)
+* <img src="http://intellitrader.io/img/discord_icon.png" alt="logo" width="20" height="22"> [Discord Channel](https://discord.gg/rqfpn5a)
+* <img src="http://intellitrader.io/img/youtube_icon.png" alt="logo" width="20" height="22"> [Youtube Channel](https://www.youtube.com/channel/UC8Gvv0ArdF9a2CHUPTdqkjg)
+* <img src="http://intellitrader.io/img/medium_icon.png" alt="logo" width="20" height="22"> [Medium](https://medium.com/@intellitrader.io/)
 
 Getting Started
 -------------
