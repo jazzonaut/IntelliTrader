@@ -1,0 +1,56 @@
+{
+  "Signals": {
+    "Enabled": true,
+    "GlobalRatingSignals": [
+      "TV-5mins",
+      "TV-15mins",
+      "TV-60mins"
+    ],
+    "Definitions": [
+      {
+        "Name": "TV-5mins",
+        "Receiver": "TradingViewCryptoSignalReceiver",
+        "Configuration": {
+          "PollingInterval": 7,
+          "SignalPeriod": 5,
+          "VolatilityPeriod": "Day",
+          "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
+          "RequestData": "{\"filter\":[{\"left\":\"exchange\",\"operation\":\"equal\",\"right\":\"%EXCHANGE%\"},{\"left\":\"name\",\"operation\":\"match\",\"right\":\"%MARKET%\"}],\"columns\":[\"name\",\"close%PERIOD%\",\"change%PERIOD%\",\"volume%PERIOD%\",\"Recommend.All%PERIOD%\",\"Volatility%VOLATILITY%\"],\"options\":{\"lang\":\"en\"},\"range\":[0,500]}"
+        }
+      },
+      {
+        "Name": "TV-15mins",
+        "Receiver": "TradingViewCryptoSignalReceiver",
+        "Configuration": {
+          "PollingInterval": 7,
+          "SignalPeriod": 15,
+          "VolatilityPeriod": "Week",
+          "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
+          "RequestData": "{\"filter\":[{\"left\":\"exchange\",\"operation\":\"equal\",\"right\":\"%EXCHANGE%\"},{\"left\":\"name\",\"operation\":\"match\",\"right\":\"%MARKET%\"}],\"columns\":[\"name\",\"close%PERIOD%\",\"change%PERIOD%\",\"volume%PERIOD%\",\"Recommend.All%PERIOD%\",\"Volatility%VOLATILITY%\"],\"options\":{\"lang\":\"en\"},\"range\":[0,500]}"
+        }
+      },
+      {
+        "Name": "TV-60mins",
+        "Receiver": "TradingViewCryptoSignalReceiver",
+        "Configuration": {
+          "PollingInterval": 7,
+          "SignalPeriod": 60,
+          "VolatilityPeriod": "Month",
+          "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
+          "RequestData": "{\"filter\":[{\"left\":\"exchange\",\"operation\":\"equal\",\"right\":\"%EXCHANGE%\"},{\"left\":\"name\",\"operation\":\"match\",\"right\":\"%MARKET%\"}],\"columns\":[\"name\",\"close%PERIOD%\",\"change%PERIOD%\",\"volume%PERIOD%\",\"Recommend.All%PERIOD%\",\"Volatility%VOLATILITY%\"],\"options\":{\"lang\":\"en\"},\"range\":[0,500]}"
+        }
+      },
+      {
+        "Name": "TV-240mins",
+        "Receiver": "TradingViewCryptoSignalReceiver",
+        "Configuration": {
+          "PollingInterval": 7,
+          "SignalPeriod": 240,
+          "VolatilityPeriod": "Month",
+          "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
+          "RequestData": "{\"filter\":[{\"left\":\"exchange\",\"operation\":\"equal\",\"right\":\"%EXCHANGE%\"},{\"left\":\"name\",\"operation\":\"match\",\"right\":\"%MARKET%\"}],\"columns\":[\"name\",\"close%PERIOD%\",\"change%PERIOD%\",\"volume%PERIOD%\",\"Recommend.All%PERIOD%\",\"Volatility%VOLATILITY%\"],\"options\":{\"lang\":\"en\"},\"range\":[0,500]}"
+        }
+      }
+    ]
+  }
+}

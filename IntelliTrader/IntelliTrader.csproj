@@ -18,7 +18,6 @@
     <ProjectReference Include="..\IntelliTrader.Signals.Base\IntelliTrader.Signals.Base.csproj" />
     <ProjectReference Include="..\IntelliTrader.Signals.TradingView\IntelliTrader.Signals.TradingView.csproj" />
     <ProjectReference Include="..\IntelliTrader.Trading\IntelliTrader.Trading.csproj" />
-    <ProjectReference Include="..\IntelliTrader.Web\IntelliTrader.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

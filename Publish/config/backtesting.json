@@ -1,0 +1,15 @@
+﻿{
+  "Backtesting": {
+    "Enabled": false,
+    "Replay": false,
+    "ReplayOutput": true,
+    "ReplaySpeed": 100,
+    "ReplayStartIndex": null,
+    "ReplayEndIndex": null,
+    "DeleteLogs": true,
+    "DeleteAccountData": true,
+    "CopyAccountDataPath": null,
+    "SnapshotsInterval": 1,
+    "SnapshotsPath": "data/backtesting"
+  }
+}
