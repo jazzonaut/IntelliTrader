@@ -13,6 +13,8 @@
     <None Remove="Static\favicon.ico" />
     <None Remove="Static\Help\index.md" />
     <None Remove="Static\Help\navigation.md" />
+    <None Remove="Static\Images\favicon.ico" />
+    <None Remove="Static\Images\logo.png" />
     <None Remove="Static\Scripts\intellitrader.js" />
     <None Remove="Static\Scripts\Vendor\bootstrap-multiselect.min.js" />
     <None Remove="Static\Scripts\Vendor\bootstrap.min.js" />
@@ -64,15 +66,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Static\Images\favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Images\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Static\Scripts\Vendor\mdwiki.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Static\favicon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Static\Help\index.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

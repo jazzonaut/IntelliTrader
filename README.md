@@ -1,5 +1,17 @@
-IntelliTrader
+![logo](http://intellitrader.io/img/logo.png){:height="40px" width="40px"} IntelliTrader
 ===========
+
+Overview
+-------------
+
+IntelliTrader is a fully featured, highlighly customizable trading bot for cryptocurrency exchanges. It is completely free, please use it at your own risk. Always start by [virtual trading](#virtual-trading) first.
+
+##### Main Features #####
+
+Official Website
+Discord
+Youtube
+Medium
 
 Getting Started
 -------------
