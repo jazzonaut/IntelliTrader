@@ -4,14 +4,22 @@
 Overview
 -------------
 
-IntelliTrader is a fully featured, highlighly customizable trading bot for cryptocurrency exchanges. It is completely free, please use it at your own risk. Always start by [virtual trading](#virtual-trading) first.
+IntelliTrader is a fully featured, highly configurable trading bot for cryptocurrency exchanges. It is completely free, so please use it at your own risk. Always start by [virtual trading](#virtual-trading) first.
 
 ##### Main Features #####
 
-Official Website
-Discord
-Youtube
-Medium
+* Cross-platform
+* Highly configurable
+* Easy to use, fast and lightweight
+* Ability to adjust to different market conditions
+* Virtual/paper trading support
+* Backtesting support
+
+##### Additional Resources #####
+* [Official Website](http://intellitrader.io)
+* [Discord Channel](https://discord.gg/rqfpn5a)
+* [Youtube Channel](https://www.youtube.com/channel/UC8Gvv0ArdF9a2CHUPTdqkjg)
+* [Medium](https://medium.com/@intellitrader.io/)
 
 Getting Started
 -------------
