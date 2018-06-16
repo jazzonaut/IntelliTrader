@@ -1,4 +1,4 @@
-![logo](http://intellitrader.io/img/logo.png){:height="40px" width="40px"} IntelliTrader
+<img src="http://intellitrader.io/img/logo.png" alt="logo" width="40" height="40"> IntelliTrader
 ===========
 
 Overview
