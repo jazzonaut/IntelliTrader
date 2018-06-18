@@ -8,6 +8,7 @@
     "ExcludedPairs": [
       "BNBBTC"
     ],
+    "TradePriceType": "Last",
     "BuyEnabled": true,
     "BuyType": "Market",
     "BuyMaxCost": 0.0012,

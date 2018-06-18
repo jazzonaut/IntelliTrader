@@ -32,6 +32,10 @@ namespace IntelliTrader.Exchange.Base
 
         public abstract Task<IEnumerable<IOrderDetails>> GetMyTrades(string pair);
 
+        public abstract Task<decimal> GetAskPrice(string pair);
+
+        public abstract Task<decimal> GetBidPrice(string pair);
+
         public abstract Task<decimal> GetLastPrice(string pair);
 
         public abstract Task<decimal> GetPriceSpread(string pair);

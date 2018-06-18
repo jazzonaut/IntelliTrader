@@ -38,6 +38,30 @@ namespace IntelliTrader.Backtesting
             loggingService.Info("Backtesting Exchange service stopped");
         }
 
+        public async Task<decimal> GetAskPrice(string pair)
+        {
+            if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
+            {
+                return ticker.AskPrice;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public async Task<decimal> GetBidPrice(string pair)
+        {
+            if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
+            {
+                return ticker.BidPrice;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public async Task<decimal> GetLastPrice(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))

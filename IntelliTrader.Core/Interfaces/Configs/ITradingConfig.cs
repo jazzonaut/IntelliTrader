@@ -12,6 +12,7 @@ namespace IntelliTrader.Core
         int MaxPairs { get; }
         decimal MinCost { get; }
         List<string> ExcludedPairs { get; }
+        TradePriceType TradePriceType { get; set; }
 
         bool RepeatLastDCALevel { get; }
         List<DCALevel> DCALevels { get; }

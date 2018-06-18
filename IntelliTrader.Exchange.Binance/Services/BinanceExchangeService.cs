@@ -154,6 +154,30 @@ namespace IntelliTrader.Exchange.Binance
             return myTrades;
         }
 
+        public override async Task<decimal> GetAskPrice(string pair)
+        {
+            if (tickers.TryGetValue(pair, out Ticker ticker))
+            {
+                return ticker.AskPrice;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public override async Task<decimal> GetBidPrice(string pair)
+        {
+            if (tickers.TryGetValue(pair, out Ticker ticker))
+            {
+                return ticker.BidPrice;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public override async Task<decimal> GetLastPrice(string pair)
         {
             if (tickers.TryGetValue(pair, out Ticker ticker))

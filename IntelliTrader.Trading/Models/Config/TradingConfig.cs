@@ -13,6 +13,7 @@ namespace IntelliTrader.Trading
         public int MaxPairs { get; set; }
         public decimal MinCost { get; set; }
         public List<string> ExcludedPairs { get; set; }
+        public TradePriceType TradePriceType { get; set; }
 
         public bool BuyEnabled { get; set; }
         public OrderType BuyType { get; set; }
@@ -71,6 +72,7 @@ namespace IntelliTrader.Trading
                 MaxPairs = MaxPairs,
                 MinCost = MinCost,
                 ExcludedPairs = ExcludedPairs,
+                TradePriceType = TradePriceType,
 
                 BuyEnabled = BuyEnabled,
                 BuyType = BuyType,

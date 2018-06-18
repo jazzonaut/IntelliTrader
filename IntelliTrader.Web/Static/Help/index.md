@@ -85,6 +85,7 @@ Read more about how trading works in the [trading](#Trading) section.
 |MaxPairs|Number|16|Maximum pairs to trade with|
 |MinCost|Number|0.000999|Ignore pairs with the specified market value or lower (dust)|
 |ExcludedPairs|Array|[ "BNBBTC" ]|Pairs excluded from trading|
+|TradePriceType|String|"Last"|Price type to use for trading. Available values: Last, Ask, Bid|
 
 ###### Buying
 

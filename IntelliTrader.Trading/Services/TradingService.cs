@@ -466,7 +466,18 @@ namespace IntelliTrader.Trading
 
         public decimal GetCurrentPrice(string pair)
         {
-            return exchangeService.GetLastPrice(pair).Result;
+            if (Config.TradePriceType == TradePriceType.Ask)
+            {
+                return exchangeService.GetAskPrice(pair).Result;
+            }
+            else if (Config.TradePriceType == TradePriceType.Bid)
+            {
+                return exchangeService.GetBidPrice(pair).Result;
+            }
+            else
+            {
+                return exchangeService.GetLastPrice(pair).Result;
+            }
         }
 
         public decimal GetCurrentSpread(string pair)
