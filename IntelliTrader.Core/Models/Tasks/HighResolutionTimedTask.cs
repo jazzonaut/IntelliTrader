@@ -55,12 +55,6 @@ namespace IntelliTrader.Core
         private Stopwatch runWatch;
         private ManualResetEvent resetEvent;
 
-        public HighResolutionTimedTask()
-        {
-            this.runWatch = new Stopwatch();
-            this.resetEvent = new ManualResetEvent(false);
-        }
-
         /// <summary>
         /// Starts the task
         /// </summary>
@@ -69,6 +63,8 @@ namespace IntelliTrader.Core
             if (!IsRunning)
             {
                 IsRunning = true;
+                runWatch = new Stopwatch();
+                resetEvent = new ManualResetEvent(false);
 
                 timerThread = new Thread(() =>
                 {
@@ -146,6 +142,8 @@ namespace IntelliTrader.Core
                     timerThread?.Join();
                     timerThread = null;
                 }
+
+                resetEvent.Dispose();
             }
         }
 
