@@ -34,5 +34,6 @@ namespace IntelliTrader.Core
         IEnumerable<IOrderDetails> GetMyTrades(string pair);
         IOrderDetails PlaceOrder(IOrder order);
         decimal GetCurrentPrice(string pair);
+        decimal GetCurrentSpread(string pair);
     }
 }

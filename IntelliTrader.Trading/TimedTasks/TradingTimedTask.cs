@@ -111,7 +111,7 @@ namespace IntelliTrader.Trading
                     trailingBuys.TryRemove(options.Pair, out BuyTrailingInfo buyTrailingInfo);
 
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                    tradingPair.SetCurrentPrice(tradingService.GetCurrentPrice(options.Pair));
+                    tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(options.Pair), tradingService.GetCurrentSpread(options.Pair));
 
                     var trailingInfo = new SellTrailingInfo
                     {
@@ -154,7 +154,7 @@ namespace IntelliTrader.Trading
             foreach (var tradingPair in tradingService.Account.GetTradingPairs())
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(tradingPair.Pair);
-                tradingPair.SetCurrentPrice(tradingService.GetCurrentPrice(tradingPair.Pair));
+                tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(tradingPair.Pair), tradingService.GetCurrentSpread(tradingPair.Pair));
                 tradingPair.Metadata.TradingRules = pairConfig.Rules.ToList();
                 tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                 tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
@@ -408,7 +408,7 @@ namespace IntelliTrader.Trading
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
                 ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                tradingPair.SetCurrentPrice(tradingService.GetCurrentPrice(options.Pair));
+                tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(options.Pair), tradingService.GetCurrentSpread(options.Pair));
 
                 SellOrder sellOrder = new SellOrder
                 {

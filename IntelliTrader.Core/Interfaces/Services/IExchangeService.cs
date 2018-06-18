@@ -14,6 +14,7 @@ namespace IntelliTrader.Core
         Task<Dictionary<string, decimal>> GetAvailableAmounts();
         Task<IEnumerable<IOrderDetails>> GetMyTrades(string pair);
         Task<decimal> GetLastPrice(string pair);
+        Task<decimal> GetPriceSpread(string pair);
         Task<IOrderDetails> PlaceOrder(IOrder order);
     }
 }

@@ -107,7 +107,7 @@ namespace IntelliTrader.Trading
                             Metadata = order.Metadata
                         };
                         tradingPairs.TryAdd(order.Pair, tradingPair);
-                        tradingPair.SetCurrentPrice(tradingService.GetCurrentPrice(tradingPair.Pair));
+                        tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(tradingPair.Pair), tradingService.GetCurrentSpread(tradingPair.Pair));
                         tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                         tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
                     }

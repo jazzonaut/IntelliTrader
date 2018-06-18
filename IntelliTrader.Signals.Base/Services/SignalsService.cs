@@ -66,7 +66,7 @@ namespace IntelliTrader.Signals.Base
             }
 
             signalRulesTimedTask = new SignalRulesTimedTask(loggingService, healthCheckService, tradingService, rulesService, this);
-            signalRulesTimedTask.RunInterval = (float)(RulesConfig.CheckInterval * 1000 / Application.Speed);
+            signalRulesTimedTask.Interval = RulesConfig.CheckInterval * 1000 / Application.Speed;
             signalRulesTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
             Application.Resolve<ICoreService>().AddTask(nameof(SignalRulesTimedTask), signalRulesTimedTask);
 

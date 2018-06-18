@@ -4,7 +4,7 @@ using System.Timers;
 
 namespace IntelliTrader.Core
 {
-    public abstract class LowResolutionTimedTask
+    public abstract class LowResolutionTimedTask : ITimedTask
     {
         /// <summary>
         /// Delay before starting the task in milliseconds
@@ -14,29 +14,34 @@ namespace IntelliTrader.Core
         /// <summary>
         /// Periodic execution interval in milliseconds
         /// </summary>
-        public double RunInterval
+        public double Interval
         {
             get { return timer.Interval; }
             set { timer.Interval = value; }
         }
 
         /// <summary>
-        /// Indicates whether the task is currenly running
+        /// Indicates whether the task is currently running
         /// </summary>
         public bool IsRunning { get; private set; }
 
         /// <summary>
         /// Number of times the task has been run
         /// </summary>
-        public long RunTimes { get; private set; }
+        public long RunCount { get; private set; }
 
         /// <summary>
-        /// Total amount of time spend on waiting for previous execution to complete
+        /// Total time it took to run the task in milliseconds
         /// </summary>
-        public double TotalWaitTime { get; private set; }
+        public double TotalRunTime { get; private set; }
+
+        /// <summary>
+        /// Total task run delay in milliseconds
+        /// </summary>
+        public double TotalLagTime { get; private set; }
 
         private readonly Timer timer = new Timer();
-        private readonly Stopwatch timeWatcher = new Stopwatch();
+        private readonly Stopwatch runWatch = new Stopwatch();
         private readonly System.Threading.AutoResetEvent syncMutex = new System.Threading.AutoResetEvent(true);
 
         /// <summary>
@@ -81,8 +86,20 @@ namespace IntelliTrader.Core
         /// the timer will be stopped. Otherwise, if the Execute method is not executing when this
         /// method is called, the timer will be stopped without blocking the caller thread.
         /// </summary>
+        public void Stop()
+        {
+            Stop(-1);
+        }
+
+        /// <summary>
+        /// Stops the background task timer that is in charge of executing the Execute method each
+        /// time the interval is elapsed. If the Execute method was executing when this method is
+        /// called, the caller thread will block waiting the Execute operation to finish. Later on,
+        /// the timer will be stopped. Otherwise, if the Execute method is not executing when this
+        /// method is called, the timer will be stopped without blocking the caller thread.
+        /// </summary>
         /// <param name="timeout">Timeout value in milliseconds to wait before killing the task</param>
-        public void Stop(int timeout = -1)
+        public void Stop(int timeout)
         {
             if (IsRunning)
             {
@@ -134,11 +151,13 @@ namespace IntelliTrader.Core
 
             if (IsRunning)
             {
-                timeWatcher.Restart();
+                runWatch.Restart();
                 this.Run();
-                RunTimes++;
-                TotalWaitTime += (int)(timeWatcher.ElapsedMilliseconds - RunInterval);
-                timeWatcher.Stop();
+                long runTime = runWatch.ElapsedMilliseconds;
+                TotalLagTime += (runTime > Interval) ? (runTime - Interval) : 0;
+                TotalRunTime += runTime;
+                RunCount++;
+                runWatch.Stop();
 
                 //Re-Start the timer to execute the worker function endlessly.
                 this.timer.Start();

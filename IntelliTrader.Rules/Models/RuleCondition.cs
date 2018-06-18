@@ -6,12 +6,14 @@ namespace IntelliTrader.Rules
     internal class RuleCondition : IRuleCondition
     {
         public string Signal { get; set; }
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
+        public decimal? MinSpread { get; set; }
+        public decimal? MaxSpread { get; set; }
         public long? MinVolume { get; set; }
         public long? MaxVolume { get; set; }
         public double? MinVolumeChange { get; set; }
         public double? MaxVolumeChange { get; set; }
-        public decimal? MinPrice { get; set; }
-        public decimal? MaxPrice { get; set; }
         public decimal? MinPriceChange { get; set; }
         public decimal? MaxPriceChange { get; set; }
         public double? MinRating { get; set; }

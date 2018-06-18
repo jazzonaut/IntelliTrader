@@ -35,7 +35,7 @@ namespace IntelliTrader.Signals.TradingView
             loggingService.Info("Start TradingViewCryptoSignalReceiver...");
 
             tradingViewCryptoSignalPollingTimedTask = new TradingViewCryptoSignalPollingTimedTask(loggingService, healthCheckService, tradingService, this);
-            tradingViewCryptoSignalPollingTimedTask.RunInterval = (float)(Config.PollingInterval * 1000 / Application.Speed);
+            tradingViewCryptoSignalPollingTimedTask.Interval = Config.PollingInterval * 1000 / Application.Speed;
             tradingViewCryptoSignalPollingTimedTask.Run();
             Application.Resolve<ICoreService>().AddTask($"{nameof(TradingViewCryptoSignalPollingTimedTask)} [{SignalName}]", tradingViewCryptoSignalPollingTimedTask);
 

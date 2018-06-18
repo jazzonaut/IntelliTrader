@@ -21,7 +21,7 @@
         <div>@Html.CheckBoxFor(model => model.SellEnabled)@Html.LabelFor(model => model.SellEnabled)</div>
         <div>@Html.CheckBoxFor(model => model.HealthCheckEnabled)@Html.LabelFor(model => model.HealthCheckEnabled)</div>
         <div>@Html.CheckBoxFor(model => model.TradingSuspended)@Html.LabelFor(model => model.TradingSuspended)</div>
-        <input type="submit" value="Save" class="btn btn-primary" onclick="return confirm('Save settings?');" />
+        <input type="submit" value="Save" class="btn btn-primary settings-btn" onclick="return confirm('Save settings?');" />
     </div>
     }
     <button class="btn btn-info settings-btn" onclick="logout();">Log Out</button>

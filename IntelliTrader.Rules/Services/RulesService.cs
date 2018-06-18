@@ -13,11 +13,13 @@ namespace IntelliTrader.Rules
         IRulesConfig IRulesService.Config => Config;
 
         private readonly ILoggingService loggingService;
+        private readonly ITradingService tradingService;
         private readonly List<Action> rulesChangeCallbacks = new List<Action>();
 
-        public RulesService(ILoggingService loggingService)
+        public RulesService(ILoggingService loggingService, ITradingService tradingService)
         {
             this.loggingService = loggingService;
+            this.tradingService = tradingService;
         }
 
         public IModuleRules GetRules(string module)
@@ -42,12 +44,15 @@ namespace IntelliTrader.Rules
                     signal = s;
                 }
 
-                if (condition.MinVolume != null && (signal == null || signal.Volume == null || signal.Volume < condition.MinVolume) ||
+                if (condition.MinPrice != null && (tradingService.GetCurrentPrice(pair) < condition.MinPrice) ||
+                    condition.MaxPrice != null && (tradingService.GetCurrentPrice(pair) > condition.MaxPrice) ||
+                    condition.MinSpread != null && (tradingService.GetCurrentSpread(pair) < condition.MinSpread) ||
+                    condition.MaxSpread != null && (tradingService.GetCurrentSpread(pair) > condition.MaxSpread) ||
+
+                    condition.MinVolume != null && (signal == null || signal.Volume == null || signal.Volume < condition.MinVolume) ||
                     condition.MaxVolume != null && (signal == null || signal.Volume == null || signal.Volume > condition.MaxVolume) ||
                     condition.MinVolumeChange != null && (signal == null || signal.VolumeChange == null || signal.VolumeChange < condition.MinVolumeChange) ||
                     condition.MaxVolumeChange != null && (signal == null || signal.VolumeChange == null || signal.VolumeChange > condition.MaxVolumeChange) ||
-                    condition.MinPrice != null && (signal == null || signal.Price == null || signal.Price < condition.MinPrice) ||
-                    condition.MaxPrice != null && (signal == null || signal.Price == null || signal.Price > condition.MaxPrice) ||
                     condition.MinPriceChange != null && (signal == null || signal.PriceChange == null || signal.PriceChange < condition.MinPriceChange) ||
                     condition.MaxPriceChange != null && (signal == null || signal.PriceChange == null || signal.PriceChange > condition.MaxPriceChange) ||
                     condition.MinRating != null && (signal == null || signal.Rating == null || signal.Rating < condition.MinRating) ||

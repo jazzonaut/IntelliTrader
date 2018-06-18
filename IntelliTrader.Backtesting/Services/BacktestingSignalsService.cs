@@ -41,7 +41,8 @@ namespace IntelliTrader.Backtesting
             rulesService.RegisterRulesChangeCallback(OnSignalRulesChanged);
 
             signalRulesTimedTask = new SignalRulesTimedTask(loggingService, healthCheckService, tradingService, rulesService, this);
-            signalRulesTimedTask.RunInterval = (float)(RulesConfig.CheckInterval * 1000 / Application.Speed);
+            signalRulesTimedTask.Interval = RulesConfig.CheckInterval * 1000 / Application.Speed;
+            signalRulesTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
             signalRulesTimedTask.LoggingEnabled = false;
             Application.Resolve<ICoreService>().AddTask(nameof(SignalRulesTimedTask), signalRulesTimedTask);
 

@@ -7,12 +7,14 @@ namespace IntelliTrader.Core
     public interface IRuleCondition
     {
         string Signal { get; }
+        decimal? MinPrice { get; }
+        decimal? MaxPrice { get; }
+        decimal? MinSpread { get; }
+        decimal? MaxSpread { get; }
         long? MinVolume { get; }
         long? MaxVolume { get; }
         double? MinVolumeChange { get; }
         double? MaxVolumeChange { get; }
-        decimal? MinPrice { get; }
-        decimal? MaxPrice { get; }
         decimal? MinPriceChange { get; }
         decimal? MaxPriceChange { get; }
         double? MinRating { get; }

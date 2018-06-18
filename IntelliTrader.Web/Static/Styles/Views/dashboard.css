@@ -26,14 +26,14 @@
 
 .show-settings {
     float: right;
+    margin-left: 15px;
 }
 
 .manual-order {
     float: right;
-    margin-right: 15px;
 }
 
 .manual-order input[type=text] {
-    width: 100px;
+    width: 60px;
     padding: 2px;
 }

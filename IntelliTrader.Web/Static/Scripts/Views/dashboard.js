@@ -105,6 +105,10 @@ $(function () {
                 data: "BoughtPrice"
             },
             {
+                name: "CurrentSpread",
+                data: "CurrentSpread"
+            },
+            {
                 name: "SignalRule",
                 data: "SignalRule"
             },

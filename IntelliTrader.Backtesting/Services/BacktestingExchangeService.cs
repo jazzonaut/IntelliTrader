@@ -50,6 +50,18 @@ namespace IntelliTrader.Backtesting
             }
         }
 
+        public async Task<decimal> GetPriceSpread(string pair)
+        {
+            if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
+            {
+                return Utils.CalculateMargin(ticker.BidPrice, ticker.AskPrice);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public Task<IEnumerable<string>> GetMarketPairs(string market)
         {
             return Task.FromResult(backtestingService.GetCurrentTickers().Keys.AsEnumerable());

@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace IntelliTrader.Core
 {
-    public abstract class HighResolutionTimedTask : ITimedTask
+    public abstract class EqualResolutionTimedTask : ITimedTask
     {
         /// <summary>
         /// Raised on unhandled exception
@@ -55,7 +55,7 @@ namespace IntelliTrader.Core
         private Stopwatch runWatch;
         private ManualResetEvent resetEvent;
 
-        public HighResolutionTimedTask()
+        public EqualResolutionTimedTask()
         {
             this.runWatch = new Stopwatch();
             this.resetEvent = new ManualResetEvent(false);
@@ -82,12 +82,12 @@ namespace IntelliTrader.Core
                     }
 
                     long startTime = Stopwatch.ElapsedMilliseconds;
-                    double nextRunTime = StartDelay + Interval;
-
                     while (IsRunning)
                     {
                         long elapsedTime = Stopwatch.ElapsedMilliseconds;
-                        double waitTime = nextRunTime - (elapsedTime - startTime);
+                        double nextRunTime = RunCount * Interval + StartDelay + TotalLagTime + startTime;
+                        double waitTime = nextRunTime - elapsedTime;
+
                         if (waitTime > 0)
                         {
                             if (resetEvent.WaitOne((int)(waitTime)))
@@ -105,12 +105,10 @@ namespace IntelliTrader.Core
                         {
                             UnhandledException?.Invoke(this, new UnhandledExceptionEventArgs(ex, false));
                         }
-
                         long runTime = runWatch.ElapsedMilliseconds;
-                        TotalLagTime += runTime - Interval;
+                        TotalLagTime += (runTime > Interval) ? (runTime - Interval) : 0;
                         TotalRunTime += runTime;
                         RunCount++;
-                        nextRunTime += Interval;
                     }
                 });
 

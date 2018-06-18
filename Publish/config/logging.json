@@ -25,7 +25,7 @@
               {
                 "Name": "RollingFile",
                 "Args": {
-                  "outputTemplate": "[{Timestamp:HH:mm:ss}] [{Level:u3}] {Message}{NewLine}{Exception}",
+                  "outputTemplate": "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message}{NewLine}{Exception}",
                   "pathFormat": "log/{Date}-general.txt",
                   "retainedFileCountLimit": 1000
                 }
@@ -50,7 +50,7 @@
               {
                 "Name": "RollingFile",
                 "Args": {
-                  "outputTemplate": "[{Timestamp:HH:mm:ss}] {Message}{NewLine}",
+                  "outputTemplate": "[{Timestamp:HH:mm:ss.fff}] {Message}{NewLine}",
                   "pathFormat": "log/{Date}-trades.txt",
                   "retainedFileCountLimit": 1000
                 }

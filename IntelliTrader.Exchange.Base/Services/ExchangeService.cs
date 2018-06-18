@@ -34,6 +34,8 @@ namespace IntelliTrader.Exchange.Base
 
         public abstract Task<decimal> GetLastPrice(string pair);
 
+        public abstract Task<decimal> GetPriceSpread(string pair);
+
         public abstract Task<IOrderDetails> PlaceOrder(IOrder order);
     }
 }

@@ -69,3 +69,11 @@ table.dataTable a.btn {
     float: right;
     margin-bottom: 15px;
 }
+
+div.dataTables_wrapper div.dataTables_filter input {
+    width: 140px;
+}
+
+table.dataTable.dtr-column > tbody > tr > td.control:before, table.dataTable.dtr-column > tbody > tr > th.control:before {
+    line-height: 16px;
+}

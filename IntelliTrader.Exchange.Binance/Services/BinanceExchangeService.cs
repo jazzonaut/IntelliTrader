@@ -83,7 +83,7 @@ namespace IntelliTrader.Exchange.Binance
                 loggingService.Info("Connected to Binance Exchange tickers");
 
                 tickersMonitorTimedTask = new BinanceTickersMonitorTimedTask(loggingService, this);
-                tickersMonitorTimedTask.RunInterval = MAX_TICKERS_AGE_TO_RECONNECT_SECONDS / 2;
+                tickersMonitorTimedTask.Interval = MAX_TICKERS_AGE_TO_RECONNECT_SECONDS / 2;
                 Application.Resolve<ICoreService>().AddTask(nameof(BinanceTickersMonitorTimedTask), tickersMonitorTimedTask);
             }
             catch (Exception ex)
@@ -159,6 +159,18 @@ namespace IntelliTrader.Exchange.Binance
             if (tickers.TryGetValue(pair, out Ticker ticker))
             {
                 return ticker.LastPrice;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public override async Task<decimal> GetPriceSpread(string pair)
+        {
+            if (tickers.TryGetValue(pair, out Ticker ticker))
+            {
+                return Utils.CalculateMargin(ticker.BidPrice, ticker.AskPrice);
             }
             else
             {

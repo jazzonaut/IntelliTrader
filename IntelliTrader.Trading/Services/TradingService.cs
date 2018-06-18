@@ -27,8 +27,8 @@ namespace IntelliTrader.Trading
         private readonly ILoggingService loggingService;
         private readonly INotificationService notificationService;
         private readonly IHealthCheckService healthCheckService;
-        private readonly IRulesService rulesService;
         private readonly IExchangeService exchangeService;
+        private IRulesService rulesService;
         private ISignalsService signalsService;
 
         private TradingTimedTask tradingTimedTask;
@@ -38,12 +38,12 @@ namespace IntelliTrader.Trading
         private bool isReplayingSnapshots;
         private bool tradingForcefullySuspended;
 
-        public TradingService(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, IRulesService rulesService)
+        public TradingService(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService)
         {
             this.loggingService = loggingService;
             this.notificationService = notificationService;
             this.healthCheckService = healthCheckService;
-            this.rulesService = rulesService;
+
             this.isReplayingSnapshots = Application.Resolve<IBacktestingService>().Config.Enabled && Application.Resolve<IBacktestingService>().Config.Replay;
 
             if (isReplayingSnapshots)
@@ -67,6 +67,7 @@ namespace IntelliTrader.Trading
 
             IsTradingSuspended = true;
 
+            rulesService = Application.Resolve<IRulesService>();
             OnTradingRulesChanged();
             rulesService.RegisterRulesChangeCallback(OnTradingRulesChanged);
 
@@ -84,7 +85,7 @@ namespace IntelliTrader.Trading
             }
 
             accountTimedTask = new AccountTimedTask(loggingService, healthCheckService, this);
-            accountTimedTask.RunInterval = (float)(Config.AccountRefreshInterval * 1000 / Application.Speed);
+            accountTimedTask.Interval = Config.AccountRefreshInterval * 1000 / Application.Speed;
             accountTimedTask.Run();
             Application.Resolve<ICoreService>().AddTask(nameof(AccountTimedTask), accountTimedTask);
 
@@ -94,13 +95,13 @@ namespace IntelliTrader.Trading
             }
 
             tradingTimedTask = new TradingTimedTask(loggingService, notificationService, healthCheckService, signalsService, this);
-            tradingTimedTask.RunInterval = (float)(Config.TradingCheckInterval * 1000 / Application.Speed);
+            tradingTimedTask.Interval = Config.TradingCheckInterval * 1000 / Application.Speed;
             tradingTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
             tradingTimedTask.LoggingEnabled = !isReplayingSnapshots;
             Application.Resolve<ICoreService>().AddTask(nameof(TradingTimedTask), tradingTimedTask);
 
             tradingRulesTimedTask = new TradingRulesTimedTask(loggingService, notificationService, healthCheckService, rulesService, signalsService, this);
-            tradingRulesTimedTask.RunInterval = (float)(RulesConfig.CheckInterval * 1000 / Application.Speed);
+            tradingRulesTimedTask.Interval = RulesConfig.CheckInterval * 1000 / Application.Speed;
             Application.Resolve<ICoreService>().AddTask(nameof(TradingRulesTimedTask), tradingRulesTimedTask);
 
             IsTradingSuspended = false;
@@ -466,6 +467,11 @@ namespace IntelliTrader.Trading
         public decimal GetCurrentPrice(string pair)
         {
             return exchangeService.GetLastPrice(pair).Result;
+        }
+
+        public decimal GetCurrentSpread(string pair)
+        {
+            return exchangeService.GetPriceSpread(pair).Result;
         }
 
         private void OnTradingRulesChanged()

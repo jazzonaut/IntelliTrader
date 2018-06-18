@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IntelliTrader.Trading
+﻿namespace IntelliTrader.Core
 {
     public static class Utils
     {

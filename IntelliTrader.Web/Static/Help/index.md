@@ -1,28 +1,6 @@
 Help
 ===========
 
-Getting Started
--------------
-
-#### Prerequisites
-
-###### Windows, Linux & MacOS
-Download and install .NET Core Runtime 2.1 from [Microsoft](https://www.microsoft.com/net/download/all).
-
-#### Setting Up
-The bot should just run with out of the box settings. By default, it is configured for virtual trading, so there is no need to provide any API keys at the start. The only thing you might want to change is the default port for the web interface (7000).
-Refer to [web configuration](#Web_Configuration) section for information on how to do this.
-
-#### Supported Exchanges
-Currenly only Binance Exchange is supported.
-
-#### Running
-
-###### Windows
-Simply run Start-IntelliTrader.bat to start the bot.
-###### Linux & MacOS
-Copy the *.sh files from the linux directory supplied with the package to the root directory of the package and run them.
-
 Configuration
 -------------
 
@@ -158,11 +136,11 @@ Read more about how trading works in the [trading](#Trading) section.
 |SellDCATrailingStopMargin|Number|1.25|Stop trailing and place sell order immediately when margin hits the specified value|
 |SellDCATrailingStopAction|String|"Sell"|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
 |RepeatLastDCALevel|Boolean|fasle|Repeat the last DCA Level indefinitely, essentially making the DCA level number unlimited|
-|DCALevels|Array|[DCA Levels](#DCA_Levels)|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
+|DCALevels|Array|[DCA Levels](#Dca_Levels)|Action to take after hitting the StopMargin. Possible values: Sell, Cancel|
 
 ###### DCA Levels
 
-Read more about how DCA works in the [DCA](#DCA) section.
+Read more about how DCA works in the [DCA](#Dca) section.
 
 DCALevels setting is an array of DCA levels. There is no limit to the number of levels. The only mandatory setting for each level is Margin, which specifies when to trigger the DCA. All other settings are optional and when omitted will use the default values as defined above.
 
@@ -251,20 +229,22 @@ Is is not necessary to specify a Signal if none of the conditions are signal-spe
 |MaxRating|Number|Yes|Maximal ration of a coin within the specified signal's period. Expect a value between -1 and 1. In a normal market do not expect it to go over 0.6|
 |MinRatingChange|Number|Yes|The minimal rate of change of coins rating (percentage). For a reference values let the bot run and then have a look in the dashboard|
 |MaxRatingChange|Number|Yes|The maximal rate of change of coins rating (percentage). For a reference values let the bot run and then have a look in the dashboard|
-|MinPrice|Number|Yes|Minimum current price of the coin|
-|MaxPrice|Number|Yes|Maxmimum current price of the coin|
+|MinPrice|Number|No|Minimum current price of the coin|
+|MaxPrice|Number|No|Maximum current price of the coin|
 |MinPriceChange|Number|Yes|The minimal rate of change of price withing specified period frame (percentage)|
 |MaxPriceChange|Number|Yes|The maximal rate of change of price withing specified period frame (percentage)|
+|MinSpread|Number|No|Minimum difference between current bid and ask price (percentage)|
+|MaxSpread|Number|No|Maximum difference between current bid and ask price (percentage)|
 |MinVolume|Number|Yes|Minimum coin volume within the specified signal's period. Do not expect 24h volume in this category|
-|MaxVolume|Number|Yes|Maxmimum coin volume within the specified signal's period. Do not expect 24h volume in this category|
+|MaxVolume|Number|Yes|Maximum coin volume within the specified signal's period. Do not expect 24h volume in this category|
 |MinVolumeChange|Number|Yes|The minimal rate of change of volume withing specified period frame (percentage)|
 |MaxVolumeChange|Number|Yes|The maximal rate of change of volume withing specified period frame (percentage)|
 |MinVolatility|Number|Yes|Minimum average volatility of a coin within its own specified timeframe|
 |MaxVolatility|Number|Yes|Maximum average volatility of a coin within its own specified timeframe|
 |MinAge|Number|No|Minimum trading pair's age (in days, e.g. 1.5 is 36 hours)|
-|MaxAge|Number|No|Maxmimum trading pair's age (in days, e.g. 1.5 is 36 hours)|
+|MaxAge|Number|No|Maximum trading pair's age (in days, e.g. 1.5 is 36 hours)|
 |MinLastBuyAge|Number|No|Minimum trading pair's age since last buy (in days, e.g. 1.5 is 36 hours)|
-|MaxLastBuyAge|Number|No|Maxmimum trading pair's age since last buy (in days, e.g. 1.5 is 36 hours)|
+|MaxLastBuyAge|Number|No|Maximum trading pair's age since last buy (in days, e.g. 1.5 is 36 hours)|
 |MinMargin|Number|No|Minimum trading pair's margin|
 |MaxMargin|Number|No|Maximum trading pair's margin|
 |MinMarginChange|Number|No|Minimum trading pair's margin change since last buy|
@@ -452,6 +432,7 @@ The log button will display the last 5 lines from the log file.
 |Cost Bought|Purchase value of the pair|
 |Price|Current price of the pair on the exchange|
 |Price Bought|Price paid on purchase|
+|Spread|Difference between current bid and ask price|
 |Signal Rule|Signal rule used to buy the pair|
 |Trading Rules|Trading rules currently applied to the pair|
 |Order Dates|The dates of the purchase orders|
@@ -477,6 +458,7 @@ The log button will display the last 5 lines from the log file.
 |% Rating Change|Percentage rating change for each signal|
 |Price|Current pair's price (same for every signal)|
 |% Price Change|Percentage price change for each signal|
+|Spread|Difference between current bid and ask price|
 |Volume|Volume for each signal|
 |% Volume Change|Percentage volume change for each signal|
 |Volatility|Volatility for each signal|

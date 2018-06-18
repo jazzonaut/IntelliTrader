@@ -148,7 +148,7 @@ namespace IntelliTrader.Core
             if (timedTasks.TryGetValue(name, out HighResolutionTimedTask task))
             {
                 task.UnhandledException += OnUnhandledException;
-                task.SyncedStopWatch = syncStopSwatch;
+                task.Stopwatch = syncStopSwatch;
                 task.Start();
             }
         }
@@ -158,7 +158,7 @@ namespace IntelliTrader.Core
             if (timedTasks.TryGetValue(name, out HighResolutionTimedTask task))
             {
                 task.Stop();
-                task.SyncedStopWatch = null;
+                task.Stopwatch = null;
                 task.UnhandledException -= OnUnhandledException;
             }
         }

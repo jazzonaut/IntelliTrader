@@ -23,7 +23,7 @@ namespace IntelliTrader.Core
             loggingService.Info($"Start Health Check service...");
 
             healthCheckTimedTask = new HealthCheckTimedTask(loggingService, notificationService, this, Application.Resolve<ICoreService>(), Application.Resolve<ITradingService>());
-            healthCheckTimedTask.RunInterval = (float)(Application.Resolve<ICoreService>().Config.HealthCheckInterval * 1000 / Application.Speed);
+            healthCheckTimedTask.Interval = Application.Resolve<ICoreService>().Config.HealthCheckInterval * 1000 / Application.Speed;
             healthCheckTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
             Application.Resolve<ICoreService>().AddTask(nameof(HealthCheckTimedTask), healthCheckTimedTask);
 

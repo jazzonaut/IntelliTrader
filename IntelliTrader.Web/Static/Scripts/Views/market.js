@@ -56,10 +56,9 @@ $(function () {
             },
             {
                 name: "Price",
-                data: "PriceList",
-                type: "multi-value",
+                data: "Price",
                 render: function (data, type, row, meta) {
-                    return data.map(function (item) { return '<div class="signal-details"><span class="signal-name">' + item.Name + '</span><span class="signal-value">' + (item.Price != null ? item.Price.toFixed(8) : "N/A") + '</span></div>'; }).join("");
+                    return data;
                 }
             },
             {
@@ -68,6 +67,13 @@ $(function () {
                 type: "multi-value",
                 render: function (data, type, row, meta) {
                     return data.map(function (item) { return '<div class="signal-details"><span class="signal-name">' + item.Name + '</span><span class="signal-value ' + (item.PriceChange != null && item.PriceChange >= 0 ? 'text-success' : 'text-warning') + '">' + (item.PriceChange != null ? item.PriceChange.toFixed(2) : "N/A") + '</span></div>'; }).join("");
+                }
+            },
+            {
+                name: "Spread",
+                data: "Spread",
+                render: function (data, type, row, meta) {
+                    return data;
                 }
             },
             {
@@ -150,10 +156,23 @@ $(function () {
                 var value = parseFloat(filter.val());
                 var valueIndex = filter.data("index");
                 if (value && valueIndex) {
-                    var data = searchData[valueIndex + 1];
-                    var sum = getMultiValueAvg(data);
-                    if (sum < value) {
-                        show = false;
+                    var visibleData = [];
+                    for (var idx in searchData) {
+                        if (settings.aoColumns.filter(function (col) { return col.idx == idx; })[0].bVisible) {
+                            visibleData.push(searchData[idx]);
+                        }
+                    }
+
+                    var data = visibleData[valueIndex + 1];
+                    if (!isNaN(data)) {
+                        if (parseFloat(data) < value) {
+                            show = false;
+                        }
+                    } else {
+                        var sum = getMultiValueAvg(data);
+                        if (sum < value) {
+                            show = false;
+                        }
                     }
                 }
             });
@@ -163,8 +182,8 @@ $(function () {
 
     $('#marketPairsTable thead th:not(.control)').each(function (i) {
         var title = $('#marketPairsTable thead th').eq($(this).index()).text();
-        if (title != "Name" && title != "Trading Rules" && title != "Trailing Rules") {
-            $(this).prepend('<input type="text" class="filter" onclick="return filterClicked(event);" placeholder="Min Avg ' + title + '" data-index="' + i + '" />');
+        if (title != "Name" && title != "Trading Rules" && title != "Trailing Rules" && title != "Signal Rules") {
+            $(this).prepend('<input type="text" class="filter" onclick="return filterClicked(event);" placeholder="Min ' + title + '" data-index="' + i + '" />');
         }
     });
 

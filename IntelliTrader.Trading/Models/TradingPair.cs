@@ -28,15 +28,18 @@ namespace IntelliTrader.Trading
         public decimal CurrentCost => CurrentPrice * TotalAmount;
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal CurrentPrice { get; set; }
+        [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
+        public decimal CurrentSpread { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 2)]
         public decimal CurrentMargin => Utils.CalculateMargin(AverageCostPaid + (Metadata.AdditionalCosts ?? 0), CurrentCost);
         public double CurrentAge => OrderDates != null && OrderDates.Count > 0 ? (DateTimeOffset.Now - OrderDates.Min()).TotalDays : 0;
         public double LastBuyAge => OrderDates != null && OrderDates.Count > 0 ? (DateTimeOffset.Now - OrderDates.Max()).TotalDays : 0;
         public OrderMetadata Metadata { get; set; } = new OrderMetadata();
 
-        public void SetCurrentPrice(decimal currentPrice)
+        public void SetCurrentValues(decimal currentPrice, decimal currentSpread)
         {
             CurrentPrice = currentPrice;
+            CurrentSpread = currentSpread;
         }
     }
 }

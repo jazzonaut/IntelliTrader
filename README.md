@@ -280,20 +280,22 @@ Is is not necessary to specify a Signal if none of the conditions are signal-spe
 |MaxRating|Number|Yes|Maximal ration of a coin within the specified signal's period. Expect a value between -1 and 1. In a normal market do not expect it to go over 0.6|
 |MinRatingChange|Number|Yes|The minimal rate of change of coins rating (percentage). For a reference values let the bot run and then have a look in the dashboard|
 |MaxRatingChange|Number|Yes|The maximal rate of change of coins rating (percentage). For a reference values let the bot run and then have a look in the dashboard|
-|MinPrice|Number|Yes|Minimum current price of the coin|
-|MaxPrice|Number|Yes|Maxmimum current price of the coin|
+|MinPrice|Number|No|Minimum current price of the coin|
+|MaxPrice|Number|No|Maximum current price of the coin|
 |MinPriceChange|Number|Yes|The minimal rate of change of price withing specified period frame (percentage)|
 |MaxPriceChange|Number|Yes|The maximal rate of change of price withing specified period frame (percentage)|
+|MinSpread|Number|No|Minimum difference between current bid and ask price (percentage)|
+|MaxSpread|Number|No|Maximum difference between current bid and ask price (percentage)|
 |MinVolume|Number|Yes|Minimum coin volume within the specified signal's period. Do not expect 24h volume in this category|
-|MaxVolume|Number|Yes|Maxmimum coin volume within the specified signal's period. Do not expect 24h volume in this category|
+|MaxVolume|Number|Yes|Maximum coin volume within the specified signal's period. Do not expect 24h volume in this category|
 |MinVolumeChange|Number|Yes|The minimal rate of change of volume withing specified period frame (percentage)|
 |MaxVolumeChange|Number|Yes|The maximal rate of change of volume withing specified period frame (percentage)|
 |MinVolatility|Number|Yes|Minimum average volatility of a coin within its own specified timeframe|
 |MaxVolatility|Number|Yes|Maximum average volatility of a coin within its own specified timeframe|
 |MinAge|Number|No|Minimum trading pair's age (in days, e.g. 1.5 is 36 hours)|
-|MaxAge|Number|No|Maxmimum trading pair's age (in days, e.g. 1.5 is 36 hours)|
+|MaxAge|Number|No|Maximum trading pair's age (in days, e.g. 1.5 is 36 hours)|
 |MinLastBuyAge|Number|No|Minimum trading pair's age since last buy (in days, e.g. 1.5 is 36 hours)|
-|MaxLastBuyAge|Number|No|Maxmimum trading pair's age since last buy (in days, e.g. 1.5 is 36 hours)|
+|MaxLastBuyAge|Number|No|Maximum trading pair's age since last buy (in days, e.g. 1.5 is 36 hours)|
 |MinMargin|Number|No|Minimum trading pair's margin|
 |MaxMargin|Number|No|Maximum trading pair's margin|
 |MinMarginChange|Number|No|Minimum trading pair's margin change since last buy|
@@ -481,6 +483,7 @@ The log button will display the last 5 lines from the log file.
 |Cost Bought|Purchase value of the pair|
 |Price|Current price of the pair on the exchange|
 |Price Bought|Price paid on purchase|
+|Spread|Difference between current bid and ask price|
 |Signal Rule|Signal rule used to buy the pair|
 |Trading Rules|Trading rules currently applied to the pair|
 |Order Dates|The dates of the purchase orders|
@@ -506,6 +509,7 @@ The log button will display the last 5 lines from the log file.
 |% Rating Change|Percentage rating change for each signal|
 |Price|Current pair's price (same for every signal)|
 |% Price Change|Percentage price change for each signal|
+|Spread|Difference between current bid and ask price|
 |Volume|Volume for each signal|
 |% Volume Change|Percentage volume change for each signal|
 |Volatility|Volatility for each signal|

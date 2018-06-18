@@ -40,13 +40,13 @@ namespace IntelliTrader.Backtesting
             if (Config.Replay)
             {
                 backtestingLoadSnapshotsTimedTask = new BacktestingLoadSnapshotsTimedTask(loggingService, healthCheckService, tradingService, this);
-                backtestingLoadSnapshotsTimedTask.RunInterval = (float)(Config.SnapshotsInterval / Config.ReplaySpeed * 1000);
+                backtestingLoadSnapshotsTimedTask.Interval = Config.SnapshotsInterval / Config.ReplaySpeed * 1000;
                 backtestingLoadSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
                 Application.Resolve<ICoreService>().AddTask(nameof(BacktestingLoadSnapshotsTimedTask), backtestingLoadSnapshotsTimedTask);
             }
 
             backtestingSaveSnapshotsTimedTask = new BacktestingSaveSnapshotsTimedTask(loggingService, healthCheckService, tradingService, signalsService, this);
-            backtestingSaveSnapshotsTimedTask.RunInterval = Config.SnapshotsInterval * 1000;
+            backtestingSaveSnapshotsTimedTask.Interval = Config.SnapshotsInterval * 1000;
             backtestingSaveSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
             Application.Resolve<ICoreService>().AddTask(nameof(BacktestingSaveSnapshotsTimedTask), backtestingSaveSnapshotsTimedTask);
 
@@ -100,9 +100,9 @@ namespace IntelliTrader.Backtesting
                 string taskName = t.Key;
                 HighResolutionTimedTask task = t.Value;
 
-                double averageWaitTime = Math.Round(task.TotalWaitTime / task.RunTimes, 3);
+                double averageWaitTime = Math.Round(task.TotalLagTime / task.RunCount, 3);
                 if (averageWaitTime > 0) lagAmount += averageWaitTime;
-                loggingService.Info($" [+] {taskName} Run times: {task.RunTimes}, average wait time: " + averageWaitTime);
+                loggingService.Info($" [+] {taskName} Run times: {task.RunCount}, average wait time: " + averageWaitTime);
             }
 
             loggingService.Info($"Lag value: {lagAmount}. Lower the ReplaySpeed if lag value is positive.");

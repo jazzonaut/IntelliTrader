@@ -18,11 +18,12 @@ namespace IntelliTrader.Core
         decimal AverageCostPaid { get; }
         decimal CurrentCost { get; }
         decimal CurrentPrice { get; }
+        decimal CurrentSpread { get; }
         decimal CurrentMargin { get; }
         double CurrentAge { get; }
         double LastBuyAge { get; }
         OrderMetadata Metadata { get; }
 
-        void SetCurrentPrice(decimal currentPrice);
+        void SetCurrentValues(decimal currentPrice, decimal currentSpread);
     }
 }

@@ -34,7 +34,7 @@
 }
 
 .manual-order input[type=text] {
-    width: 100px;
+    width: 60px;
     padding: 2px;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .signal-details {
-
+    width: 180px;
 }
 
 .signal-name {
@@ -63,4 +63,5 @@
 .filter {
     display: block;
     margin-bottom: 10px;
+    width: 100px;
 }
