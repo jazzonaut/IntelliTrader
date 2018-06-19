@@ -9,6 +9,8 @@ namespace IntelliTrader.Trading
     {
         public IEnumerable<string> Rules { get; set; }
 
+        public int MaxPairs { get; set; }
+
         public bool BuyEnabled { get; set; }
         public OrderType BuyType { get; set; }
         public decimal BuyMaxCost { get; set; }

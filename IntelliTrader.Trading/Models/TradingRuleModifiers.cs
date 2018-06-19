@@ -7,6 +7,8 @@ namespace IntelliTrader.Trading
 {
     internal class TradingRuleModifiers
     {
+        public int? MaxPairs { get; set; }
+
         public bool? BuyEnabled { get; set; }
         public decimal? BuyMaxCost { get; set; }
         public decimal? BuyMultiplier { get; set; }

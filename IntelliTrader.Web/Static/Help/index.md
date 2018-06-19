@@ -207,7 +207,7 @@ Read more about how rules work in the [rules](#Rules) section.
 
 All modifiers (both signal and trading) are optional and can be omitted.  
 Signal modifiers currently only support the *CostMultiplier* (MaxCost multiplier)  
-Trading modifiers support any trading setting that begins with Buy, Sell or DCALevels in addition to the following trading-rule specific modifiers:
+Trading modifiers support any trading setting that begins with Buy, Sell plus DCALevels and MaxPairs in addition to the following trading-rule specific modifiers:
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|

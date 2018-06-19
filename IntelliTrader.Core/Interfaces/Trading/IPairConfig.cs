@@ -8,6 +8,8 @@ namespace IntelliTrader.Core
     {
         IEnumerable<string> Rules { get; }
 
+        int MaxPairs { get; }
+
         bool SwapEnabled { get; }
         List<string> SwapSignalRules { get; }
         int SwapTimeout { get; }

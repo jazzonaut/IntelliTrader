@@ -327,7 +327,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel buy request for {options.Pair}. Reason: pair already exists";
                 return false;
             }
-            else if (!options.ManualOrder && !options.Swap && Config.MaxPairs != 0 && Account.GetTradingPairs().Count() >= Config.MaxPairs && !Account.HasTradingPair(options.Pair))
+            else if (!options.ManualOrder && !options.Swap && pairConfig.MaxPairs != 0 && Account.GetTradingPairs().Count() >= pairConfig.MaxPairs && !Account.HasTradingPair(options.Pair))
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: maximum pairs reached";
                 return false;

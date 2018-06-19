@@ -76,6 +76,7 @@ namespace IntelliTrader.Trading
                             if (modifiers != null)
                             {
                                 // Base Trading Config
+                                modifiedTradingConfig.MaxPairs = modifiers.MaxPairs ?? modifiedTradingConfig.MaxPairs;
                                 modifiedTradingConfig.BuyEnabled = modifiers.BuyEnabled ?? modifiedTradingConfig.BuyEnabled;
                                 modifiedTradingConfig.BuyMaxCost = modifiers.BuyMaxCost ?? modifiedTradingConfig.BuyMaxCost;
                                 modifiedTradingConfig.BuyMultiplier = modifiers.BuyMultiplier ?? modifiedTradingConfig.BuyMultiplier;
@@ -142,6 +143,8 @@ namespace IntelliTrader.Trading
             return new PairConfig
             {
                 Rules = appliedRules.Select(r => r.Name),
+
+                MaxPairs = modifiedTradingConfig.MaxPairs,
 
                 BuyEnabled = tradingPair == null ? modifiedTradingConfig.BuyEnabled : modifiedTradingConfig.BuyDCAEnabled,
                 BuyType = modifiedTradingConfig.BuyType,
