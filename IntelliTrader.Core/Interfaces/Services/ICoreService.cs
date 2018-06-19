@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 
 namespace IntelliTrader.Core
 {
@@ -9,14 +10,5 @@ namespace IntelliTrader.Core
         void Start();
         void Stop();
         void Restart();
-        void AddTask(string name, HighResolutionTimedTask task);
-        void RemoveTask(string name);
-        void RemoveAllTasks();
-        void StartTask(string name);
-        void StartAllTasks();
-        void StopTask(string name);
-        void StopAllTasks();
-        HighResolutionTimedTask GetTask(string name);
-        ConcurrentDictionary<string, HighResolutionTimedTask> GetAllTasks();
     }
 }

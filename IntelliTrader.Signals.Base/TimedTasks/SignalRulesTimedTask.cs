@@ -27,7 +27,7 @@ namespace IntelliTrader.Signals.Base
             this.signalsService = signalsService;
         }
 
-        public override void Run()
+        protected override void Run()
         {
             ProcessTrailingSignals();
             ProcessRules();

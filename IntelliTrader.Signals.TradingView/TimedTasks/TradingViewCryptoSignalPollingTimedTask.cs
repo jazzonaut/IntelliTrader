@@ -45,7 +45,7 @@ namespace IntelliTrader.Signals.TradingView
             this.httpClient = CreateHttpClient();
         }
 
-        public override void Run()
+        protected override void Run()
         {
             var requestData = signalReceiver.Config.RequestData
                 .Replace("%EXCHANGE%", tradingService.Config.Exchange.ToUpper())

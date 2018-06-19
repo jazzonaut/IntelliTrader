@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -6,6 +7,12 @@ namespace IntelliTrader.Core
 {
     public abstract class LowResolutionTimedTask : ITimedTask
     {
+        /// <summary>
+        /// Raised on unhandled exception
+        /// </summary>
+        #pragma warning disable CS0067 
+        public event UnhandledExceptionEventHandler UnhandledException;
+
         /// <summary>
         /// Delay before starting the task in milliseconds
         /// </summary>
@@ -19,6 +26,11 @@ namespace IntelliTrader.Core
             get { return timer.Interval; }
             set { timer.Interval = value; }
         }
+
+        /// <summary>
+        /// Stopwatch to use for timing the intervals
+        /// </summary>
+        public Stopwatch Stopwatch { get; set; }
 
         /// <summary>
         /// Indicates whether the task is currently running
@@ -168,10 +180,18 @@ namespace IntelliTrader.Core
         }
 
         /// <summary>
+        /// Manually run the task
+        /// </summary>
+        public void RunNow()
+        {
+            Run();
+        }
+
+        /// <summary>
         /// This method must be implemented by the child class and must contain the code
         /// to be executed periodically.
         /// </summary>
-        public abstract void Run();
+        protected abstract void Run();
     }
 }
 

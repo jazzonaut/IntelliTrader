@@ -29,7 +29,7 @@ namespace IntelliTrader.Trading
             this.tradingService = tradingService;
         }
 
-        public override void Run()
+        protected override void Run()
         {
             lock (tradingService.SyncRoot)
             {

@@ -40,11 +40,13 @@ namespace IntelliTrader.Backtesting
             OnSignalRulesChanged();
             rulesService.RegisterRulesChangeCallback(OnSignalRulesChanged);
 
-            signalRulesTimedTask = new SignalRulesTimedTask(loggingService, healthCheckService, tradingService, rulesService, this);
-            signalRulesTimedTask.Interval = RulesConfig.CheckInterval * 1000 / Application.Speed;
-            signalRulesTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
-            signalRulesTimedTask.LoggingEnabled = false;
-            Application.Resolve<ICoreService>().AddTask(nameof(SignalRulesTimedTask), signalRulesTimedTask);
+            signalRulesTimedTask = Application.Resolve<ITasksService>().AddTask(
+                name: nameof(SignalRulesTimedTask),
+                task: new SignalRulesTimedTask(loggingService, healthCheckService, tradingService, rulesService, this) { LoggingEnabled = false },
+                interval: RulesConfig.CheckInterval * 1000 / Application.Speed,
+                startDelay: Constants.TaskDelays.LowDelay,
+                startTask: false,
+                runNow: false);
 
             loggingService.Info("Backtesting Signals service started");
         }
@@ -53,8 +55,7 @@ namespace IntelliTrader.Backtesting
         {
             loggingService.Info("Stop Backtesting Signals service...");
 
-            Application.Resolve<ICoreService>().StopTask(nameof(SignalRulesTimedTask));
-            Application.Resolve<ICoreService>().RemoveTask(nameof(SignalRulesTimedTask));
+            Application.Resolve<ITasksService>().RemoveTask(nameof(SignalRulesTimedTask), stopTask: true);
 
             rulesService.UnregisterRulesChangeCallback(OnSignalRulesChanged);
 

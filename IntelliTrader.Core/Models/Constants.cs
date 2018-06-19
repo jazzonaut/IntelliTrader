@@ -47,9 +47,13 @@ namespace IntelliTrader.Core
             public const string Tickers = "tickers";
         }
 
-        public static class TimedTasks
+        public static class TaskDelays
         {
-            public const int StandardDelay = 3000;
+            public const int ZeroDelay = 0;
+            public const int LowDelay = 1300;
+            public const int MidDelay = 2300;
+            public const int NormalDelay = 3300;
+            public const int HighDelay = 4300;
         }
     }
 }

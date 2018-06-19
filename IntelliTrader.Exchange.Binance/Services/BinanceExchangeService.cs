@@ -82,9 +82,13 @@ namespace IntelliTrader.Exchange.Binance
                 socket = binanceApi.GetTickersWebSocket(OnTickersUpdated);
                 loggingService.Info("Connected to Binance Exchange tickers");
 
-                tickersMonitorTimedTask = new BinanceTickersMonitorTimedTask(loggingService, this);
-                tickersMonitorTimedTask.Interval = MAX_TICKERS_AGE_TO_RECONNECT_SECONDS / 2;
-                Application.Resolve<ICoreService>().AddTask(nameof(BinanceTickersMonitorTimedTask), tickersMonitorTimedTask);
+                tickersMonitorTimedTask = Application.Resolve<ITasksService>().AddTask(
+                    name: nameof(BinanceTickersMonitorTimedTask),
+                    task: new BinanceTickersMonitorTimedTask(loggingService, this),
+                    interval: MAX_TICKERS_AGE_TO_RECONNECT_SECONDS / 2,
+                    startDelay: Constants.TaskDelays.ZeroDelay,
+                    startTask: false,
+                    runNow: false);
             }
             catch (Exception ex)
             {
@@ -96,8 +100,7 @@ namespace IntelliTrader.Exchange.Binance
         {
             try
             {
-                Application.Resolve<ICoreService>().StopTask(nameof(BinanceTickersMonitorTimedTask));
-                Application.Resolve<ICoreService>().RemoveTask(nameof(BinanceTickersMonitorTimedTask));
+                Application.Resolve<ITasksService>().RemoveTask(nameof(BinanceTickersMonitorTimedTask), stopTask: true);
 
                 loggingService.Info("Disconnect from Binance Exchange tickers...");
                 // Give Dispose 10 seconds to complete and then time out if not
@@ -154,6 +157,7 @@ namespace IntelliTrader.Exchange.Binance
             return myTrades;
         }
 
+        #pragma warning disable CS1998
         public override async Task<decimal> GetAskPrice(string pair)
         {
             if (tickers.TryGetValue(pair, out Ticker ticker))
@@ -166,6 +170,7 @@ namespace IntelliTrader.Exchange.Binance
             }
         }
 
+        #pragma warning disable CS1998
         public override async Task<decimal> GetBidPrice(string pair)
         {
             if (tickers.TryGetValue(pair, out Ticker ticker))
@@ -178,6 +183,7 @@ namespace IntelliTrader.Exchange.Binance
             }
         }
 
+        #pragma warning disable CS1998
         public override async Task<decimal> GetLastPrice(string pair)
         {
             if (tickers.TryGetValue(pair, out Ticker ticker))

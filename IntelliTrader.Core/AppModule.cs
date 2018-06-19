@@ -9,6 +9,7 @@ namespace IntelliTrader.Core
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<TasksService>().As<ITasksService>().SingleInstance();
             builder.RegisterType<HealthCheckService>().As<IHealthCheckService>().SingleInstance();
             builder.RegisterType<CoreService>().As<ICoreService>().As<IConfigurableService>().Named<IConfigurableService>(Constants.ServiceNames.CoreService).SingleInstance();
             builder.RegisterType<LoggingService>().As<ILoggingService>().As<IConfigurableService>().Named<IConfigurableService>(Constants.ServiceNames.LoggingService).SingleInstance();

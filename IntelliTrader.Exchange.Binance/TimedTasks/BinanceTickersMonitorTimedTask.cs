@@ -13,7 +13,7 @@ namespace IntelliTrader.Exchange.Binance
             this.binanceExchangeService = binanceExchangeService;
         }
 
-        public override void Run()
+        protected override void Run()
         {
             if (binanceExchangeService.GetTimeElapsedSinceLastTickersUpdate().TotalSeconds > BinanceExchangeService.MAX_TICKERS_AGE_TO_RECONNECT_SECONDS)
             {

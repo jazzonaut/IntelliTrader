@@ -65,10 +65,13 @@ namespace IntelliTrader.Signals.Base
                 }
             }
 
-            signalRulesTimedTask = new SignalRulesTimedTask(loggingService, healthCheckService, tradingService, rulesService, this);
-            signalRulesTimedTask.Interval = RulesConfig.CheckInterval * 1000 / Application.Speed;
-            signalRulesTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
-            Application.Resolve<ICoreService>().AddTask(nameof(SignalRulesTimedTask), signalRulesTimedTask);
+            signalRulesTimedTask = Application.Resolve<ITasksService>().AddTask(
+                name: nameof(SignalRulesTimedTask),
+                task: new SignalRulesTimedTask(loggingService, healthCheckService, tradingService, rulesService, this),
+                interval: RulesConfig.CheckInterval * 1000 / Application.Speed,
+                startDelay: Constants.TaskDelays.LowDelay,
+                startTask: false,
+                runNow: false);
 
             loggingService.Info("Signals service started");
         }
@@ -83,8 +86,7 @@ namespace IntelliTrader.Signals.Base
             }
             signalReceivers.Clear();
 
-            Application.Resolve<ICoreService>().StopTask(nameof(SignalRulesTimedTask));
-            Application.Resolve<ICoreService>().RemoveTask(nameof(SignalRulesTimedTask));
+            Application.Resolve<ITasksService>().RemoveTask(nameof(SignalRulesTimedTask), stopTask: true);
 
             rulesService.UnregisterRulesChangeCallback(OnSignalRulesChanged);
 

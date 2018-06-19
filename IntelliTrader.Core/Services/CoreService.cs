@@ -17,29 +17,26 @@ namespace IntelliTrader.Core
         public string Version { get; private set; }
 
         private readonly ILoggingService loggingService;
+        private readonly ITasksService tasksService;
         private readonly INotificationService notificationService;
         private readonly IHealthCheckService healthCheckService;
         private readonly ITradingService tradingService;
         private readonly IWebService webService;
         private readonly IBacktestingService backtestingService;
 
-        private ConcurrentDictionary<string, HighResolutionTimedTask> timedTasks;
-        private Stopwatch syncStopSwatch;
-
-        public CoreService(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, ITradingService tradingService, IWebService webService, IBacktestingService backtestingService)
+        public CoreService(ILoggingService loggingService, ITasksService tasksService, INotificationService notificationService, IHealthCheckService healthCheckService, ITradingService tradingService, IWebService webService, IBacktestingService backtestingService)
         {
             this.loggingService = loggingService;
+            this.tasksService = tasksService;
             this.notificationService = notificationService;
             this.healthCheckService = healthCheckService;
             this.tradingService = tradingService;
             this.webService = webService;
             this.backtestingService = backtestingService;
 
-            this.timedTasks = new ConcurrentDictionary<string, HighResolutionTimedTask>();
-            this.syncStopSwatch = new Stopwatch();
-
             // Log unhandled exceptions
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            tasksService.SetUnhandledExceptionHandler(OnUnhandledException);
 
             // Set decimal separator to a dot for all cultures
             var cultureInfo = new CultureInfo(CultureInfo.CurrentCulture.Name);
@@ -81,8 +78,8 @@ namespace IntelliTrader.Core
 
             ThreadPool.QueueUserWorkItem((state) =>
             {
-                Thread.Sleep(3000);
-                StartAllTasks();
+                Thread.Sleep(2000);
+                tasksService.StartAllTasks();
             });
 
             loggingService.Info("Core service started");
@@ -114,8 +111,8 @@ namespace IntelliTrader.Core
                 backtestingService.Stop();
             }
 
-            StopAllTasks();
-            RemoveAllTasks();
+            tasksService.StopAllTasks();
+            tasksService.RemoveAllTasks();
             loggingService.Info("Core service stopped");
         }
 
@@ -127,77 +124,7 @@ namespace IntelliTrader.Core
             Start();
         }
 
-        public void AddTask(string name, HighResolutionTimedTask task)
-        {
-            timedTasks[name] = task;
-        }
-
-        public void RemoveTask(string name)
-        {
-            timedTasks.TryRemove(name, out HighResolutionTimedTask task);
-        }
-
-        public void RemoveAllTasks()
-        {
-            timedTasks.Clear();
-            syncStopSwatch.Stop();
-        }
-
-        public void StartTask(string name)
-        {
-            if (timedTasks.TryGetValue(name, out HighResolutionTimedTask task))
-            {
-                task.UnhandledException += OnUnhandledException;
-                task.Stopwatch = syncStopSwatch;
-                task.Start();
-            }
-        }
-
-        public void StopTask(string name)
-        {
-            if (timedTasks.TryGetValue(name, out HighResolutionTimedTask task))
-            {
-                task.Stop();
-                task.Stopwatch = null;
-                task.UnhandledException -= OnUnhandledException;
-            }
-        }
-
-        public void StartAllTasks()
-        {
-            foreach (var taskName in timedTasks.Keys)
-            {
-                StartTask(taskName);
-            }
-        }
-
-        public void StopAllTasks()
-        {
-            foreach (var taskName in timedTasks.Keys)
-            {
-                StopTask(taskName);
-            }
-            syncStopSwatch.Stop();
-        }
-
-        public HighResolutionTimedTask GetTask(string name)
-        {
-            if (timedTasks.TryGetValue(name, out HighResolutionTimedTask task))
-            {
-                return task;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public ConcurrentDictionary<string, HighResolutionTimedTask> GetAllTasks()
-        {
-            return timedTasks;
-        }
-
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        public void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             string message = "Unhandled exception occured";
             if (e.ExceptionObject != null)

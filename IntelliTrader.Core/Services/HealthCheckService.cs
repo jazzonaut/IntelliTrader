@@ -22,10 +22,13 @@ namespace IntelliTrader.Core
         {
             loggingService.Info($"Start Health Check service...");
 
-            healthCheckTimedTask = new HealthCheckTimedTask(loggingService, notificationService, this, Application.Resolve<ICoreService>(), Application.Resolve<ITradingService>());
-            healthCheckTimedTask.Interval = Application.Resolve<ICoreService>().Config.HealthCheckInterval * 1000 / Application.Speed;
-            healthCheckTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
-            Application.Resolve<ICoreService>().AddTask(nameof(HealthCheckTimedTask), healthCheckTimedTask);
+            healthCheckTimedTask = Application.Resolve<ITasksService>().AddTask(
+                name: nameof(HealthCheckTimedTask),
+                task: new HealthCheckTimedTask(loggingService, notificationService, this, Application.Resolve<ICoreService>(), Application.Resolve<ITradingService>()),
+                interval: Application.Resolve<ICoreService>().Config.HealthCheckInterval * 1000 / Application.Speed,
+                startDelay: Constants.TaskDelays.HighDelay,
+                startTask: false,
+                runNow: false);
 
             loggingService.Info("Health Check service started");
         }
@@ -34,8 +37,7 @@ namespace IntelliTrader.Core
         {
             loggingService.Info($"Stop Health Check service...");
 
-            Application.Resolve<ICoreService>().StopTask(nameof(HealthCheckTimedTask));
-            Application.Resolve<ICoreService>().RemoveTask(nameof(HealthCheckTimedTask));
+            Application.Resolve<ITasksService>().RemoveTask(nameof(HealthCheckTimedTask), stopTask: true);
 
             loggingService.Info("Health Check service stopped");
         }

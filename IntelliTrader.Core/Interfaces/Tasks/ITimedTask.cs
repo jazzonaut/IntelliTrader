@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace IntelliTrader.Core
 {
     public interface ITimedTask
     {
+        event UnhandledExceptionEventHandler UnhandledException;
+
         double StartDelay { get; set; }
         double Interval { get; set; }
+        Stopwatch Stopwatch { get; set; }
         bool IsRunning { get; }
         long RunCount { get; }
         double TotalRunTime { get; }
@@ -15,6 +19,6 @@ namespace IntelliTrader.Core
 
         void Start();
         void Stop();
-        void Run();
+        void RunNow();
     }
 }

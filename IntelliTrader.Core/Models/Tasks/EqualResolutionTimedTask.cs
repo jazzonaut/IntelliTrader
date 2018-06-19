@@ -56,7 +56,7 @@ namespace IntelliTrader.Core
         private ManualResetEvent resetEvent;
 
         /// <summary>
-        /// Starts the task
+        /// Start the task
         /// </summary>
         public void Start()
         {
@@ -83,7 +83,6 @@ namespace IntelliTrader.Core
                         long elapsedTime = Stopwatch.ElapsedMilliseconds;
                         double nextRunTime = RunCount * Interval + StartDelay + TotalLagTime + startTime;
                         double waitTime = nextRunTime - elapsedTime;
-
                         if (waitTime > 0)
                         {
                             if (resetEvent.WaitOne((int)(waitTime)))
@@ -93,14 +92,7 @@ namespace IntelliTrader.Core
                         }
 
                         runWatch.Restart();
-                        try
-                        {
-                            Run();
-                        }
-                        catch (Exception ex)
-                        {
-                            UnhandledException?.Invoke(this, new UnhandledExceptionEventArgs(ex, false));
-                        }
+                        SafeRun();
                         long runTime = runWatch.ElapsedMilliseconds;
                         TotalLagTime += (runTime > Interval) ? (runTime - Interval) : 0;
                         TotalRunTime += runTime;
@@ -114,7 +106,7 @@ namespace IntelliTrader.Core
         }
 
         /// <summary>
-        /// Stops the task
+        /// Stop the task
         /// </summary>
         public void Stop()
         {
@@ -122,7 +114,7 @@ namespace IntelliTrader.Core
         }
 
         /// <summary>
-        /// Stops the task
+        /// Stop the task
         /// </summary>
         /// <remarks>
         /// This function is waiting an executing thread (unless join is set to false).
@@ -145,6 +137,33 @@ namespace IntelliTrader.Core
             }
         }
 
-        public abstract void Run();
+        /// <summary>
+        /// Manually run the task
+        /// </summary>
+        public void RunNow()
+        {
+            SafeRun();
+        }
+
+        /// <summary>
+        /// This method must be implemented by the child class and must contain the code
+        /// to be executed periodically.
+        /// </summary>
+        protected abstract void Run();
+
+        /// <summary>
+        /// Wrap Run method in Try/Catch
+        /// </summary>
+        private void SafeRun()
+        {
+            try
+            {
+                Run();
+            }
+            catch (Exception ex)
+            {
+                UnhandledException?.Invoke(this, new UnhandledExceptionEventArgs(ex, false));
+            }
+        }
     }
 }

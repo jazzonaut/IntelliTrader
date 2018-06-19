@@ -84,25 +84,34 @@ namespace IntelliTrader.Trading
                 Account = new VirtualAccount(loggingService, notificationService, healthCheckService, signalsService, this);
             }
 
-            accountTimedTask = new AccountTimedTask(loggingService, healthCheckService, this);
-            accountTimedTask.Interval = Config.AccountRefreshInterval * 1000 / Application.Speed;
-            accountTimedTask.Run();
-            Application.Resolve<ICoreService>().AddTask(nameof(AccountTimedTask), accountTimedTask);
+            accountTimedTask =  Application.Resolve<ITasksService>().AddTask(
+                name: nameof(AccountTimedTask),
+                task: new AccountTimedTask(loggingService, healthCheckService, this),
+                interval: Config.AccountRefreshInterval * 1000 / Application.Speed,
+                startDelay: Constants.TaskDelays.ZeroDelay,
+                startTask: false,
+                runNow: true);
 
             if (signalsService.Config.Enabled)
             {
                 signalsService.Start();
             }
 
-            tradingTimedTask = new TradingTimedTask(loggingService, notificationService, healthCheckService, signalsService, this);
-            tradingTimedTask.Interval = Config.TradingCheckInterval * 1000 / Application.Speed;
-            tradingTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
-            tradingTimedTask.LoggingEnabled = !isReplayingSnapshots;
-            Application.Resolve<ICoreService>().AddTask(nameof(TradingTimedTask), tradingTimedTask);
+            tradingTimedTask =  Application.Resolve<ITasksService>().AddTask(
+                name: nameof(TradingTimedTask),
+                task: new TradingTimedTask(loggingService, notificationService, healthCheckService, signalsService, this) { LoggingEnabled = !isReplayingSnapshots },
+                interval: Config.TradingCheckInterval * 1000 / Application.Speed,
+                startDelay: Constants.TaskDelays.NormalDelay,
+                startTask: false,
+                runNow: false);
 
-            tradingRulesTimedTask = new TradingRulesTimedTask(loggingService, notificationService, healthCheckService, rulesService, signalsService, this);
-            tradingRulesTimedTask.Interval = RulesConfig.CheckInterval * 1000 / Application.Speed;
-            Application.Resolve<ICoreService>().AddTask(nameof(TradingRulesTimedTask), tradingRulesTimedTask);
+            tradingRulesTimedTask = Application.Resolve<ITasksService>().AddTask(
+                name: nameof(TradingRulesTimedTask),
+                task: new TradingRulesTimedTask(loggingService, notificationService, healthCheckService, rulesService, signalsService, this),
+                interval: RulesConfig.CheckInterval * 1000 / Application.Speed,
+                startDelay: Constants.TaskDelays.MidDelay,
+                startTask: false,
+                runNow: false);
 
             IsTradingSuspended = false;
 
@@ -120,14 +129,9 @@ namespace IntelliTrader.Trading
                 signalsService.Stop();
             }
 
-            Application.Resolve<ICoreService>().StopTask(nameof(TradingTimedTask));
-            Application.Resolve<ICoreService>().RemoveTask(nameof(TradingTimedTask));
-
-            Application.Resolve<ICoreService>().StopTask(nameof(TradingRulesTimedTask));
-            Application.Resolve<ICoreService>().RemoveTask(nameof(TradingRulesTimedTask));
-
-            Application.Resolve<ICoreService>().StopTask(nameof(AccountTimedTask));
-            Application.Resolve<ICoreService>().RemoveTask(nameof(AccountTimedTask));
+            Application.Resolve<ITasksService>().RemoveTask(nameof(TradingTimedTask), stopTask: true);
+            Application.Resolve<ITasksService>().RemoveTask(nameof(TradingRulesTimedTask), stopTask: true);
+            Application.Resolve<ITasksService>().RemoveTask(nameof(AccountTimedTask), stopTask: true);
 
             Account.Dispose();
 
@@ -146,9 +150,9 @@ namespace IntelliTrader.Trading
                 loggingService.Info("Trading started");
                 IsTradingSuspended = false;
 
-                Application.Resolve<ICoreService>().StartTask(nameof(TradingTimedTask));
-                Application.Resolve<ICoreService>().StartTask(nameof(TradingRulesTimedTask));
-                tradingRulesTimedTask.Run();
+                tradingTimedTask.Start();
+                tradingRulesTimedTask.Start();
+                tradingRulesTimedTask.RunNow();
             }
         }
 
@@ -160,8 +164,8 @@ namespace IntelliTrader.Trading
                 IsTradingSuspended = true;
                 tradingForcefullySuspended = forced;
 
-                Application.Resolve<ICoreService>().StopTask(nameof(TradingTimedTask));
-                Application.Resolve<ICoreService>().StopTask(nameof(TradingRulesTimedTask));
+                tradingRulesTimedTask.Stop();
+                tradingTimedTask.Stop();
                 tradingTimedTask.ClearTrailing();
             }
         }
@@ -173,7 +177,7 @@ namespace IntelliTrader.Trading
 
         public void ReapplyTradingRules()
         {
-            tradingRulesTimedTask.Run();
+            tradingRulesTimedTask.RunNow();
         }
 
         public void Buy(BuyOptions options)

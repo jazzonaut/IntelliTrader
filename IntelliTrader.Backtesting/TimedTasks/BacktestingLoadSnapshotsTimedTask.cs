@@ -39,7 +39,7 @@ namespace IntelliTrader.Backtesting
             PopulateSnapshotPaths();
         }
 
-        public override void Run()
+        protected override void Run()
         {
             if (!isCompleted)
             {

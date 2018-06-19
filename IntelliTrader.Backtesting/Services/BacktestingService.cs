@@ -39,16 +39,22 @@ namespace IntelliTrader.Backtesting
 
             if (Config.Replay)
             {
-                backtestingLoadSnapshotsTimedTask = new BacktestingLoadSnapshotsTimedTask(loggingService, healthCheckService, tradingService, this);
-                backtestingLoadSnapshotsTimedTask.Interval = Config.SnapshotsInterval / Config.ReplaySpeed * 1000;
-                backtestingLoadSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
-                Application.Resolve<ICoreService>().AddTask(nameof(BacktestingLoadSnapshotsTimedTask), backtestingLoadSnapshotsTimedTask);
+                backtestingLoadSnapshotsTimedTask = Application.Resolve<ITasksService>().AddTask(
+                    name: nameof(BacktestingLoadSnapshotsTimedTask),
+                    task: new BacktestingLoadSnapshotsTimedTask(loggingService, healthCheckService, tradingService, this),
+                    interval: Config.SnapshotsInterval / Config.ReplaySpeed * 1000,
+                    startDelay: Constants.TaskDelays.HighDelay,
+                    startTask: false,
+                    runNow: false);
             }
 
-            backtestingSaveSnapshotsTimedTask = new BacktestingSaveSnapshotsTimedTask(loggingService, healthCheckService, tradingService, signalsService, this);
-            backtestingSaveSnapshotsTimedTask.Interval = Config.SnapshotsInterval * 1000;
-            backtestingSaveSnapshotsTimedTask.StartDelay = Constants.TimedTasks.StandardDelay;
-            Application.Resolve<ICoreService>().AddTask(nameof(BacktestingSaveSnapshotsTimedTask), backtestingSaveSnapshotsTimedTask);
+            backtestingSaveSnapshotsTimedTask = Application.Resolve<ITasksService>().AddTask(
+                name: nameof(BacktestingSaveSnapshotsTimedTask),
+                task: new BacktestingSaveSnapshotsTimedTask(loggingService, healthCheckService, tradingService, signalsService, this),
+                interval: Config.SnapshotsInterval * 1000,
+                startDelay: Constants.TaskDelays.HighDelay,
+                startTask: false,
+                runNow: false);
 
             if (Config.DeleteLogs)
             {
@@ -75,12 +81,9 @@ namespace IntelliTrader.Backtesting
 
             if (Config.Replay)
             {
-                Application.Resolve<ICoreService>().StopTask(nameof(BacktestingLoadSnapshotsTimedTask));
-                Application.Resolve<ICoreService>().RemoveTask(nameof(BacktestingLoadSnapshotsTimedTask));
+                Application.Resolve<ITasksService>().RemoveTask(nameof(BacktestingLoadSnapshotsTimedTask), stopTask: true);
             }
-
-            Application.Resolve<ICoreService>().StopTask(nameof(BacktestingSaveSnapshotsTimedTask));
-            Application.Resolve<ICoreService>().RemoveTask(nameof(BacktestingSaveSnapshotsTimedTask));
+            Application.Resolve<ITasksService>().RemoveTask(nameof(BacktestingSaveSnapshotsTimedTask), stopTask: true);
 
             healthCheckService.RemoveHealthCheck(Constants.HealthChecks.BacktestingSignalsSnapshotTaken);
             healthCheckService.RemoveHealthCheck(Constants.HealthChecks.BacktestingTickersSnapshotTaken);
@@ -95,10 +98,10 @@ namespace IntelliTrader.Backtesting
             loggingService.Info("Backtesting results:");
 
             double lagAmount = 0;
-            foreach (var t in Application.Resolve<ICoreService>().GetAllTasks().OrderBy(t => t.Key))
+            foreach (var kvp in Application.Resolve<ITasksService>().GetAllTasks().OrderBy(t => t.Key))
             {
-                string taskName = t.Key;
-                HighResolutionTimedTask task = t.Value;
+                string taskName = kvp.Key;
+                ITimedTask task = kvp.Value;
 
                 double averageWaitTime = Math.Round(task.TotalLagTime / task.RunCount, 3);
                 if (averageWaitTime > 0) lagAmount += averageWaitTime;

@@ -38,6 +38,7 @@ namespace IntelliTrader.Backtesting
             loggingService.Info("Backtesting Exchange service stopped");
         }
 
+        #pragma warning disable CS1998
         public async Task<decimal> GetAskPrice(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
@@ -49,7 +50,9 @@ namespace IntelliTrader.Backtesting
                 return 0;
             }
         }
+        
 
+        #pragma warning disable CS1998
         public async Task<decimal> GetBidPrice(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
@@ -62,6 +65,7 @@ namespace IntelliTrader.Backtesting
             }
         }
 
+        #pragma warning disable CS1998
         public async Task<decimal> GetLastPrice(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))

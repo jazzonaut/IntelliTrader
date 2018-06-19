@@ -23,7 +23,7 @@ namespace IntelliTrader.Core
             this.tradingService = tradingService;
         }
 
-        public override void Run()
+        protected override void Run()
         {
             if (coreService.Config.HealthCheckEnabled)
             {

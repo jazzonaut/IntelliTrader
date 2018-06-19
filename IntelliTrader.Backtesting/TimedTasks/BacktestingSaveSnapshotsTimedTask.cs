@@ -22,7 +22,7 @@ namespace IntelliTrader.Backtesting
             this.backtestingService = backtestingService;
         }
 
-        public override void Run()
+        protected override void Run()
         {
             if (backtestingService.Config.Enabled && !backtestingService.Config.Replay)
             {
