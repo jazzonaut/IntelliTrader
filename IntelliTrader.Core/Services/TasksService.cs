@@ -12,13 +12,14 @@ namespace IntelliTrader.Core
         private Stopwatch syncStopSwatch = new Stopwatch();
         private UnhandledExceptionEventHandler exceptionHandler;
 
-        public T AddTask<T>(string name, T task, double interval, double startDelay = 0, bool startTask = true, bool runNow = false)
+        public T AddTask<T>(string name, T task, double interval, double startDelay = 0, bool startTask = true, bool runNow = false, int skipIteration = 0)
             where T : ITimedTask
         {
             tasks[name] = task;
             task.Interval = interval;
             task.StartDelay = startDelay;
             task.Stopwatch = syncStopSwatch;
+            task.SkipIteration = skipIteration;
 
             if (exceptionHandler != null)
             {

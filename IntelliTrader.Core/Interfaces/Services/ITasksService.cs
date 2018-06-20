@@ -7,7 +7,7 @@ namespace IntelliTrader.Core
 {
     public interface ITasksService
     {
-        T AddTask<T>(string name, T task, double interval, double startDelay = 0, bool startTask = true, bool runNow = false) where T : ITimedTask;
+        T AddTask<T>(string name, T task, double interval, double startDelay = 0, bool startTask = true, bool runNow = false, int skipIteration = 0) where T : ITimedTask;
         void RemoveTask(string name, bool stopTask = true);
         void StartAllTasks();
         void StopAllTasks();

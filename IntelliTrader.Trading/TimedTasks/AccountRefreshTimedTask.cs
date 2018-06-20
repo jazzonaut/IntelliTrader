@@ -2,13 +2,13 @@
 
 namespace IntelliTrader.Trading
 {
-    internal class AccountTimedTask : HighResolutionTimedTask
+    public class AccountRefreshTimedTask : HighResolutionTimedTask
     {
         private readonly ILoggingService loggingService;
         private readonly IHealthCheckService healthCheckService;
         private readonly ITradingService tradingService;
 
-        public AccountTimedTask(ILoggingService loggingService, IHealthCheckService healthCheckService, ITradingService tradingService)
+        public AccountRefreshTimedTask(ILoggingService loggingService, IHealthCheckService healthCheckService, ITradingService tradingService)
         {
             this.loggingService = loggingService;
             this.healthCheckService = healthCheckService;

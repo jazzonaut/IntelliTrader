@@ -4,6 +4,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using IntelliTrader.Signals.Base;
+using IntelliTrader.Trading;
 
 namespace IntelliTrader.Backtesting
 {
@@ -19,15 +21,17 @@ namespace IntelliTrader.Backtesting
 
         private readonly ILoggingService loggingService;
         private readonly IHealthCheckService healthCheckService;
+        private readonly ITasksService tasksService;
         private ISignalsService signalsService;
         private ITradingService tradingService;
         private BacktestingLoadSnapshotsTimedTask backtestingLoadSnapshotsTimedTask;
         private BacktestingSaveSnapshotsTimedTask backtestingSaveSnapshotsTimedTask;
 
-        public BacktestingService(ILoggingService loggingService, IHealthCheckService healthCheckService)
+        public BacktestingService(ILoggingService loggingService, IHealthCheckService healthCheckService, ITasksService tasksService)
         {
             this.loggingService = loggingService;
             this.healthCheckService = healthCheckService;
+            this.tasksService = tasksService;
         }
 
         public void Start()
@@ -39,22 +43,24 @@ namespace IntelliTrader.Backtesting
 
             if (Config.Replay)
             {
-                backtestingLoadSnapshotsTimedTask = Application.Resolve<ITasksService>().AddTask(
+                backtestingLoadSnapshotsTimedTask = tasksService.AddTask(
                     name: nameof(BacktestingLoadSnapshotsTimedTask),
                     task: new BacktestingLoadSnapshotsTimedTask(loggingService, healthCheckService, tradingService, this),
                     interval: Config.SnapshotsInterval / Config.ReplaySpeed * 1000,
                     startDelay: Constants.TaskDelays.HighDelay,
                     startTask: false,
-                    runNow: false);
+                    runNow: false,
+                    skipIteration: 0);
             }
 
-            backtestingSaveSnapshotsTimedTask = Application.Resolve<ITasksService>().AddTask(
+            backtestingSaveSnapshotsTimedTask = tasksService.AddTask(
                 name: nameof(BacktestingSaveSnapshotsTimedTask),
                 task: new BacktestingSaveSnapshotsTimedTask(loggingService, healthCheckService, tradingService, signalsService, this),
                 interval: Config.SnapshotsInterval * 1000,
                 startDelay: Constants.TaskDelays.HighDelay,
                 startTask: false,
-                runNow: false);
+                runNow: false,
+                skipIteration: 0);
 
             if (Config.DeleteLogs)
             {
@@ -77,6 +83,8 @@ namespace IntelliTrader.Backtesting
                 Application.Speed = Config.ReplaySpeed;
             }
 
+            Application.Resolve<ICoreService>().Started += OnCoreServiceStarted;
+
             loggingService.Info("Backtesting service started");
         }
 
@@ -86,14 +94,16 @@ namespace IntelliTrader.Backtesting
 
             if (Config.Replay)
             {
-                Application.Resolve<ITasksService>().RemoveTask(nameof(BacktestingLoadSnapshotsTimedTask), stopTask: true);
+                tasksService.RemoveTask(nameof(BacktestingLoadSnapshotsTimedTask), stopTask: true);
             }
-            Application.Resolve<ITasksService>().RemoveTask(nameof(BacktestingSaveSnapshotsTimedTask), stopTask: true);
+            tasksService.RemoveTask(nameof(BacktestingSaveSnapshotsTimedTask), stopTask: true);
 
             healthCheckService.RemoveHealthCheck(Constants.HealthChecks.BacktestingSignalsSnapshotTaken);
             healthCheckService.RemoveHealthCheck(Constants.HealthChecks.BacktestingTickersSnapshotTaken);
             healthCheckService.RemoveHealthCheck(Constants.HealthChecks.BacktestingSignalsSnapshotLoaded);
             healthCheckService.RemoveHealthCheck(Constants.HealthChecks.BacktestingTickersSnapshotLoaded);
+
+            Application.Resolve<ICoreService>().Started -= OnCoreServiceStarted;
 
             loggingService.Info("Backtesting service stopped");
         }
@@ -103,7 +113,7 @@ namespace IntelliTrader.Backtesting
             loggingService.Info("Backtesting results:");
 
             double lagAmount = 0;
-            foreach (var kvp in Application.Resolve<ITasksService>().GetAllTasks().OrderBy(t => t.Key))
+            foreach (var kvp in tasksService.GetAllTasks().OrderBy(t => t.Key))
             {
                 string taskName = kvp.Key;
                 ITimedTask task = kvp.Value;
@@ -148,6 +158,15 @@ namespace IntelliTrader.Backtesting
         public int GetTotalSnapshots()
         {
             return backtestingLoadSnapshotsTimedTask.GetTotalSnapshots();
+        }
+
+        private void OnCoreServiceStarted()
+        {
+            tasksService.GetTask<TradingTimedTask>(nameof(TradingTimedTask)).SkipIteration = Config.TradingSpeedEasing;
+            tasksService.GetTask<TradingTimedTask>(nameof(TradingTimedTask)).LoggingEnabled = false;
+            tasksService.GetTask<TradingRulesTimedTask>(nameof(TradingRulesTimedTask)).SkipIteration = Config.TradingRulesSpeedEasing;
+            tasksService.GetTask<SignalRulesTimedTask>(nameof(SignalRulesTimedTask)).SkipIteration = Config.SignalRulesSpeedEasing;
+            tasksService.GetTask<SignalRulesTimedTask>(nameof(SignalRulesTimedTask)).LoggingEnabled = false;
         }
     }
 }

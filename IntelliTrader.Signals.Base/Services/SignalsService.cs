@@ -20,16 +20,18 @@ namespace IntelliTrader.Signals.Base
 
         private readonly ILoggingService loggingService;
         private readonly IHealthCheckService healthCheckService;
+        private readonly ITasksService tasksService;
         private readonly ITradingService tradingService;
         private readonly IRulesService rulesService;
 
         private ConcurrentDictionary<string, ISignalReceiver> signalReceivers = new ConcurrentDictionary<string, ISignalReceiver>();
         private SignalRulesTimedTask signalRulesTimedTask;
 
-        public SignalsService(ILoggingService loggingService, IHealthCheckService healthCheckService, ITradingService tradingService, IRulesService rulesService)
+        public SignalsService(ILoggingService loggingService, IHealthCheckService healthCheckService, ITasksService tasksService, ITradingService tradingService, IRulesService rulesService)
         {
             this.loggingService = loggingService;
             this.healthCheckService = healthCheckService;
+            this.tasksService = tasksService;
             this.tradingService = tradingService;
             this.rulesService = rulesService;
         }
@@ -65,13 +67,14 @@ namespace IntelliTrader.Signals.Base
                 }
             }
 
-            signalRulesTimedTask = Application.Resolve<ITasksService>().AddTask(
+            signalRulesTimedTask = tasksService.AddTask(
                 name: nameof(SignalRulesTimedTask),
                 task: new SignalRulesTimedTask(loggingService, healthCheckService, tradingService, rulesService, this),
                 interval: RulesConfig.CheckInterval * 1000 / Application.Speed,
                 startDelay: Constants.TaskDelays.LowDelay,
                 startTask: false,
-                runNow: false);
+                runNow: false,
+                skipIteration: 0);
 
             loggingService.Info("Signals service started");
         }
@@ -86,7 +89,7 @@ namespace IntelliTrader.Signals.Base
             }
             signalReceivers.Clear();
 
-            Application.Resolve<ITasksService>().RemoveTask(nameof(SignalRulesTimedTask), stopTask: true);
+            tasksService.RemoveTask(nameof(SignalRulesTimedTask), stopTask: true);
 
             rulesService.UnregisterRulesChangeCallback(OnSignalRulesChanged);
 

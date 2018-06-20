@@ -10,6 +10,8 @@ namespace IntelliTrader.Core
 {
     internal class CoreService : ConfigrableServiceBase<CoreConfig>, ICoreService
     {
+        public event Action Started;
+
         public override string ServiceName => Constants.ServiceNames.CoreService;
 
         ICoreConfig ICoreService.Config => Config;
@@ -75,6 +77,7 @@ namespace IntelliTrader.Core
             ThreadPool.QueueUserWorkItem((state) =>
             {
                 Thread.Sleep(2000);
+                Started?.Invoke();
                 tasksService.StartAllTasks();
             });
 
@@ -120,7 +123,7 @@ namespace IntelliTrader.Core
             Start();
         }
 
-        public void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             string message = "Unhandled exception occured";
             if (e.ExceptionObject != null)

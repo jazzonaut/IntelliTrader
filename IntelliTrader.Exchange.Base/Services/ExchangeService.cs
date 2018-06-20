@@ -13,11 +13,13 @@ namespace IntelliTrader.Exchange.Base
 
         protected readonly ILoggingService loggingService;
         protected readonly IHealthCheckService healthCheckService;
+        protected readonly ITasksService tasksService;
 
-        public ExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService)
+        public ExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService, ITasksService tasksService)
         {
             this.loggingService = loggingService;
             this.healthCheckService = healthCheckService;
+            this.tasksService = tasksService;
         }
 
         public abstract void Start(bool virtualTrading);

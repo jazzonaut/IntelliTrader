@@ -15,6 +15,9 @@ namespace IntelliTrader.Core
         bool DeleteLogs { get; }
         bool DeleteAccountData { get; }
         string CopyAccountDataPath { get; }
+        int TradingSpeedEasing { get; }
+        int TradingRulesSpeedEasing { get; }
+        int SignalRulesSpeedEasing { get; }
         int SnapshotsInterval { get; }
         string SnapshotsPath { get; }
     }

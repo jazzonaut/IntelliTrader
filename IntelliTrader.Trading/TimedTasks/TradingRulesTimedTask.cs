@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace IntelliTrader.Trading
 {
-    internal class TradingRulesTimedTask : HighResolutionTimedTask
+    public class TradingRulesTimedTask : HighResolutionTimedTask
     {
         private readonly ILoggingService loggingService;
         private readonly INotificationService notificationService;
@@ -17,14 +17,14 @@ namespace IntelliTrader.Trading
 
         private readonly ConcurrentDictionary<string, PairConfig> pairConfigs = new ConcurrentDictionary<string, PairConfig>();
 
-        public TradingRulesTimedTask(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, IRulesService rulesService, ISignalsService signalsService, TradingService tradingService)
+        public TradingRulesTimedTask(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, IRulesService rulesService, ISignalsService signalsService, ITradingService tradingService)
         {
             this.loggingService = loggingService;
             this.notificationService = notificationService;
             this.healthCheckService = healthCheckService;
             this.rulesService = rulesService;
             this.signalsService = signalsService;
-            this.tradingService = tradingService;
+            this.tradingService = tradingService as TradingService;
         }
 
         protected override void Run()

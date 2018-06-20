@@ -299,6 +299,9 @@ Read more about how backtesting works in the [backtesting](#Backtesting) section
 |DeleteLogs|Boolean|false|Delete all existing logs before running backtesting|
 |DeleteAccountData|Boolean|false|Delete account data before running backtesting|
 |CopyAccountDataPath|String|null|Path to copy existing account data file from for backtesting|
+|TradingSpeedEasing|Number|0|Slow down the trading service while replaying snapshots|
+|TradingRulesSpeedEasing|Number|0|Slow down the trading rules service while replaying snapshots|
+|SignalRulesSpeedEasing|Number|0|Slow down the signal rules service while replaying snapshots|
 |SnapshotsInterval|Number|1|How often to take snapshots (in seconds)|
 |SnapshotsPath|String|data/backtesting|Where to save the new snapshots or to load existing ones when replaying|
 

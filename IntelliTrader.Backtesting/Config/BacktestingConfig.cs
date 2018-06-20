@@ -16,6 +16,9 @@ namespace IntelliTrader.Backtesting
         public bool DeleteLogs { get; set; }
         public bool DeleteAccountData { get; set; }
         public string CopyAccountDataPath { get; set; }
+        public int TradingSpeedEasing { get; set; }
+        public int TradingRulesSpeedEasing { get; set; }
+        public int SignalRulesSpeedEasing { get; set; }
         public int SnapshotsInterval { get; set; }
         public string SnapshotsPath { get; set; }
     }

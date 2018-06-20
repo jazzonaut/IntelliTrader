@@ -13,19 +13,22 @@ namespace IntelliTrader.Signals.TradingView
         
         private readonly ILoggingService loggingService;
         private readonly IHealthCheckService healthCheckService;
+        private readonly ITasksService tasksService;
         private readonly ISignalsService signalsService;
         private readonly ITradingService tradingService;
 
         private TradingViewCryptoSignalPollingTimedTask tradingViewCryptoSignalPollingTimedTask;
 
-        public TradingViewCryptoSignalReceiver(string signalName, IConfigurationSection configuration, 
-            ILoggingService loggingService, IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
+        public TradingViewCryptoSignalReceiver(string signalName, 
+            IConfigurationSection configuration,  ILoggingService loggingService, IHealthCheckService healthCheckService, 
+            ITasksService tasksService, ISignalsService signalsService, ITradingService tradingService)
         {
             this.SignalName = signalName;
             this.Config = configuration.Get<TradingViewCryptoSignalReceiverConfig>();
 
             this.loggingService = loggingService;
             this.healthCheckService = healthCheckService;
+            this.tasksService = tasksService;
             this.signalsService = signalsService;
             this.tradingService = tradingService;
         }
@@ -34,13 +37,14 @@ namespace IntelliTrader.Signals.TradingView
         {
             loggingService.Info("Start TradingViewCryptoSignalReceiver...");
 
-            tradingViewCryptoSignalPollingTimedTask = Application.Resolve<ITasksService>().AddTask(
+            tradingViewCryptoSignalPollingTimedTask = tasksService.AddTask(
                 name: $"{nameof(TradingViewCryptoSignalPollingTimedTask)} [{SignalName}]",
                 task: new TradingViewCryptoSignalPollingTimedTask(loggingService, healthCheckService, tradingService, this),
                 interval: Config.PollingInterval * 1000 / Application.Speed,
                 startDelay: Constants.TaskDelays.ZeroDelay,
                 startTask: false,
-                runNow: true);
+                runNow: true,
+                skipIteration: 0);
 
             loggingService.Info("TradingViewCryptoSignalReceiver started");
         }
@@ -49,7 +53,7 @@ namespace IntelliTrader.Signals.TradingView
         {
             loggingService.Info("Stop TradingViewCryptoSignalReceiver...");
 
-            Application.Resolve<ITasksService>().RemoveTask($"{nameof(TradingViewCryptoSignalPollingTimedTask)} [{SignalName}]", stopTask: true);
+            tasksService.RemoveTask($"{nameof(TradingViewCryptoSignalPollingTimedTask)} [{SignalName}]", stopTask: true);
 
             healthCheckService.RemoveHealthCheck($"{Constants.HealthChecks.TradingViewCryptoSignalsReceived} [{SignalName}]");
 
