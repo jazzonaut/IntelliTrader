@@ -11,6 +11,7 @@ namespace IntelliTrader.Core
 
         double StartDelay { get; set; }
         double Interval { get; set; }
+        int SkipIteration { get; set; }
         Stopwatch Stopwatch { get; set; }
         bool IsRunning { get; }
         long RunCount { get; }

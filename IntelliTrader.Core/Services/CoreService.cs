@@ -54,10 +54,6 @@ namespace IntelliTrader.Core
             if (backtestingService.Config.Enabled)
             {
                 backtestingService.Start();
-                if (backtestingService.Config.Replay)
-                {
-                    Application.Speed = backtestingService.Config.ReplaySpeed;
-                }
             }
             if (Config.HealthCheckInterval > 0 && (!backtestingService.Config.Enabled || !backtestingService.Config.Replay))
             {

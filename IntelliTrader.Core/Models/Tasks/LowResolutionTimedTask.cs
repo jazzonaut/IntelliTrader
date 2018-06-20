@@ -28,6 +28,11 @@ namespace IntelliTrader.Core
         }
 
         /// <summary>
+        /// How often to skip task execution (in RunCount)
+        /// </summary>
+        public int SkipIteration { get; set; } = 0;
+
+        /// <summary>
         /// Stopwatch to use for timing the intervals
         /// </summary>
         public Stopwatch Stopwatch { get; set; }

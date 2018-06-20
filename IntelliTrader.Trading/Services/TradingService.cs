@@ -45,7 +45,6 @@ namespace IntelliTrader.Trading
             this.healthCheckService = healthCheckService;
 
             this.isReplayingSnapshots = Application.Resolve<IBacktestingService>().Config.Enabled && Application.Resolve<IBacktestingService>().Config.Replay;
-
             if (isReplayingSnapshots)
             {
                 this.exchangeService = Application.ResolveOptionalNamed<IExchangeService>(Constants.ServiceNames.BacktestingExchangeService);

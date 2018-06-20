@@ -72,6 +72,11 @@ namespace IntelliTrader.Backtesting
                 File.Copy(Path.Combine(Directory.GetCurrentDirectory(), Config.CopyAccountDataPath), virtualAccountPath, true);
             }
 
+            if (Config.Replay)
+            {
+                Application.Speed = Config.ReplaySpeed;
+            }
+
             loggingService.Info("Backtesting service started");
         }
 

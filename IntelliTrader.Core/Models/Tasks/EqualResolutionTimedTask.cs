@@ -22,6 +22,11 @@ namespace IntelliTrader.Core
         public double Interval { get; set; } = 1000;
 
         /// <summary>
+        /// How often to skip task execution (in RunCount)
+        /// </summary>
+        public int SkipIteration { get; set; } = 0;
+
+        /// <summary>
         /// The priority of the timer thread
         /// </summary>
         public ThreadPriority Priorty { get; set; } = ThreadPriority.Normal;
@@ -91,11 +96,14 @@ namespace IntelliTrader.Core
                             }
                         }
 
-                        runWatch.Restart();
-                        SafeRun();
-                        long runTime = runWatch.ElapsedMilliseconds;
-                        TotalLagTime += (runTime > Interval) ? (runTime - Interval) : 0;
-                        TotalRunTime += runTime;
+                        if (SkipIteration == 0 || RunCount % SkipIteration != 0)
+                        {
+                            runWatch.Restart();
+                            SafeRun();
+                            long runTime = runWatch.ElapsedMilliseconds;
+                            TotalLagTime += (runTime > Interval) ? (runTime - Interval) : 0;
+                            TotalRunTime += runTime;
+                        }
                         RunCount++;
                     }
                 });
