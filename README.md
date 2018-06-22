@@ -308,7 +308,9 @@ Is is not necessary to specify a Signal if none of the conditions are signal-spe
 |MinDCALevel|Number|No|Minimum trading pair's DCA level|
 |MaxDCALevel|Number|No|Maximum trading pair's DCA level|
 |Pairs|Array|No|List of pairs to directly apply the rule to|
+|NotPairs|Array|No|List of pairs to not apply the rule to|
 |SignalRules|Array|No|List of signal rules that were used to buy a pair|
+|NotSignalRules|Array|No|List of signal rules that were not used to buy a pair|
 
 ###### Rule Trailing
 

@@ -63,7 +63,8 @@ namespace IntelliTrader.Rules
                     condition.MaxVolatility != null && (signal == null || signal.Volatility == null || signal.Volatility > condition.MaxVolatility) ||
                     condition.MinGlobalRating != null && (globalRating == null || globalRating < condition.MinGlobalRating) ||
                     condition.MaxGlobalRating != null && (globalRating == null || globalRating > condition.MaxGlobalRating) ||
-                    condition.Pairs != null && (pair == null || !condition.Pairs.Contains(pair)) || 
+                    condition.Pairs != null && (pair == null || !condition.Pairs.Contains(pair)) ||
+                    condition.NotPairs != null && (pair == null || condition.NotPairs.Contains(pair)) || 
 
                     condition.MinAge != null && (tradingPair == null || tradingPair.CurrentAge < condition.MinAge / Application.Speed) ||
                     condition.MaxAge != null && (tradingPair == null || tradingPair.CurrentAge > condition.MaxAge / Application.Speed) ||
@@ -79,7 +80,8 @@ namespace IntelliTrader.Rules
                     condition.MaxCost != null && (tradingPair == null || tradingPair.CurrentCost > condition.MaxCost) ||
                     condition.MinDCALevel != null && (tradingPair == null || tradingPair.DCALevel < condition.MinDCALevel) ||
                     condition.MaxDCALevel != null && (tradingPair == null || tradingPair.DCALevel > condition.MaxDCALevel) ||
-                    condition.SignalRules != null && (tradingPair == null || tradingPair.Metadata.SignalRule == null || !condition.SignalRules.Contains(tradingPair.Metadata.SignalRule)))
+                    condition.SignalRules != null && (tradingPair == null || tradingPair.Metadata.SignalRule == null || !condition.SignalRules.Contains(tradingPair.Metadata.SignalRule)) ||
+                    condition.NotSignalRules != null && (tradingPair == null || tradingPair.Metadata.SignalRule == null || condition.NotSignalRules.Contains(tradingPair.Metadata.SignalRule)))
                 {
                     return false;
                 }

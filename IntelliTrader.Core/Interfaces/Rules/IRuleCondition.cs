@@ -27,6 +27,7 @@ namespace IntelliTrader.Core
         double? MaxGlobalRating { get; }
 
         List<string> Pairs { get; }
+        List<string> NotPairs { get; }
         double? MinAge { get; }
         double? MaxAge { get; }
         double? MinLastBuyAge { get; }
@@ -42,5 +43,6 @@ namespace IntelliTrader.Core
         int? MinDCALevel { get; }
         int? MaxDCALevel { get; }
         List<string> SignalRules { get; }
+        List<string> NotSignalRules { get; }
     }
 }

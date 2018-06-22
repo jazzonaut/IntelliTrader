@@ -25,6 +25,7 @@ namespace IntelliTrader.Rules
         public double? MinGlobalRating { get; set; }
         public double? MaxGlobalRating { get; set; }
         public List<string> Pairs { get; set; }
+        public List<string> NotPairs { get; set; }
 
         // Trading pair specific conditions
         public double? MinAge { get; set; }
@@ -42,5 +43,6 @@ namespace IntelliTrader.Rules
         public int? MinDCALevel { get; set; }
         public int? MaxDCALevel { get; set; }
         public List<string> SignalRules { get; set; }
+        public List<string> NotSignalRules { get; set; }
     }
 }
