@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace IntelliTrader.Launcher
 {
@@ -20,27 +21,38 @@ namespace IntelliTrader.Launcher
             if (!string.IsNullOrWhiteSpace(processPath))
             {
                 Process process = new Process();
-                process.StartInfo.FileName = "dotnet";
-                process.StartInfo.Arguments = processPath;
-                process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
-                process.Start();
-                SpinWait.SpinUntil(delegate
+                try
                 {
-                    return process.MainWindowHandle != IntPtr.Zero;
-                });
+                    process.StartInfo.FileName = "dotnet";
+                    process.StartInfo.Arguments = processPath;
+                    process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                    process.Start();
+                    SpinWait.SpinUntil(() =>
+                    {
+                        return process.MainWindowHandle != IntPtr.Zero;
+                    }, TimeSpan.FromSeconds(3));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex.Message}{Environment.NewLine}{Environment.NewLine}Please download the latest .NET Core Runtime from{Environment.NewLine}https://www.microsoft.com/net/download", nameof(IntelliTrader));
+                }
 
-                if (!String.IsNullOrWhiteSpace(instanceName))
+                try
                 {
-                    SetWindowText(process.MainWindowHandle, $"{nameof(IntelliTrader)} - {instanceName}");
+                    if (!String.IsNullOrWhiteSpace(instanceName))
+                    {
+                        SetWindowText(process.MainWindowHandle, $"{nameof(IntelliTrader)} - {instanceName}");
+                    }
+                    else
+                    {
+                        SetWindowText(process.MainWindowHandle, $"{nameof(IntelliTrader)}");
+                    }
                 }
-                else
-                {
-                    SetWindowText(process.MainWindowHandle, $"{nameof(IntelliTrader)}");
-                }
+                catch { }
             }
             else
             {
-                throw new FileNotFoundException($"{processFileName} not found", processFileName);
+                MessageBox.Show($"{processFileName} not found", nameof(IntelliTrader));
             }
         }
     }
