@@ -1,6 +1,6 @@
 {
   "Exchange": {
-    "KeysPath": "keys.bin",
+    "KeysPath": "data/keys.bin",
     "RateLimitOccurences": 40,
     "RateLimitTimeframe": 10
   }

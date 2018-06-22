@@ -36,7 +36,7 @@ You don't usually need to build the bot yourself, in most cases it's easier to g
 1. Clone the IntelliTrader repository locally
 2. From Git terminal, run 'git submodule update --init --recursive' to pull all the necessary submodules
 3. Run Publish.bat (or Publish.sh if you are on Linux) and it should generate the bin folder in the Publish directory.
-4. That should be it, try running the bot with Start-IntelliTrader to see if it worked.
+4. That should be it, try running the bot with IntelliTrader to see if it worked.
 
 #### Setting Up
 The bot should just run with out of the box settings. By default, it is configured for virtual trading, so there is no need to provide any API keys at the start. The only thing you might want to change is the default port for the web interface (7000).
@@ -44,10 +44,7 @@ Refer to [web configuration](#web-configuration) section for information on how 
 
 #### Running
 
-###### Windows
-Simply run Start-IntelliTrader.bat to start the bot.
-###### Linux & MacOS
-Copy the *.sh files from the linux directory supplied with the package to the root directory of the package and run them.
+Simply run IntelliTrader to start the bot.
 
 #### Supported Exchanges
 Currenly only Binance Exchange is supported.
@@ -390,15 +387,15 @@ Conceptually there is no difference between virtual and live trading, so virtual
 #### Virtual Trading
 
 Virtual trading is enabled by default. You don't need to provide your API Key to virtual trade.  
-To enable virtual trading, set *VirtualTrading* to true in config\trading.json. 
+To enable virtual trading, set *VirtualTrading* to true in config/trading.json. 
 You might want to change *VirtualAccountInitialBalance* to reflect your starting balance for testing. 
 
 #### Live Trading
 
 To trade on an exchange, first you need to create an encrypted file that will hold your API keys. 
-Open Encrypt-Keys.bat and change publickey to your API key and privatekey to your API secret, then run it.  
+Open data/encrypt-keys and change public_key to your API key and private_key to your API secret, then run it.  
 You should now have the generated keys.bin file in your IntelliTrader directory. This file contains your encrypted API keys and it is only valid for the current user and only on the computer it is created on.  
-Important: Make sure to remove your keys from Encrypt-Keys.bat file after generating the keys.bin. Now change *VirtualTrading* to false in config\trading.json. 
+Important: Make sure to remove your keys from data/encrypt-keys file after generating the keys.bin. Now change *VirtualTrading* to false in config/trading.json. 
 Also, to make the profit stats accurate, you need to set *AccountInitialBalance* to your current BTC/ETH balance (depending on the market you use). 
 That's it, you are ready for exchange trading!
 
@@ -553,7 +550,7 @@ Notifications
 
 #### Telegram
 
-In the config\notification.json change *Enabled* to true, set *TelegramBotToken* to your bot's token and *TelegramChatId* to your chat id to enable Telegram notifications. Set *TelegramAlertsEnabled* to *false* if you don't want to receive alerts with notifications.  
+In the config/notification.json change *Enabled* to true, set *TelegramBotToken* to your bot's token and *TelegramChatId* to your chat id to enable Telegram notifications. Set *TelegramAlertsEnabled* to *false* if you don't want to receive alerts with notifications.  
 
 Talk to @botfather to create a new bot and then talk to @FalconGate_Bot to get your telegram chat id (type /get\_my\_id).
 

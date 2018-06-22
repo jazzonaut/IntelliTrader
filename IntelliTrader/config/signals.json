@@ -8,10 +8,21 @@
     ],
     "Definitions": [
       {
+        "Name": "TV-1mins",
+        "Receiver": "TradingViewCryptoSignalReceiver",
+        "Configuration": {
+          "PollingInterval": 1,
+          "SignalPeriod": 1,
+          "VolatilityPeriod": "Day",
+          "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
+          "RequestData": "{\"filter\":[{\"left\":\"exchange\",\"operation\":\"equal\",\"right\":\"%EXCHANGE%\"},{\"left\":\"name\",\"operation\":\"match\",\"right\":\"%MARKET%\"}],\"columns\":[\"name\",\"close%PERIOD%\",\"change%PERIOD%\",\"volume%PERIOD%\",\"Recommend.All%PERIOD%\",\"Volatility%VOLATILITY%\"],\"options\":{\"lang\":\"en\"},\"range\":[0,500]}"
+        }
+      },
+      {
         "Name": "TV-5mins",
         "Receiver": "TradingViewCryptoSignalReceiver",
         "Configuration": {
-          "PollingInterval": 7,
+          "PollingInterval": 3,
           "SignalPeriod": 5,
           "VolatilityPeriod": "Day",
           "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
@@ -22,7 +33,7 @@
         "Name": "TV-15mins",
         "Receiver": "TradingViewCryptoSignalReceiver",
         "Configuration": {
-          "PollingInterval": 7,
+          "PollingInterval": 5,
           "SignalPeriod": 15,
           "VolatilityPeriod": "Week",
           "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
