@@ -2,13 +2,13 @@
   "Signals": {
     "Enabled": true,
     "GlobalRatingSignals": [
-      "TV-5mins",
-      "TV-15mins",
-      "TV-60mins"
+      "TV-5m",
+      "TV-15m",
+      "TV-1h"
     ],
     "Definitions": [
       {
-        "Name": "TV-1mins",
+        "Name": "TV-1m",
         "Receiver": "TradingViewCryptoSignalReceiver",
         "Configuration": {
           "PollingInterval": 1,
@@ -19,7 +19,7 @@
         }
       },
       {
-        "Name": "TV-5mins",
+        "Name": "TV-5m",
         "Receiver": "TradingViewCryptoSignalReceiver",
         "Configuration": {
           "PollingInterval": 3,
@@ -30,7 +30,7 @@
         }
       },
       {
-        "Name": "TV-15mins",
+        "Name": "TV-15m",
         "Receiver": "TradingViewCryptoSignalReceiver",
         "Configuration": {
           "PollingInterval": 5,
@@ -41,7 +41,7 @@
         }
       },
       {
-        "Name": "TV-60mins",
+        "Name": "TV-1h",
         "Receiver": "TradingViewCryptoSignalReceiver",
         "Configuration": {
           "PollingInterval": 7,
@@ -52,11 +52,22 @@
         }
       },
       {
-        "Name": "TV-240mins",
+        "Name": "TV-4h",
         "Receiver": "TradingViewCryptoSignalReceiver",
         "Configuration": {
-          "PollingInterval": 7,
+          "PollingInterval": 15,
           "SignalPeriod": 240,
+          "VolatilityPeriod": "Month",
+          "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
+          "RequestData": "{\"filter\":[{\"left\":\"exchange\",\"operation\":\"equal\",\"right\":\"%EXCHANGE%\"},{\"left\":\"name\",\"operation\":\"match\",\"right\":\"%MARKET%\"}],\"columns\":[\"name\",\"close%PERIOD%\",\"change%PERIOD%\",\"volume%PERIOD%\",\"Recommend.All%PERIOD%\",\"Volatility%VOLATILITY%\"],\"options\":{\"lang\":\"en\"},\"range\":[0,500]}"
+        }
+      },
+      {
+        "Name": "TV-1d",
+        "Receiver": "TradingViewCryptoSignalReceiver",
+        "Configuration": {
+          "PollingInterval": 60,
+          "SignalPeriod": 1440,
           "VolatilityPeriod": "Month",
           "RequestUrl": "https://scanner.tradingview.com/crypto/scan",
           "RequestData": "{\"filter\":[{\"left\":\"exchange\",\"operation\":\"equal\",\"right\":\"%EXCHANGE%\"},{\"left\":\"name\",\"operation\":\"match\",\"right\":\"%MARKET%\"}],\"columns\":[\"name\",\"close%PERIOD%\",\"change%PERIOD%\",\"volume%PERIOD%\",\"Recommend.All%PERIOD%\",\"Volatility%VOLATILITY%\"],\"options\":{\"lang\":\"en\"},\"range\":[0,500]}"

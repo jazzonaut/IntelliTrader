@@ -50,14 +50,14 @@ Read more about how signals work in the [signals](#Signals) section.
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
 |Enabled|Boolean|true|Enable / disable signals|
-|GlobalRatingSignals|Array|"TV-5mins","TV-15mins","TV-60mins"|Signals to calculate the Global Rating from|
+|GlobalRatingSignals|Array|"TV-5m","TV-15m","TV-1h"|Signals to calculate the Global Rating from|
 |Definitions|Array|[Signal Definitions](#Signal_Definitions)|Signal source definitions|
 
 ###### Signal Definitions
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
-|Name|String|"TV-15mins"|Signal name|
+|Name|String|"TV-15m"|Signal name|
 |Receiver|String|"TradingViewCryptoSignalReceiver"|Signal receiver name|
 |Configuration|Object|[Signal Receiver Configuration](#Signal_Receiver_Configuration)|Signal receiver configuration|
 

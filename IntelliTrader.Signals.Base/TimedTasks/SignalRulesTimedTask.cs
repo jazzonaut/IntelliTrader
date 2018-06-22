@@ -150,10 +150,9 @@ namespace IntelliTrader.Signals.Base
                                             StartTime = DateTimeOffset.Now
                                         });
 
-                                        string ruleSignalsList = String.Join(", ", ruleSignals.Select(s => s.Name));
                                         if (LoggingEnabled)
                                         {
-                                            loggingService.Info($"Start trailing signal for {pair}. Rule: {rule.Name}, Signals: {ruleSignalsList}");
+                                            loggingService.Info($"Start trailing signal for {pair}. Rule: {rule.Name}");
                                         }
                                     }
                                     else
@@ -181,10 +180,9 @@ namespace IntelliTrader.Signals.Base
 
             IPairConfig pairConfig = tradingService.GetPairConfig(pair);
             SignalRuleModifiers ruleModifiers = rule.GetModifiers<SignalRuleModifiers>();
-            string ruleSignalsList = String.Join(", ", ruleSignals.Select(s => s.Name));
             if (LoggingEnabled)
             {
-                loggingService.Info($"Initiate buy request for {pair}. Rule: {rule.Name}, Signals: {ruleSignalsList}");
+                loggingService.Info($"Initiate buy request for {pair}. Rule: {rule.Name}");
             }
 
             var buyOptions = new BuyOptions(pair)

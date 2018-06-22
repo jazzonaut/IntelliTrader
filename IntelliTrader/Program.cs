@@ -41,7 +41,7 @@ namespace IntelliTrader
         private static void PrintWelcomeMessage()
         {
             var foregroundColorBackup = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Welcome to IntelliTrader, The Intelligent Cryptocurrency Trading Bot.");
             Console.WriteLine("Always use Enter/Return key to exit the program to avoid corrupting the data.");
             Console.ForegroundColor = foregroundColorBackup;

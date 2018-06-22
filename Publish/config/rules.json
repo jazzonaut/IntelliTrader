@@ -10,106 +10,112 @@
         "Entries": [
           {
             "Enabled": true,
-            "Name": "Default",
+            "Name": "Buy-Default",
             "Modifiers": {
               "CostMultiplier": 1
             },
             "Conditions": [
               {
-                "Signal": "TV-15mins",
-                "MinVolume": 150000,
-                "MinGlobalRating": 0.1,
-                "MinRating": 0.35
+                "Signal": "TV-1m",
+                "MinRating": 0.48
               },
               {
-                "Signal": "TV-60mins",
-                "MinRating": 0.2
+                "Signal": "TV-5m",
+                "MinRating": 0.38
+              },
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.36
+              },
+              {
+                "Signal": "TV-1h",
+                "MinRating": 0.34,
+                "MinVolume": 100000,
+                "MaxPriceChange": 4
+              },
+              {
+                "Signal": "TV-4h",
+                "MinRating": 0.28,
+                "MaxPriceChange": 6
+              },
+              {
+                "Signal": "TV-1d",
+                "MaxPriceChange": 25
+              },
+              {
+                "MinGlobalRating": -0.40,
+                "MaxGlobalRating": 1.0,
+                "MaxSpread": 0.25
               }
             ],
             "Trailing": {
-              "Enabled": true,
-              "MinDuration": 25,
-              "MaxDuration": 240,
+              "Enabled": false,
+              "MinDuration": 8,
+              "MaxDuration": 480,
               "StartConditions": [
                 {
-                  "Signal": "TV-15mins",
-                  "MinVolume": 150000,
-                  "MinGlobalRating": 0.1,
-                  "MaxRating": 0.28
+                  "MinGlobalRating": -1.0,
+                  "MaxGlobalRating": 1.0
+                },
+                {
+                  "Signal": "TV-1m",
+                  "MinRating": 0.4
                 }
               ]
             }
           },
           {
             "Enabled": true,
-            "Name": "Safe",
-            "Modifiers": {
-              "CostMultiplier": 1
-            },
-            "Conditions": [
-              {
-                "Signal": "TV-5mins",
-                "MinRating": 0.25
-              },
-              {
-                "Signal": "TV-15mins",
-                "MinVolume": 300000,
-                "MinGlobalRating": 0,
-                "MaxGlobalRating": 0.1,
-                "MinRating": 0.35
-              },
-              {
-                "Signal": "TV-60mins",
-                "MinRating": 0.25
-              }
-            ],
-            "Trailing": {
-              "Enabled": true,
-              "MinDuration": 25,
-              "MaxDuration": 240,
-              "StartConditions": [
-                {
-                  "Signal": "TV-15mins",
-                  "MinVolume": 300000,
-                  "MinGlobalRating": -0.05,
-                  "MaxGlobalRating": 0.1,
-                  "MaxRating": 0.28
-                }
-              ]
-            }
-          },
-          {
-            "Enabled": true,
-            "Name": "Swap",
+            "Name": "Swap-High-DCA",
             "Action": "Swap",
             "Modifiers": {
               "CostMultiplier": 1
             },
             "Conditions": [
               {
-                "Signal": "TV-5mins",
-                "MinRating": 0.25
+                "Signal": "TV-5m",
+                "MinRating": 0.30
               },
               {
-                "Signal": "TV-15mins",
-                "MinVolume": 300000,
-                "MinRating": 0.35
+                "Signal": "TV-15m",
+                "MinRating": 0.30
               },
               {
-                "Signal": "TV-60mins",
+                "Signal": "TV-1h",
+                "MinRating": 0.30,
+                "MinVolume": 100000,
+                "MaxPriceChange": 4
+              },
+              {
+                "Signal": "TV-4h",
                 "MinRating": 0.25,
-                "MinPriceChange": 0
+                "MaxPriceChange": 8
+              },
+              {
+                "Signal": "TV-1d",
+                "MaxPriceChange": 12
+              },
+              {
+                "MinGlobalRating": -0.40,
+                "MaxGlobalRating": 1,
+                "MaxSpread": 0.35,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
               }
             ],
             "Trailing": {
-              "Enabled": true,
-              "MinDuration": 25,
-              "MaxDuration": 240,
+              "Enabled": false,
+              "MinDuration": 10,
+              "MaxDuration": 480,
               "StartConditions": [
                 {
-                  "Signal": "TV-15mins",
-                  "MinVolume": 300000,
-                  "MaxRating": 0.28
+                  "MinGlobalRating": -0.4,
+                  "MaxGlobalRating": 1
+                },
+                {
+                  "Signal": "TV-1m",
+                  "MinRating": 0.50
                 }
               ]
             }
@@ -128,64 +134,28 @@
             "Name": "Apocalypse",
             "Modifiers": {
               "BuyEnabled": false,
-              "BuyDCAEnabled": false,
-              "SellMargin": -1.5,
-              "SellTrailing": 0,
-              "SellDCAMargin": -2.3,
-              "SellDCATrailing": 0,
-              "SellStopLossEnabled": true,
-              "SellStopLossAfterDCA": false,
-              "SellStopLossMargin": -25,
-              "SellStopLossMinAge": 0
+              "SellMargin": -0.25,
+              "SellTrailing": 0
             },
             "Conditions": [
               {
                 "MinGlobalRating": -1,
-                "MaxGlobalRating": -0.4
+                "MaxGlobalRating": -0.45
               }
             ]
           },
           {
             "Enabled": true,
-            "Name": "Abandon Ship",
+            "Name": "Superbear",
             "Modifiers": {
-              "BuyEnabled": false,
-              "BuyDCAEnabled": false,
-              "SellMargin": -0.5,
-              "SellTrailing": 0,
-              "SellDCAMargin": -0.5,
-              "SellDCATrailing": 0,
-              "SellStopLossEnabled": true,
-              "SellStopLossAfterDCA": true,
-              "SellStopLossMargin": -25,
-              "SellStopLossMinAge": 0
+              "BuyTrailing": -0.325,
+              "SellMargin": 0.30,
+              "MaxPairs": 2
             },
             "Conditions": [
               {
-                "MinGlobalRating": -0.4,
-                "MaxGlobalRating": -0.3
-              }
-            ]
-          },
-          {
-            "Enabled": true,
-            "Name": "Super Bear",
-            "Modifiers": {
-              "BuyEnabled": false,
-              "BuyDCAEnabled": false,
-              "SellMargin": 0.5,
-              "SellTrailing": 0,
-              "SellDCAMargin": 0.3,
-              "SellDCATrailing": 0,
-              "SellStopLossEnabled": true,
-              "SellStopLossAfterDCA": true,
-              "SellStopLossMargin": -25,
-              "SellStopLossMinAge": 0.5
-            },
-            "Conditions": [
-              {
-                "MinGlobalRating": -0.3,
-                "MaxGlobalRating": -0.2
+                "MinGlobalRating": -0.45,
+                "MaxGlobalRating": -0.35
               }
             ]
           },
@@ -193,19 +163,14 @@
             "Enabled": true,
             "Name": "Bear",
             "Modifiers": {
-              "BuyEnabled": false,
-              "BuyDCAEnabled": false,
-              "SellMargin": 1.3,
-              "SellTrailing": 0.5,
-              "SellTrailingStopMargin": 1,
-              "SellDCAMargin": 0.85,
-              "SellDCATrailing": 0.3,
-              "SellDCATrailingStopMargin": 0.7
+              "BuyTrailing": -0.3,
+              "SellMargin": 0.35,
+              "MaxPairs": 2
             },
             "Conditions": [
               {
-                "MinGlobalRating": -0.2,
-                "MaxGlobalRating": -0.1
+                "MinGlobalRating": -0.35,
+                "MaxGlobalRating": -0.2
               }
             ]
           },
@@ -213,19 +178,12 @@
             "Enabled": true,
             "Name": "Bearish",
             "Modifiers": {
-              "BuyTrailing": -0.3,
-              "BuyTrailingStopMargin": 0.15,
-              "BuyDCASamePairTimeout": 6000,
-              "SellMargin": 1.5,
-              "SellTrailing": 0.5,
-              "SellTrailingStopMargin": 1.25,
-              "SellDCAMargin": 1.15,
-              "SellDCATrailing": 0.4,
-              "SellDCATrailingStopMargin": 1
+              "BuyTrailing": -0.275,
+              "SellMargin": 0.40
             },
             "Conditions": [
               {
-                "MinGlobalRating": -0.1,
+                "MinGlobalRating": -0.2,
                 "MaxGlobalRating": 0
               }
             ]
@@ -234,12 +192,13 @@
             "Enabled": true,
             "Name": "Boring",
             "Modifiers": {
-              "BuyDCASamePairTimeout": 4200
+              "BuyTrailing": -0.25,
+              "SellMargin": 0.5
             },
             "Conditions": [
               {
-                "MinGlobalRating": 0,
-                "MaxGlobalRating": 0.1
+                "MinGlobalRating": 0.0,
+                "MaxGlobalRating": 0.25
               }
             ]
           },
@@ -247,71 +206,146 @@
             "Enabled": true,
             "Name": "Bull",
             "Modifiers": {
-              "BuyDCASamePairTimeout": 3600
+              "BuyTrailing": -0.225,
+              "SellMargin": 0.55
             },
             "Conditions": [
               {
-                "MinGlobalRating": 0.1,
-                "MaxGlobalRating": 0.2
+                "MinGlobalRating": 0.25,
+                "MaxGlobalRating": 0.35
               }
             ]
           },
           {
             "Enabled": true,
-            "Name": "Super Bull",
+            "Name": "Superbull",
             "Modifiers": {
-              "BuyDCASamePairTimeout": 3000,
-              "SellMargin": 2.3,
-              "SellTrailing": 1,
-              "SellTrailingStopMargin": 1.85,
-              "SellDCAMargin": 1.85,
-              "SellDCATrailing": 0.6,
-              "SellDCATrailingStopMargin": 1.5
+              "BuyTrailing": -0.20,
+              "SellMargin": 0.55,
+              "MaxPairs": 4
             },
             "Conditions": [
               {
-                "MinGlobalRating": 0.2,
-                "MaxGlobalRating": 0.3
-              }
-            ]
-          },
-          {
-            "Enabled": true,
-            "Name": "Blast Off",
-            "Modifiers": {
-              "BuyDCASamePairTimeout": 3000,
-              "SellMargin": 2.7,
-              "SellTrailing": 1,
-              "SellTrailingStopMargin": 2.1,
-              "SellDCAMargin": 2,
-              "SellDCATrailing": 0.7,
-              "SellDCATrailingStopMargin": 1.7
-            },
-            "Conditions": [
-              {
-                "MinGlobalRating": 0.3,
+                "MinGlobalRating": 0.35,
                 "MaxGlobalRating": 1
               }
             ]
           },
           {
             "Enabled": true,
-            "Name": "Swap Pair",
+            "Name": "Swap-Low-DCA-Level",
             "Modifiers": {
               "BuyDCAEnabled": false,
               "SwapEnabled": true,
-              "SwapSignalRules": [
-                "Swap"
-              ],
-              "SwapTimeout": 10800
+              "SwapSignalRules": [ "Buy-Default" ],
+              "SwapTimeout": 900
             },
             "Conditions": [
               {
-                "Signal": "TV-60mins",
-                "MaxRating": 0,
-                "MinAge": 0.2,
-                "MaxMargin": -3.5,
-                "MinDCALevel": 1
+                "Signal": "TV-5m",
+                "MaxRating": 0.1
+              },
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0.1
+              },
+              {
+                "MaxDCALevel": 2
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-High-DCA-Level",
+            "Modifiers": {
+              "BuyDCAEnabled": false,
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Swap-High-DCA" ],
+              "SwapTimeout": 3600
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MaxRating": 0.20
+              },
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0.20
+              },
+              {
+                "Signal": "TV-1h",
+                "MaxRating": 0.15
+              },
+              {
+                "MinDCALevel": 3,
+                "MaxMargin": -4
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-High-DCA-Age",
+            "Modifiers": {
+              "BuyDCAEnabled": false,
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Swap-High-DCA" ],
+              "SwapTimeout": 3600
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0.20
+              },
+              {
+                "Signal": "TV-1h",
+                "MaxRating": 0.25
+              },
+              {
+                "MinAge": 0.5
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "DCA-Enabled",
+            "Modifiers": {
+              "BuyDCAEnabled": true
+            },
+            "Conditions": [
+              {
+                "MinGlobalRating": -0.40,
+                "MaxGlobalRating": 1,
+                "MaxSpread": 0.25
+              },
+              {
+                "Signal": "TV-5m",
+                "MinRating": 0.35
+              },
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.35,
+                "MinPriceChange": 0,
+                "MinRatingChange": 0,
+                "MinVolume": 100000
+              },
+              {
+                "Signal": "TV-1h",
+                "MinRating": 0.25,
+                "MinPriceChange": 0,
+                "MaxPriceChange": 5,
+                "MinRatingChange": 0,
+                "MinVolumeChange": 0
+              },
+              {
+                "Signal": "TV-4h",
+                "MinRating": 0.20,
+                "MinPriceChange": 0,
+                "MaxPriceChange": 3,
+                "MinRatingChange": 0
+              },
+              {
+                "Signal": "TV-1d",
+                "MaxPriceChange": 16
               }
             ]
           }
