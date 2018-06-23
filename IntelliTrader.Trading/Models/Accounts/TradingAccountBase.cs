@@ -139,7 +139,10 @@ namespace IntelliTrader.Trading
                             }
                         }
                         balance += balanceDifference;
-                        decimal profit = (order.AverageCost - tradingPair.AverageCostPaid - (tradingPair.Metadata.AdditionalCosts ?? 0)) * (order.AmountFilled / tradingPair.TotalAmount);
+
+                        decimal profit = 
+                            (order.AverageCost - tradingPair.GetAverageCostPaid(order.AmountFilled) - (tradingPair.Metadata.AdditionalCosts ?? 0)) * 
+                            (order.AmountFilled / tradingPair.TotalAmount);
 
                         var tradeResult = new TradeResult
                         {

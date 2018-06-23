@@ -10,6 +10,8 @@ namespace IntelliTrader.Launcher
 {
     class Program
     {
+        const int PROCESS_WAIT_TIMEOUT = 1;
+
         [DllImport("user32.dll")]
         static extern int SetWindowText(IntPtr hWnd, string text);
 
@@ -24,13 +26,19 @@ namespace IntelliTrader.Launcher
                 try
                 {
                     process.StartInfo.FileName = "dotnet";
-                    process.StartInfo.Arguments = processPath;
+                    process.StartInfo.Arguments = $"\"{processPath}\"";
                     process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
                     process.Start();
+                    Thread.Sleep(TimeSpan.FromSeconds(PROCESS_WAIT_TIMEOUT));
+                    if (process.HasExited)
+                    {
+                        MessageBox.Show($"Unable to start IntelliTrader.{Environment.NewLine}{Environment.NewLine}Please make sure you have the latest .NET Core Runtime installed from{Environment.NewLine}https://www.microsoft.com/net/download", nameof(IntelliTrader));
+                        return;
+                    }
                     SpinWait.SpinUntil(() =>
                     {
                         return process.MainWindowHandle != IntPtr.Zero;
-                    }, TimeSpan.FromSeconds(3));
+                    }, TimeSpan.FromSeconds(PROCESS_WAIT_TIMEOUT));
                 }
                 catch (Exception ex)
                 {

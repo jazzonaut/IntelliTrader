@@ -23,7 +23,7 @@ namespace IntelliTrader.Trading
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal FeesMarketCurrency { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal AverageCostPaid => AveragePricePaid * (TotalAmount + FeesPairCurrency) + FeesMarketCurrency;
+        public decimal AverageCostPaid => GetAverageCostPaid(TotalAmount);
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal CurrentCost => CurrentPrice * TotalAmount;
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
@@ -40,6 +40,11 @@ namespace IntelliTrader.Trading
         {
             CurrentPrice = currentPrice;
             CurrentSpread = currentSpread;
+        }
+
+        public decimal GetAverageCostPaid(decimal partialAmount)
+        {
+            return AveragePricePaid * (partialAmount + FeesPairCurrency) + FeesMarketCurrency;
         }
     }
 }
