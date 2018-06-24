@@ -27,9 +27,9 @@
     "BuyDCATrailingStopAction": "Buy",
     "SellEnabled": true,
     "SellType": "Market",
-    "SellMargin": 0.5,
-    "SellTrailing": 0.55,
-    "SellTrailingStopMargin": 0.30,
+    "SellMargin": 1.0,
+    "SellTrailing": 0.65,
+    "SellTrailingStopMargin": 0.7,
     "SellTrailingStopAction": "Sell",
     "SellStopLossEnabled": false,
     "SellStopLossAfterDCA": false,
@@ -44,29 +44,29 @@
       {
         "Margin": -0.25,
         "SellMargin": 0.5,
-        "SellTrailing": 0.25,
-        "SellTrailingStopMargin": 0.30,
+        "SellTrailing": 0.45,
+        "SellTrailingStopMargin": 0.40,
         "BuyTrailing": -0.25
       },
       {
         "Margin": -0.75,
         "SellMargin": 0.4,
-        "SellTrailing": 0.25,
-        "SellTrailingStopMargin": 0.25,
+        "SellTrailing": 0.35,
+        "SellTrailingStopMargin": 0.30,
         "BuyTrailing": -0.25
       },
       {
         "Margin": -2,
         "SellMargin": 0.3,
-        "SellTrailing": 0.15,
-        "SellTrailingStopMargin": 0.2,
+        "SellTrailing": 0.25,
+        "SellTrailingStopMargin": 0.25,
         "BuyTrailing": -0.30
       },
       {
         "Margin": -3,
         "SellMargin": 0.2,
-        "SellTrailing": 0.05,
-        "SellTrailingStopMargin": 0.1,
+        "SellTrailing": 0.20,
+        "SellTrailingStopMargin": 0.15,
         "BuyTrailing": -0.35
       }
     ],
