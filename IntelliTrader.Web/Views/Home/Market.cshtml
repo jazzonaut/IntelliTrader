@@ -81,8 +81,8 @@
                 </div>
                 <div class="manual-order">
                     <span>Amount:</span>&nbsp;&nbsp;<input type="text" id="amount" value="0" />
-                    <button class="btn btn-sm btn-warning" onclick="buyPair(this);">Buy</button>
-                    <button class="btn btn-sm btn-warning" onclick="buyPairDefault(this);">Buy Default</button>
+                    <button class="btn btn-sm btn-warning" onclick="buyPair(this);" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Buy</button>
+                    <button class="btn btn-sm btn-warning" onclick="buyPairDefault(this);" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Buy Default</button>
                 </div>
             </div>
         </div>

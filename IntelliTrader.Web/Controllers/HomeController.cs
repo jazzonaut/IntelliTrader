@@ -122,10 +122,12 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Dashboard()
         {
             var coreService = Application.Resolve<ICoreService>();
+            var webService = Application.Resolve<IWebService>();
             var model = new DashboardViewModel
             {
                 InstanceName = coreService.Config.InstanceName,
-                Version = coreService.Version
+                Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode
             };
             return View(nameof(Dashboard), model);
         }
@@ -133,10 +135,12 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Market()
         {
             var coreService = Application.Resolve<ICoreService>();
+            var webService = Application.Resolve<IWebService>();
             var model = new MarketViewModel
             {
                 InstanceName = coreService.Config.InstanceName,
-                Version = coreService.Version
+                Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode
             };
             return View(model);
         }
@@ -144,6 +148,7 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Stats()
         {
             var coreService = Application.Resolve<ICoreService>();
+            var webService = Application.Resolve<IWebService>();
             var tradingService = Application.Resolve<ITradingService>();
             var accountInitialBalance = tradingService.Config.VirtualTrading ? tradingService.Config.VirtualAccountInitialBalance : tradingService.Config.AccountInitialBalance;
             var accountInitialBalanceDate = tradingService.Config.VirtualTrading ? DateTimeOffset.Now.AddDays(-30) : tradingService.Config.AccountInitialBalanceDate;
@@ -158,6 +163,7 @@ namespace IntelliTrader.Web.Controllers
             {
                 InstanceName = coreService.Config.InstanceName,
                 Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode,
                 TimezoneOffset = coreService.Config.TimezoneOffset,
                 AccountInitialBalance = accountInitialBalance,
                 AccountBalance = accountBalance,
@@ -192,11 +198,12 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Trades(DateTimeOffset id)
         {
             var coreService = Application.Resolve<ICoreService>();
-
+            var webService = Application.Resolve<IWebService>();
             var model = new TradesViewModel()
             {
                 InstanceName = coreService.Config.InstanceName,
                 Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode,
                 TimezoneOffset = coreService.Config.TimezoneOffset,
                 Date = id,
                 Trades = GetTrades(id).Values.FirstOrDefault() ?? new List<TradeResult>()
@@ -208,6 +215,7 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Settings()
         {
             var coreService = Application.Resolve<ICoreService>();
+            var webService = Application.Resolve<IWebService>();
             var tradingService = Application.Resolve<ITradingService>();
             var allConfigurableServices = Application.Resolve<IEnumerable<IConfigurableService>>();
 
@@ -215,6 +223,7 @@ namespace IntelliTrader.Web.Controllers
             {
                 InstanceName = coreService.Config.InstanceName,
                 Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode,
                 BuyEnabled = tradingService.Config.BuyEnabled,
                 BuyDCAEnabled = tradingService.Config.BuyDCAEnabled,
                 SellEnabled = tradingService.Config.SellEnabled,
@@ -229,12 +238,14 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Log()
         {
             var coreService = Application.Resolve<ICoreService>();
+            var webService = Application.Resolve<IWebService>();
             var loggingService = Application.Resolve<ILoggingService>();
 
             var model = new LogViewModel()
             {
                 InstanceName = coreService.Config.InstanceName,
                 Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode,
                 LogEntries = loggingService.GetLogEntries().Reverse().Take(500)
             };
 
@@ -244,11 +255,13 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Help()
         {
             var coreService = Application.Resolve<ICoreService>();
+            var webService = Application.Resolve<IWebService>();
 
             var model = new HelpViewModel()
             {
                 InstanceName = coreService.Config.InstanceName,
-                Version = coreService.Version
+                Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode
             };
 
             return View(model);
@@ -369,23 +382,30 @@ namespace IntelliTrader.Web.Controllers
         [HttpPost]
         public IActionResult Settings(SettingsViewModel model)
         {
-            var coreService = Application.Resolve<ICoreService>();
-            var tradingService = Application.Resolve<ITradingService>();
-
-            coreService.Config.HealthCheckEnabled = model.HealthCheckEnabled;
-            tradingService.Config.BuyEnabled = model.BuyEnabled;
-            tradingService.Config.BuyDCAEnabled = model.BuyDCAEnabled;
-            tradingService.Config.SellEnabled = model.SellEnabled;
-
-            if (model.TradingSuspended)
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode)
             {
-                tradingService.SuspendTrading();
+                var coreService = Application.Resolve<ICoreService>();
+                var tradingService = Application.Resolve<ITradingService>();
+
+                coreService.Config.HealthCheckEnabled = model.HealthCheckEnabled;
+                tradingService.Config.BuyEnabled = model.BuyEnabled;
+                tradingService.Config.BuyDCAEnabled = model.BuyDCAEnabled;
+                tradingService.Config.SellEnabled = model.SellEnabled;
+
+                if (model.TradingSuspended)
+                {
+                    tradingService.SuspendTrading();
+                }
+                else
+                {
+                    tradingService.ResumeTrading();
+                }
+                return Settings();
             }
             else
             {
-                tradingService.ResumeTrading();
+                return Settings();
             }
-            return Settings();
         }
 
         [HttpPost]
@@ -394,7 +414,7 @@ namespace IntelliTrader.Web.Controllers
             string configName = Request.Form["name"].ToString();
             string configDefinition = Request.Form["definition"].ToString();
 
-            if (!String.IsNullOrWhiteSpace(configName) && !String.IsNullOrWhiteSpace(configDefinition))
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode && !String.IsNullOrWhiteSpace(configName) && !String.IsNullOrWhiteSpace(configDefinition))
             {
                 Application.ConfigProvider.SetSectionJson(configName, configDefinition);
                 return new OkResult();
@@ -409,7 +429,7 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Sell()
         {
             string pair = Request.Form["pair"].ToString();
-            if (pair != null && decimal.TryParse(Request.Form["amount"], out decimal amount) && amount > 0)
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode && pair != null && decimal.TryParse(Request.Form["amount"], out decimal amount) && amount > 0)
             {
                 var tradingService = Application.Resolve<ITradingService>();
                 tradingService.Sell(new SellOptions(pair)
@@ -429,7 +449,7 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult Buy()
         {
             string pair = Request.Form["pair"].ToString();
-            if (pair != null && decimal.TryParse(Request.Form["amount"], out decimal amount) && amount > 0)
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode && !String.IsNullOrWhiteSpace(pair) && decimal.TryParse(Request.Form["amount"], out decimal amount) && amount > 0)
             {
                 var tradingService = Application.Resolve<ITradingService>();
                 tradingService.Buy(new BuyOptions(pair)
@@ -450,7 +470,7 @@ namespace IntelliTrader.Web.Controllers
         public IActionResult BuyDefault()
         {
             string pair = Request.Form["pair"].ToString();
-            if (pair != null)
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode && !String.IsNullOrWhiteSpace(pair))
             {
                 var signalsService = Application.Resolve<ISignalsService>();
                 var tradingService = Application.Resolve<ITradingService>();
@@ -477,7 +497,7 @@ namespace IntelliTrader.Web.Controllers
         {
             string pair = Request.Form["pair"].ToString();
             string swap = Request.Form["swap"].ToString();
-            if (pair != null && swap != null)
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode && !String.IsNullOrWhiteSpace(pair) && !String.IsNullOrWhiteSpace(swap))
             {
                 var tradingService = Application.Resolve<ITradingService>();
                 tradingService.Swap(new SwapOptions(pair, swap, new OrderMetadata())
@@ -494,16 +514,30 @@ namespace IntelliTrader.Web.Controllers
 
         public IActionResult RefreshAccount()
         {
-            var tradingService = Application.Resolve<ITradingService>();
-            tradingService.Account.Refresh();
-            return new OkResult();
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode)
+            {
+                var tradingService = Application.Resolve<ITradingService>();
+                tradingService.Account.Refresh();
+                return new OkResult();
+            }
+            else
+            {
+                return new BadRequestResult();
+            }
         }
 
         public IActionResult RestartServices()
         {
-            var coreService = Application.Resolve<ICoreService>();
-            coreService.Restart();
-            return new OkResult();
+            if (!Application.Resolve<IWebService>().Config.ReadOnlyMode)
+            {
+                var coreService = Application.Resolve<ICoreService>();
+                coreService.Restart();
+                return new OkResult();
+            }
+            else
+            {
+                return new BadRequestResult();
+            }
         }
 
         private Dictionary<DateTimeOffset, List<TradeResult>> GetTrades(DateTimeOffset? date = null)

@@ -21,12 +21,12 @@
         <div>@Html.CheckBoxFor(model => model.SellEnabled)@Html.LabelFor(model => model.SellEnabled)</div>
         <div>@Html.CheckBoxFor(model => model.HealthCheckEnabled)@Html.LabelFor(model => model.HealthCheckEnabled)</div>
         <div>@Html.CheckBoxFor(model => model.TradingSuspended)@Html.LabelFor(model => model.TradingSuspended)</div>
-        <input type="submit" value="Save" class="btn btn-primary settings-btn" onclick="return confirm('Save settings?');" />
+        <button type="submit" class="btn btn-primary settings-btn" onclick="return confirm('Save settings?');" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Save</button>
     </div>
     }
-    <button class="btn btn-info settings-btn" onclick="logout();">Log Out</button>
-    <button class="btn btn-info settings-btn" onclick="refreshAccount();">Refresh Account</button>
-    <button class="btn btn-info settings-btn" onclick="restartServices();">Restart Services</button>
+    <button class="btn btn-info settings-btn" onclick="logout();" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Log Out</button>
+    <button class="btn btn-info settings-btn" onclick="refreshAccount();" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Refresh Account</button>
+    <button class="btn btn-info settings-btn" onclick="restartServices();" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Restart Services</button>
 
     <div class="configs">
         <h2>Advanced</h2>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="config-options bg-dark">
                     <span class="save-config-status" id="saveConfigStatus"></span>
-                    <button class="btn btn-primary" onclick="saveConfig(this);">Save</button>
+                    <button class="btn btn-primary" onclick="saveConfig(this);" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Save</button>
                 </div>
             </div>
         }

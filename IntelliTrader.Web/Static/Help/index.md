@@ -39,8 +39,9 @@ Read more about how web interface works in the [web](#Web_Interface) section.
 
 |Setting|Type|Default Value|Description|
 |-|:-:|:-:|-|
-|DebugMode|Boolean|true|Enable / disable debug mode|
 |Enabled|Boolean|true|Enable / disable web interface|
+|DebugMode|Boolean|true|Enable / disable debug mode|
+|ReadOnlyMode|Boolean|false|Enable / disable read only mode|
 |Port|Number|7000|Port on which to host the web interface|
 
 #### Signals Configuration

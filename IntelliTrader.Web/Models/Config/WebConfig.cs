@@ -9,6 +9,7 @@ namespace IntelliTrader.Web
     {
         public bool Enabled { get; set; }
         public bool DebugMode { get; set; }
+        public bool ReadOnlyMode { get; set; }
         public int Port { get; set; }
     }
 }

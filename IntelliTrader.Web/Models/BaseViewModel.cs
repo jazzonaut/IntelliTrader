@@ -9,5 +9,6 @@ namespace IntelliTrader.Web.Models
     {
         public string InstanceName { get; set; }
         public string Version { get; set; }
+        public bool ReadOnlyMode { get; set; }
     }
 }

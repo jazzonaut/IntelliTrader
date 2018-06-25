@@ -8,6 +8,7 @@ namespace IntelliTrader.Core
     {
         bool Enabled { get; }
         bool DebugMode { get; }
+        bool ReadOnlyMode { get; }
         int Port { get; }
     }
 }

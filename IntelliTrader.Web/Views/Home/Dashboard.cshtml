@@ -105,9 +105,9 @@
                 </div>
                 <div class="manual-order">
                     <span>Amount:</span>&nbsp;&nbsp;<input type="text" id="amount" />
-                    <button class="btn btn-sm btn-info" onclick="sellPair(this);">Sell</button>
-                    <button class="btn btn-sm btn-warning" onclick="buyPair(this);">Buy</button>
-                    <button class="btn btn-sm btn-primary" onclick="swapPair(this);">Swap</button>
+                    <button class="btn btn-sm btn-info" onclick="sellPair(this);" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Sell</button>
+                    <button class="btn btn-sm btn-warning" onclick="buyPair(this);" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Buy</button>
+                    <button class="btn btn-sm btn-primary" onclick="swapPair(this);" @if (Model.ReadOnlyMode) { <text>disabled</text> }>Swap</button>
                 </div>
             </div>
         </div>
