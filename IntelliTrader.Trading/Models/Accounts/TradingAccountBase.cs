@@ -231,7 +231,6 @@ namespace IntelliTrader.Trading
         {
             lock (SyncRoot)
             {
-                Save();
                 tradingPairs.Clear();
             }
         }

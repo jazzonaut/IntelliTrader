@@ -10,6 +10,8 @@ namespace IntelliTrader.Trading
 {
     internal class ExchangeAccount : TradingAccountBase
     {
+        private const string BACKUP_DIR = "backup";
+
         public ExchangeAccount(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
             : base(loggingService, notificationService, healthCheckService, signalsService, tradingService)
         {
@@ -28,7 +30,7 @@ namespace IntelliTrader.Trading
             // Preload account data without locking the account
             try
             {
-                loggingService.Info("Load account data...");
+                loggingService.Info("Get account data...");
 
                 foreach (var kvp in tradingService.GetAvailableAmounts())
                 {
@@ -57,13 +59,13 @@ namespace IntelliTrader.Trading
                     }
                 }
 
-                loggingService.Info("Account data loaded");
+                loggingService.Info("Account data retrieved");
             }
             catch (Exception ex) when (!isInitialRefresh)
             {
                 healthCheckService.UpdateHealthCheck(Constants.HealthChecks.AccountRefreshed, ex.Message, true);
-                loggingService.Error("Unable to load account data", ex);
-                notificationService.Notify("Unable to load account data");
+                loggingService.Error("Unable to get account data", ex);
+                notificationService.Notify("Unable to get account data");
                 return;
             }
 
@@ -72,15 +74,15 @@ namespace IntelliTrader.Trading
             {
                 lock (SyncRoot)
                 {
-                    ConcurrentDictionary<string, TradingPair> tradingPairsBackup = null;
+                    ConcurrentDictionary<string, TradingPair> tradingPairsSaved = null;
                     if (isInitialRefresh)
                     {
-                        TradingAccountData data = LoadBackupData();
-                        tradingPairsBackup = data?.TradingPairs ?? new ConcurrentDictionary<string, TradingPair>();
+                        TradingAccountData data = LoadSavedData();
+                        tradingPairsSaved = data?.TradingPairs ?? new ConcurrentDictionary<string, TradingPair>();
                     }
                     else
                     {
-                        tradingPairsBackup = tradingPairs;
+                        tradingPairsSaved = tradingPairs;
                     }
                     tradingPairs = new ConcurrentDictionary<string, TradingPair>();
 
@@ -126,9 +128,9 @@ namespace IntelliTrader.Trading
                         }
                         else
                         {
-                            if (tradingPairsBackup.TryGetValue(pair, out TradingPair backup))
+                            if (tradingPairsSaved.TryGetValue(pair, out TradingPair saved))
                             {
-                                tradingPairs[pair].Metadata = backup.Metadata ?? new OrderMetadata();
+                                tradingPairs[pair].Metadata = saved.Metadata ?? new OrderMetadata();
                             }
                         }
                     }
@@ -159,7 +161,6 @@ namespace IntelliTrader.Trading
                     if (isInitialRefresh)
                     {
                         isInitialRefresh = false;
-                        Save();
                     }
 
                     loggingService.Info($"Account refreshed. Balance: {balance}, Trading pairs: {tradingPairs.Count}");
@@ -198,12 +199,12 @@ namespace IntelliTrader.Trading
                 }
                 catch (Exception ex)
                 {
-                    loggingService.Error("Unable to save account backup data", ex);
+                    loggingService.Error("Unable to save account data", ex);
                 }
             }
         }
 
-        private TradingAccountData LoadBackupData()
+        private TradingAccountData LoadSavedData()
         {
             lock (SyncRoot)
             {
@@ -214,6 +215,7 @@ namespace IntelliTrader.Trading
 
                     if (File.Exists(accountFilePath))
                     {
+                        BackupAccountData(accountFilePath);
                         string accountJson = File.ReadAllText(accountFilePath);
                         return JsonConvert.DeserializeObject<TradingAccountData>(accountJson);
                     }
@@ -224,12 +226,27 @@ namespace IntelliTrader.Trading
                 }
                 catch (Exception ex)
                 {
-                    loggingService.Error("Unable to load account backup data", ex);
+                    loggingService.Error("Unable to load account data", ex);
                     return null;
                 }
             }
         }
 
+        private void BackupAccountData(string accountFilePath)
+        {
+            try
+            {
+                string backupAccountFileName = DateTimeOffset.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss") + ".json";
+                string backupAccountFilePath = Path.Combine(Path.GetDirectoryName(accountFilePath), BACKUP_DIR, backupAccountFileName);
+                var backupAccountFile = new FileInfo(backupAccountFilePath);
+                backupAccountFile.Directory.Create();
+                File.Copy(accountFilePath, backupAccountFile.FullName);
+            }
+            catch (Exception ex)
+            {
+                loggingService.Error("Unable to save account backup data", ex);
+            }
+        }
         public override void Dispose()
         {
             base.Dispose();

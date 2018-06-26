@@ -13,6 +13,9 @@ namespace IntelliTrader.Exchange.Binance
     internal class BinanceExchangeService : ExchangeService
     {
         public const int MAX_TICKERS_AGE_TO_RECONNECT_SECONDS = 60;
+        private const int INITIAL_TICKERS_TIMEOUT_SECONDS = 5;
+        private const int INITIAL_TICKERS_RETRY_LIMIT = 4;
+        private const int SOCKET_DISPOSE_TIMEOUT_SECONDS = 10;
 
         private ExchangeBinanceAPI binanceApi;
         private IDisposable socket;
@@ -48,15 +51,34 @@ namespace IntelliTrader.Exchange.Binance
             }
 
             loggingService.Info("Get initial ticker values...");
-            tickers = new ConcurrentDictionary<string, Ticker>(binanceApi.GetTickers().Select(t => new KeyValuePair<string, Ticker>(t.Key, new Ticker
+            IEnumerable<KeyValuePair<string, ExchangeTicker>> binanceTickers = null;
+            for (int retry = 0; retry < INITIAL_TICKERS_RETRY_LIMIT; retry++)
             {
-                Pair = t.Key,
-                AskPrice = t.Value.Ask,
-                BidPrice = t.Value.Bid,
-                LastPrice = t.Value.Last
-            })));
-            lastTickersUpdate = DateTimeOffset.Now;
-            healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TickersUpdated, $"Updates: {tickers.Count}");
+                Task.Run(() => binanceTickers = binanceApi.GetTickers()).Wait(TimeSpan.FromSeconds(INITIAL_TICKERS_TIMEOUT_SECONDS));
+                if (binanceTickers != null) break;
+            }
+            if (binanceTickers != null)
+            {
+                tickers = new ConcurrentDictionary<string, Ticker>(binanceTickers.Select(t => new KeyValuePair<string, Ticker>(t.Key, new Ticker
+                {
+                    Pair = t.Key,
+                    AskPrice = t.Value.Ask,
+                    BidPrice = t.Value.Bid,
+                    LastPrice = t.Value.Last
+                })));
+
+                lastTickersUpdate = DateTimeOffset.Now;
+                healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TickersUpdated, $"Updates: {tickers.Count}");
+            }
+            else if (tickers != null)
+            {
+                loggingService.Error("Unable to get initial ticker values");
+            }
+            else
+            {
+                throw new Exception("Unable to get initial ticker values");
+            }
+
             ConnectTickersWebsocket();
 
             loggingService.Info("Binance Exchange service started");
@@ -68,7 +90,6 @@ namespace IntelliTrader.Exchange.Binance
 
             DisconnectTickersWebsocket();
             lastTickersUpdate = DateTimeOffset.MinValue;
-            tickers.Clear();
             healthCheckService.RemoveHealthCheck(Constants.HealthChecks.TickersUpdated);
 
             loggingService.Info("Binance Exchange service stopped");
@@ -105,7 +126,7 @@ namespace IntelliTrader.Exchange.Binance
 
                 loggingService.Info("Disconnect from Binance Exchange tickers...");
                 // Give Dispose 10 seconds to complete and then time out if not
-                Task.Run(() => socket.Dispose()).Wait(TimeSpan.FromSeconds(10));
+                Task.Run(() => socket.Dispose()).Wait(TimeSpan.FromSeconds(SOCKET_DISPOSE_TIMEOUT_SECONDS));
                 socket = null;
                 loggingService.Info("Disconnected from Binance Exchange tickers");
             }
@@ -158,7 +179,7 @@ namespace IntelliTrader.Exchange.Binance
             return myTrades;
         }
 
-        #pragma warning disable CS1998
+#pragma warning disable CS1998
         public override async Task<decimal> GetAskPrice(string pair)
         {
             if (tickers.TryGetValue(pair, out Ticker ticker))
@@ -171,7 +192,7 @@ namespace IntelliTrader.Exchange.Binance
             }
         }
 
-        #pragma warning disable CS1998
+#pragma warning disable CS1998
         public override async Task<decimal> GetBidPrice(string pair)
         {
             if (tickers.TryGetValue(pair, out Ticker ticker))
@@ -184,7 +205,7 @@ namespace IntelliTrader.Exchange.Binance
             }
         }
 
-        #pragma warning disable CS1998
+#pragma warning disable CS1998
         public override async Task<decimal> GetLastPrice(string pair)
         {
             if (tickers.TryGetValue(pair, out Ticker ticker))
