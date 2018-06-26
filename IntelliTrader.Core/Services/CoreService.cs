@@ -17,6 +17,7 @@ namespace IntelliTrader.Core
         ICoreConfig ICoreService.Config => Config;
 
         public string Version { get; private set; }
+        public string VersionType { get; private set; } = "-rc1";
 
         private readonly ILoggingService loggingService;
         private readonly ITasksService tasksService;
@@ -46,7 +47,7 @@ namespace IntelliTrader.Core
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-            Version = GetType().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+            Version = GetType().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version + VersionType;
         }
 
         public void Start()
