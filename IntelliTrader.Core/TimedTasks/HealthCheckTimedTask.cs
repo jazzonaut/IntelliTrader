@@ -66,14 +66,18 @@ namespace IntelliTrader.Core
                 }
                 else
                 {
-                    if (healthCheckFailed && !tradingService.IsTradingSuspended)
+                    if (healthCheckFailed)
                     {
                         loggingService.Info($"Health check failed ({healthCheckFailures})");
                         notificationService.Notify($"Health check failed ({healthCheckFailures})");
-                        healthCheckService.RemoveHealthCheck(Constants.HealthChecks.TradingPairsProcessed);
-                        healthCheckService.RemoveHealthCheck(Constants.HealthChecks.TradingRulesProcessed);
-                        healthCheckService.RemoveHealthCheck(Constants.HealthChecks.SignalRulesProcessed);
-                        tradingService.SuspendTrading();
+
+                        if (!tradingService.IsTradingSuspended)
+                        {
+                            healthCheckService.RemoveHealthCheck(Constants.HealthChecks.TradingPairsProcessed);
+                            healthCheckService.RemoveHealthCheck(Constants.HealthChecks.TradingRulesProcessed);
+                            healthCheckService.RemoveHealthCheck(Constants.HealthChecks.SignalRulesProcessed);
+                            tradingService.SuspendTrading();
+                        }
                     }
                     else if (!healthCheckFailed && tradingService.IsTradingSuspended)
                     {

@@ -1,7 +1,7 @@
 {
   "Web": {
     "Enabled": true,
-    "DebugMode": true,
+    "DebugMode": false,
     "ReadOnlyMode": false,
     "Port": 7000
   }

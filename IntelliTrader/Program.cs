@@ -13,7 +13,7 @@ namespace IntelliTrader
             var parsedArgs = ParseCommandLineArgs(args);
             if (parsedArgs.Count == 0)
             {
-                PrintWelcomeMessage();
+                PringWelcome();
                 StartCoreService();
             }
             else
@@ -38,12 +38,20 @@ namespace IntelliTrader
             coreService.Stop();
         }
 
-        private static void PrintWelcomeMessage()
+        private static void PringWelcome()
         {
             var foregroundColorBackup = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine();
+            Console.WriteLine(@"  _____         _          _  _  _  _____                   _             ");
+            Console.WriteLine(@"  \_   \ _ __  | |_   ___ | || |(_)/__   \ _ __   __ _   __| |  ___  _ __ ");
+            Console.WriteLine(@"   / /\/| '_ \ | __| / _ \| || || |  / /\/| '__| / _` | / _` | / _ \| '__|");
+            Console.WriteLine(@"/\/ /_  | | | || |_ |  __/| || || | / /   | |   | (_| || (_| ||  __/| |   ");
+            Console.WriteLine(@"\____/  |_| |_| \__| \___||_||_||_| \/    |_|    \__,_| \__,_| \___||_|   ");
+            Console.WriteLine();
             Console.WriteLine("Welcome to IntelliTrader, The Intelligent Cryptocurrency Trading Bot.");
             Console.WriteLine("Always use Enter/Return key to exit the program to avoid corrupting the data.");
+            Console.WriteLine();
             Console.ForegroundColor = foregroundColorBackup;
         }
 

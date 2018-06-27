@@ -1,6 +1,6 @@
 {
   "Core": {
-    "DebugMode": true,
+    "DebugMode": false,
     "PasswordProtected": true,
     "Password": "b84967c4f073b71405404f3719c788cd",
     "InstanceName": "Main",
@@ -8,6 +8,6 @@
     "HealthCheckEnabled": true,
     "HealthCheckInterval": 180,
     "HealthCheckSuspendTradingTimeout": 900,
-    "HealthCheckFailuresToRestartServices": 3
+    "HealthCheckFailuresToRestartServices": 5
   }
 }
