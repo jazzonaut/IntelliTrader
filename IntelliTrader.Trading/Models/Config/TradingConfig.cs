@@ -59,6 +59,7 @@ namespace IntelliTrader.Trading
         public string AccountFilePath { get; set; }
 
         public bool VirtualTrading { get; set; }
+        public decimal VirtualTradingFees { get; set; }
         public decimal VirtualAccountInitialBalance { get; set; }
         public string VirtualAccountFilePath { get; set; }
 
@@ -118,6 +119,7 @@ namespace IntelliTrader.Trading
                 AccountFilePath = AccountFilePath,
 
                 VirtualTrading = VirtualTrading,
+                VirtualTradingFees = VirtualTradingFees,
                 VirtualAccountInitialBalance = VirtualAccountInitialBalance,
                 VirtualAccountFilePath = VirtualAccountFilePath
             };

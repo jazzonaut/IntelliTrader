@@ -314,26 +314,6 @@
           },
           {
             "Enabled": true,
-            "Name": "Swap-Low-Into-Pump",
-            "Modifiers": {
-              "BuyDCAEnabled": false,
-              "SwapEnabled": true,
-              "SwapSignalRules": [ "Buy-Volume-Spike" ],
-              "SwapTimeout": 300
-            },
-            "Conditions": [
-              {
-                "Signal": "TV-15m",
-                "MaxRating": 0.3
-              },
-              {
-                "MaxMargin": -0.5,
-                "MinMargin": -4
-              }
-            ]
-          },
-          {
-            "Enabled": true,
             "Name": "DCA-Disabled",
             "Modifiers": {
               "BuyDCAEnabled": false

@@ -376,7 +376,9 @@ namespace IntelliTrader.Trading
                             Amount = roundedAmount,
                             AmountFilled = roundedAmount,
                             Price = buyOrder.Price,
-                            AveragePrice = buyOrder.Price
+                            AveragePrice = buyOrder.Price,
+                            Fees = roundedAmount * tradingService.GetCurrentPrice(buyOrder.Pair) * tradingService.Config.VirtualTradingFees,
+                            FeesCurrency = tradingService.Config.Market
                         };
                         tradingService.Account.AddBuyOrder(orderDetails);
                         tradingService.Account.Save();
@@ -466,7 +468,9 @@ namespace IntelliTrader.Trading
                             Amount = sellOrder.Amount,
                             AmountFilled = sellOrder.Amount,
                             Price = sellOrder.Price,
-                            AveragePrice = sellOrder.Price
+                            AveragePrice = sellOrder.Price,
+                            Fees = sellOrder.Amount * tradingService.GetCurrentPrice(sellOrder.Pair) * tradingService.Config.VirtualTradingFees,
+                            FeesCurrency = tradingService.Config.Market
                         };
                         tradingPair.Metadata.SwapPair = options.SwapPair;
                         ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);

@@ -168,6 +168,7 @@ DCALevels setting is an array of DCA levels. There is no limit to the number of 
 |AccountInitialBalanceDate|String|"2018-04-08T00:00:00+00:00"|Date of the initial balance snapshot|
 |AccountFilePath|String|"data/exchange-account.json"|Path to the account file|
 |VirtualTrading|Boolean|true|Enable / disable virtual trading|
+|VirtualTradingFees|Number|0.0005|Trading fees (percentage)|
 |VirtualAccountInitialBalance|Number|0.12|Initial balance on the virtual account, used for stats calculations|
 |VirtualAccountFilePath|String|"data/virtual-account.json"|Path to the virtual account file|
 

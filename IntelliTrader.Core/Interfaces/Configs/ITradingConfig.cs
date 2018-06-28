@@ -24,6 +24,7 @@ namespace IntelliTrader.Core
         string AccountFilePath { get; }
 
         bool VirtualTrading { get; }
+        decimal VirtualTradingFees { get; }
         decimal VirtualAccountInitialBalance { get; }
         string VirtualAccountFilePath { get; }
 

@@ -17,8 +17,9 @@
                 <th>Date</th>
                 <th>Pair</th>
                 <th>DCA Level</th>
-                <th>Profit</th>
                 <th>Margin</th>
+                <th>Profit</th>
+                <th>Fees</th>
                 <th>Age</th>
                 <th>Rating Bought</th>
                 <th>Rating Sold</th>
@@ -35,8 +36,9 @@
                 <td>@trade.SellDate.ToOffset(TimeSpan.FromHours(Model.TimezoneOffset)).ToString("yyyy-MM-dd HH:mm:ss")</td>
                 <td>@trade.Pair</td>
                 <td>@Html.Raw((trade.OrderDates.Count - 1) + (trade.Metadata?.AdditionalDCALevels ?? 0))</td>
-                <td>@trade.Profit.ToString("0.00000000")</td>
                 <td>@Html.Raw((trade.Profit / (trade.AverageCost + (trade.Metadata?.AdditionalCosts ?? 0)) * 100).ToString("0.00"))</td>
+                <td>@trade.Profit.ToString("0.00000000")</td>
+                <td>@trade.Fees.ToString("0.00000000")</td>
                 <td>@if (trade.OrderDates != null && trade.OrderDates.Count > 0) { @Html.Raw((trade.SellDate - trade.OrderDates.Min()).TotalDays.ToString("0.00")); } else { <text>N/A</text> }</td>
                 <td>@if (trade.Metadata?.BoughtRating != null) { @Html.Raw(trade.Metadata.BoughtRating.Value.ToString("0.000")); } else { <text>N/A</text> }</td>
                 <td>@if (trade.Metadata?.CurrentRating != null) { @Html.Raw(trade.Metadata.CurrentRating.Value.ToString("0.000")); } else { <text>N/A</text> }</td>

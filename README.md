@@ -20,7 +20,7 @@ IntelliTrader is a fully featured, highly configurable trading bot for cryptocur
 * <img src="http://intellitrader.io/img/discord_icon.png" alt="logo" width="20" height="22"> [Discord Channel](https://discord.gg/rqfpn5a)
 * <img src="http://intellitrader.io/img/youtube_icon.png" alt="logo" width="20" height="22"> [Youtube Channel](https://www.youtube.com/channel/UC8Gvv0ArdF9a2CHUPTdqkjg)
 * <img src="http://intellitrader.io/img/medium_icon.png" alt="logo" width="20" height="22"> [Medium](https://medium.com/@intellitrader.io/)
-* <img src="http://intellitrader.io/img/tv_icon.png" alt="logo" width="20" height="22"> [TradingView Script](https://www.tradingview.com/script/axTtd4dz-Tradingview-Screener-Ratings/)
+* <img src="http://intellitrader.io/img/tv_icon.png" alt="logo" width="20" height="22"> [TradingView Scripts](https://www.tradingview.com/scripts/search/intellitrader)
 
 Getting Started
 -------------
@@ -45,7 +45,8 @@ Refer to [web configuration](#web-configuration) section for information on how 
 
 #### Running
 
-Simply run IntelliTrader to start the bot.
+Simply run IntelliTrader to start the bot.  
+Read [Runtime options for Linux and MacOSX](https://github.com/jazzonaut/IntelliTrader/wiki/Runtime-options-for-Linux-and-MacOSX) for additional details when running on these platforms.
 
 #### Supported Exchanges
 Currenly only Binance Exchange is supported.
@@ -217,6 +218,7 @@ DCALevels setting is an array of DCA levels. There is no limit to the number of 
 |AccountInitialBalanceDate|String|"2018-04-08T00:00:00+00:00"|Date of the initial balance snapshot|
 |AccountFilePath|String|"data/exchange-account.json"|Path to the account file|
 |VirtualTrading|Boolean|true|Enable / disable virtual trading|
+|VirtualTradingFees|Number|0.0005|Trading fees (percentage)|
 |VirtualAccountInitialBalance|Number|0.12|Initial balance on the virtual account, used for stats calculations|
 |VirtualAccountFilePath|String|"data/virtual-account.json"|Path to the virtual account file|
 

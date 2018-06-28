@@ -1,4 +1,5 @@
 ﻿using IntelliTrader.Core;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -14,6 +15,7 @@ namespace IntelliTrader.Core
         public decimal AveragePricePaid { get; set; }
         public decimal FeesPairCurrency { get; set; }
         public decimal FeesMarketCurrency { get; set; }
+        public decimal Fees => AveragePricePaid * FeesPairCurrency + FeesMarketCurrency;
         public decimal AverageCost => AveragePricePaid * (Amount + FeesPairCurrency) + FeesMarketCurrency;
         public DateTimeOffset SellDate { get; set; }
         public decimal SellPrice { get; set; }

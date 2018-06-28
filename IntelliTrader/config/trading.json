@@ -42,15 +42,15 @@
     "RepeatLastDCALevel": false,
     "DCALevels": [
       {
-        "Margin": -0.75,
+        "Margin": -0.50,
         "SellMargin": 0.5,
         "SellTrailing": 0.35,
         "SellTrailingStopMargin": 0.35,
         "BuyTrailing": -0.25,
-        "BuySamePairTimeout": 300
+        "BuySamePairTimeout": 200
       },
       {
-        "Margin": -1.50,
+        "Margin": -1.25,
         "SellMargin": 0.35,
         "SellTrailing": 0.25,
         "SellTrailingStopMargin": 0.25,
@@ -72,7 +72,6 @@
         "SellTrailingStopMargin": 0.1,
         "BuyTrailing": -1.0,
         "BuyTrailingStopMargin": 0.5,
-        "BuyTrailingStopAction": "Cancel",
         "BuySamePairTimeout": 2400
       }
     ],
@@ -82,6 +81,7 @@
     "AccountInitialBalanceDate": "2018-04-08T00:00:00+00:00",
     "AccountFilePath": "data/exchange-account.json",
     "VirtualTrading": true,
+    "VirtualTradingFees": 0.0005,
     "VirtualAccountInitialBalance": 1,
     "VirtualAccountFilePath": "data/virtual-account.json"
   }
