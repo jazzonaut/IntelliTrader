@@ -6,15 +6,13 @@
     "MaxPairs": 4,
     "MinCost": 0.000999,
     "TradePriceType": "Bid",
-    "ExcludedPairs": [
-      "BNBBTC"
-    ],
+    "ExcludedPairs": [],
     "BuyEnabled": true,
     "BuyType": "Market",
     "BuyMaxCost": 0.03,
     "BuyMultiplier": 1,
     "BuyMinBalance": 0,
-    "BuySamePairTimeout": 0,
+    "BuySamePairTimeout": 90,
     "BuyTrailing": -0.25,
     "BuyTrailingStopMargin": 1.35,
     "BuyTrailingStopAction": "Buy",
@@ -40,41 +38,7 @@
     "SellDCATrailingStopMargin": 0.5,
     "SellDCATrailingStopAction": "Sell",
     "RepeatLastDCALevel": false,
-    "DCALevels": [
-      {
-        "Margin": -0.50,
-        "SellMargin": 0.5,
-        "SellTrailing": 0.35,
-        "SellTrailingStopMargin": 0.35,
-        "BuyTrailing": -0.25,
-        "BuySamePairTimeout": 200
-      },
-      {
-        "Margin": -1.25,
-        "SellMargin": 0.35,
-        "SellTrailing": 0.25,
-        "SellTrailingStopMargin": 0.25,
-        "BuyTrailing": -0.35,
-        "BuySamePairTimeout": 600
-      },
-      {
-        "Margin": -3.00,
-        "SellMargin": 0.2,
-        "SellTrailing": 0.10,
-        "SellTrailingStopMargin": 0.15,
-        "BuyTrailing": -0.45,
-        "BuySamePairTimeout": 1200
-      },
-      {
-        "Margin": -5.50,
-        "SellMargin": 0.15,
-        "SellTrailing": 0.05,
-        "SellTrailingStopMargin": 0.1,
-        "BuyTrailing": -1.0,
-        "BuyTrailingStopMargin": 0.5,
-        "BuySamePairTimeout": 2400
-      }
-    ],
+    "DCALevels": [],
     "TradingCheckInterval": 1,
     "AccountRefreshInterval": 360,
     "AccountInitialBalance": 1,
