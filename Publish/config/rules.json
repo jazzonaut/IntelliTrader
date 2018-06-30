@@ -72,23 +72,24 @@
               },
               {
                 "Signal": "TV-15m",
-                "MinRating": 0.35,
+                "MinRating": 0.4,
                 "MinPriceChange": 1.5,
                 "MaxPriceChange": 9,
                 "MinVolumeChange": 200
               },
               {
                 "Signal": "TV-1h",
-                "MinVolume": 5000,
-                "MaxPriceChange": 10
+				"MinRating": 0.25,
+                "MinVolume": 10000,
+                "MaxPriceChange": 5
               },
               {
                 "Signal": "TV-4h",
-                "MaxPriceChange": 14
+                "MaxPriceChange": 7
               },
               {
                 "Signal": "TV-1d",
-                "MaxPriceChange": 20
+                "MaxPriceChange": 10
               },
               {
                 "MinGlobalRating": -0.25,
