@@ -79,7 +79,7 @@
               },
               {
                 "Signal": "TV-1h",
-				"MinRating": 0.25,
+                "MinRating": 0.25,
                 "MinVolume": 10000,
                 "MaxPriceChange": 5
               },
