@@ -93,6 +93,9 @@ Read more about how web interface works in the [web](#web-interface) section.
 |DebugMode|Boolean|true|Enable / disable debug mode|
 |ReadOnlyMode|Boolean|false|Enable / disable read only mode|
 |Port|Number|7000|Port on which to host the web interface|
+|SSLEnabled|Boolean|false|Enable SSL for web interface|
+|SSLCertPath|String|data/cert.pfx|Path to the SSL certificate|
+|SSLCertPassword|String|certpass|Certificate password|
 
 #### Signals Configuration
 

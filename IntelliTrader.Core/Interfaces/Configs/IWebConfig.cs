@@ -10,5 +10,8 @@ namespace IntelliTrader.Core
         bool DebugMode { get; }
         bool ReadOnlyMode { get; }
         int Port { get; }
+        bool SSLEnabled { get; }
+        string SSLCertPath { get; set; }
+        string SSLCertPassword { get; set; }
     }
 }

@@ -210,7 +210,7 @@
               "SellMargin": 0.40,
               "SellTrailing": 0.25,
               "SellTrailingStopMargin": 0.30,
-              "MaxPairs": 3,
+              "MaxPairs": 4,
               "DCALevels": [
                 {
                   "Margin": -0.25,
@@ -261,7 +261,7 @@
               "SellMargin": 0.50,
               "SellTrailing": 0.35,
               "SellTrailingStopMargin": 0.40,
-              "MaxPairs": 4,
+              "MaxPairs": 5,
               "DCALevels": [
                 {
                   "Margin": -0.25,
@@ -312,7 +312,7 @@
               "SellMargin": 0.60,
               "SellTrailing": 0.45,
               "SellTrailingStopMargin": 0.50,
-              "MaxPairs": 5,
+              "MaxPairs": 6,
               "DCALevels": [
                 {
                   "Margin": -0.25,

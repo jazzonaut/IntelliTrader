@@ -42,7 +42,17 @@ namespace IntelliTrader.Web
                     .UseStartup<Startup>()
                     .UseKestrel(options =>
                     {
-                        options.Listen(IPAddress.Any, Config.Port);
+                        if (Config.SSLEnabled)
+                        {
+                            options.Listen(IPAddress.Any, Config.Port, listenOptions =>
+                            {
+                                listenOptions.UseHttps(Path.Combine(Directory.GetCurrentDirectory(), Config.SSLCertPath), Config.SSLCertPassword);
+                            });
+                        }
+                        else
+                        {
+                            options.Listen(IPAddress.Any, Config.Port);
+                        }
                     });
 
                 if (Config.DebugMode)
