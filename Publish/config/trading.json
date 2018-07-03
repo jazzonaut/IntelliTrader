@@ -3,7 +3,7 @@
     "Enabled": true,
     "Market": "BTC",
     "Exchange": "Binance",
-    "MaxPairs": 7,
+    "MaxPairs": 6,
     "MinCost": 0.000999,
     "TradePriceType": "Bid",
     "ExcludedPairs": [],
