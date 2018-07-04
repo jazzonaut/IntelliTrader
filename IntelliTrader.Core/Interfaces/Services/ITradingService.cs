@@ -33,7 +33,7 @@ namespace IntelliTrader.Core
         Dictionary<string, decimal> GetAvailableAmounts();
         IEnumerable<IOrderDetails> GetMyTrades(string pair);
         IOrderDetails PlaceOrder(IOrder order);
-        decimal GetCurrentPrice(string pair);
+        decimal GetCurrentPrice(string pair, TradePriceType? priceType = null);
         decimal GetCurrentSpread(string pair);
     }
 }

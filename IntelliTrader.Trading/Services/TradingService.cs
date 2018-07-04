@@ -421,6 +421,11 @@ namespace IntelliTrader.Trading
                 message = $"Cancel swap request {options.OldPair} for {options.NewPair}. Reason: buying not enabled";
                 return false;
             }
+            else if (Account.GetBalance() < Account.GetTradingPair(options.OldPair).CurrentCost * 0.01M)
+            {
+                message = $"Cancel swap request {options.OldPair} for {options.NewPair}. Reason: not enough balance";
+                return false;
+            }
             else if (!GetMarketPairs().Contains(options.NewPair))
             {
                 message = $"Cancel swap request {options.OldPair} for {options.NewPair}. Reason: {options.NewPair} is not a valid pair";
@@ -471,13 +476,18 @@ namespace IntelliTrader.Trading
             return exchangeService.PlaceOrder(order).Result;
         }
 
-        public decimal GetCurrentPrice(string pair)
+        public decimal GetCurrentPrice(string pair, TradePriceType? priceType = null)
         {
-            if (Config.TradePriceType == TradePriceType.Ask)
+            if (priceType == null)
+            {
+                priceType = Config.TradePriceType;
+            }
+
+            if (priceType == TradePriceType.Ask)
             {
                 return exchangeService.GetAskPrice(pair).Result;
             }
-            else if (Config.TradePriceType == TradePriceType.Bid)
+            else if (priceType == TradePriceType.Bid)
             {
                 return exchangeService.GetBidPrice(pair).Result;
             }

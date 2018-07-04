@@ -364,6 +364,7 @@ namespace IntelliTrader.Trading
 
                     lock (tradingService.Account.SyncRoot)
                     {
+                        decimal buyPrice = tradingService.GetCurrentPrice(options.Pair, TradePriceType.Ask);
                         decimal roundedAmount = Math.Round(buyOrder.Amount, 4);
                         orderDetails = new OrderDetails
                         {
@@ -375,9 +376,9 @@ namespace IntelliTrader.Trading
                             Pair = buyOrder.Pair,
                             Amount = roundedAmount,
                             AmountFilled = roundedAmount,
-                            Price = buyOrder.Price,
-                            AveragePrice = buyOrder.Price,
-                            Fees = roundedAmount * tradingService.GetCurrentPrice(buyOrder.Pair) * tradingService.Config.VirtualTradingFees,
+                            Price = buyPrice,
+                            AveragePrice = buyPrice,
+                            Fees = roundedAmount * buyPrice * tradingService.Config.VirtualTradingFees,
                             FeesCurrency = tradingService.Config.Market
                         };
                         tradingService.Account.AddBuyOrder(orderDetails);
@@ -457,6 +458,7 @@ namespace IntelliTrader.Trading
 
                     lock (tradingService.Account.SyncRoot)
                     {
+                        decimal sellPrice = tradingService.GetCurrentPrice(options.Pair, TradePriceType.Bid);
                         orderDetails = new OrderDetails
                         {
                             Metadata = tradingPair.Metadata,
@@ -467,9 +469,9 @@ namespace IntelliTrader.Trading
                             Pair = sellOrder.Pair,
                             Amount = sellOrder.Amount,
                             AmountFilled = sellOrder.Amount,
-                            Price = sellOrder.Price,
-                            AveragePrice = sellOrder.Price,
-                            Fees = sellOrder.Amount * tradingService.GetCurrentPrice(sellOrder.Pair) * tradingService.Config.VirtualTradingFees,
+                            Price = sellPrice,
+                            AveragePrice = sellPrice,
+                            Fees = sellOrder.Amount * sellPrice * tradingService.Config.VirtualTradingFees,
                             FeesCurrency = tradingService.Config.Market
                         };
                         tradingPair.Metadata.SwapPair = options.SwapPair;
