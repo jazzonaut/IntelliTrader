@@ -340,7 +340,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel buy request for {options.Pair}. Reason: minimum balance reached";
                 return false;
             }
-            else if (GetCurrentPrice(options.Pair) <= 0)
+            else if (GetCurrentPrice(options.Pair, !Config.VirtualTrading ? Config.TradePriceType : TradePriceType.Ask) <= 0)
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: invalid price";
                 return false;
@@ -388,6 +388,11 @@ namespace IntelliTrader.Trading
             else if (!Account.HasTradingPair(options.Pair))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: pair does not exist";
+                return false;
+            }
+            else if (GetCurrentPrice(options.Pair, !Config.VirtualTrading ? Config.TradePriceType : TradePriceType.Bid) <= 0)
+            {
+                message = $"Cancel sell request for {options.Pair}. Reason: invalid price";
                 return false;
             }
             else if ((DateTimeOffset.Now - Account.GetTradingPair(options.Pair).OrderDates.Max()).TotalMilliseconds < (MIN_INTERVAL_BETWEEN_BUY_AND_SELL / Application.Speed))
