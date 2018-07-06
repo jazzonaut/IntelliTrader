@@ -16,4 +16,10 @@ $(function () {
         ],
         order: [[0, "desc"]]
     });
+
+    $('<div class="rules-analyzer"><button class="btn btn-success" onclick="showRulesAnalyzer();">Rules Analyzer</button></div>').insertAfter(".dt-buttons");
 });
+
+function showRulesAnalyzer() {
+    window.location = "/Rules"
+}

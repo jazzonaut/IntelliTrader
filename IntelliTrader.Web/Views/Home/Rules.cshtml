@@ -1,0 +1,49 @@
+﻿@model RulesViewModel
+@{
+    ViewData["Title"] = "Rules Analyzer";
+    ViewData["Instance"] = Model.InstanceName;
+}
+
+@section AddToHead{
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Static/Styles/Views/rules.css")">
+    <script type="text/javascript" src="@Url.Content("~/Static/Scripts/Views/rules.js")"></script>
+}
+
+<div>
+    <div class="sub-header">Signal Rules: @Model.SignalRuleStats.Count</div>
+    <table class="table table-hover table-striped" id="rulesTable" style="width: 100%">
+        <thead>
+            <tr>
+                <th>Signal Rule</th>
+                <th>Profit</th>
+                <th>Fees</th>
+                <th>Cost</th>
+                <th>Trades</th>
+                <th>Orders</th>
+                <th>Swaps</th>
+                <th>Avg. Age</th>
+                <th>Avg. Margin</th>
+                <th>Avg. Margin DCA</th>
+                <th>Avg. DCA</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var trade in Model.SignalRuleStats)
+            {
+            <tr>
+                <td>@trade.Key</td>
+                <td>@trade.Value.TotalProfit.ToString("0.00000000")</td>
+                <td>@trade.Value.TotalFees.ToString("0.00000000")</td>
+                <td>@trade.Value.TotalCost.ToString("0.00000000")</td>
+                <td>@trade.Value.TotalTrades</td>
+                <td>@trade.Value.TotalOrders</td>
+                <td>@trade.Value.TotalSwaps</td>
+                <td>@trade.Value.Age.DefaultIfEmpty(0).Average().ToString("0.00")</td>
+                <td>@trade.Value.Margin.DefaultIfEmpty(0).Average().ToString("0.00")</td>
+                <td>@trade.Value.MarginDCA.DefaultIfEmpty(0).Average().ToString("0.00")</td>
+                <td>@trade.Value.DCA.DefaultIfEmpty(0).Average().ToString("0.00")</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

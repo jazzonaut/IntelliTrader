@@ -1,6 +1,6 @@
-var table = null;
+﻿var table = null;
 $(function () {
-    table = $('#tradesTable').DataTable({
+    table = $('#rulesTable').DataTable({
         pageLength: 100,
         responsive: true,
         colReorder: true,
@@ -14,6 +14,6 @@ $(function () {
             "copy",
             "csv"
         ],
-        order: [[0, "desc"]]
+        order: [[1, "desc"]]
     });
 });

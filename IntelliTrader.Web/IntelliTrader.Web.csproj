@@ -28,6 +28,7 @@
     <None Remove="Static\Scripts\Vendor\popper.min.js" />
     <None Remove="Static\Scripts\Views\dashboard.js" />
     <None Remove="Static\Scripts\Views\market.js" />
+    <None Remove="Static\Scripts\Views\rules.js" />
     <None Remove="Static\Scripts\Views\settings.js" />
     <None Remove="Static\Scripts\Views\stats.js" />
     <None Remove="Static\Scripts\Views\trades.js" />
@@ -60,6 +61,7 @@
     <None Remove="Static\Styles\Views\dashboard.css" />
     <None Remove="Static\Styles\Views\help.css" />
     <None Remove="Static\Styles\Views\market.css" />
+    <None Remove="Static\Styles\Views\rules.css" />
     <None Remove="Static\Styles\Views\settings.css" />
     <None Remove="Static\Styles\Views\stats.css" />
     <None Remove="Static\Styles\Views\trades.css" />
@@ -118,6 +120,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Static\Scripts\Views\market.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Static\Scripts\Views\rules.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Static\Scripts\Views\settings.js">
@@ -216,6 +221,9 @@
     <Content Include="Static\Styles\Views\market.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Static\Styles\Views\rules.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Static\Styles\Views\settings.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -243,6 +251,9 @@
   <ItemGroup>
     <Content Update="Static\Help\config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Home\Rules.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
 

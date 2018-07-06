@@ -195,6 +195,64 @@ namespace IntelliTrader.Web.Controllers
             return View(model);
         }
 
+        public IActionResult Rules()
+        {
+            var allTades = GetTrades();
+            var signalRuleStats = new Dictionary<string, SignalRuleStats>();
+            foreach (var trade in allTades.Values.SelectMany(t => t))
+            {
+                if (trade.IsSuccessful)
+                {
+                    var signalRule = trade?.Metadata?.SignalRule;
+                    if (!String.IsNullOrWhiteSpace(signalRule))
+                    {
+                        if (!signalRuleStats.TryGetValue(signalRule, out SignalRuleStats ruleStats))
+                        {
+                            ruleStats = new SignalRuleStats();
+                            signalRuleStats.Add(signalRule, ruleStats);
+                        }
+
+                        if (!trade.IsSwap)
+                        {
+                            ruleStats.TotalCost += trade.AverageCost;
+                            ruleStats.TotalProfit += trade.Profit;
+                            decimal margin = trade.Profit / (trade.AverageCost + (trade.Metadata?.AdditionalCosts ?? 0)) * 100;
+                            if (trade.OrderDates.Count == 1)
+                            {
+                                ruleStats.Margin.Add(margin);
+                            }
+                            else
+                            {
+                                ruleStats.MarginDCA.Add(margin);
+                            }
+                        }
+                        else
+                        {
+                            ruleStats.TotalSwaps++;
+                        }
+
+                        ruleStats.TotalTrades++;
+                        ruleStats.TotalOrders += trade.OrderDates.Count;
+                        ruleStats.TotalFees += trade.Fees;
+                        ruleStats.Age.Add((trade.SellDate - trade.OrderDates.Min()).TotalDays);
+                        ruleStats.DCA.Add((trade.OrderDates.Count - 1) + (trade.Metadata?.AdditionalDCALevels ?? 0));
+                    }
+                }
+            }
+
+            var coreService = Application.Resolve<ICoreService>();
+            var webService = Application.Resolve<IWebService>();
+            var model = new RulesViewModel
+            {
+                InstanceName = coreService.Config.InstanceName,
+                Version = coreService.Version,
+                ReadOnlyMode = webService.Config.ReadOnlyMode,
+                SignalRuleStats = signalRuleStats
+            };
+
+            return View(model);
+        }
+
         public IActionResult Trades(DateTimeOffset id)
         {
             var coreService = Application.Resolve<ICoreService>();
