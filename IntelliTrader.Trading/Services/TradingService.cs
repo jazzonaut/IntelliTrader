@@ -507,6 +507,11 @@ namespace IntelliTrader.Trading
             return exchangeService.GetPriceSpread(pair).Result;
         }
 
+        public decimal GetCurrentArbitrage(string pair)
+        {
+            return exchangeService.GetPriceArbitrage(pair, Config.Market).Result;
+        }
+
         private void OnTradingRulesChanged()
         {
             Rules = rulesService.GetRules(ServiceName);

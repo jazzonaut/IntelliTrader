@@ -35,5 +35,6 @@ namespace IntelliTrader.Core
         IOrderDetails PlaceOrder(IOrder order);
         decimal GetCurrentPrice(string pair, TradePriceType? priceType = null);
         decimal GetCurrentSpread(string pair);
+        decimal GetCurrentArbitrage(string pair);
     }
 }

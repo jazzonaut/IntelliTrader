@@ -230,6 +230,42 @@ namespace IntelliTrader.Exchange.Binance
             }
         }
 
+        public override async Task<decimal> GetPriceArbitrage(string pair, string market)
+        {
+            try
+            {
+                string mainPair = pair;
+                string flippedPair = mainPair.Substring(0, mainPair.Length - market.Length) + (market == Constants.Markets.BTC ? Constants.Markets.ETH : Constants.Markets.BTC);
+
+                if (tickers.TryGetValue(mainPair, out Ticker mainTicker) &&
+                    tickers.TryGetValue(flippedPair, out Ticker flippedTicker) &&
+                    tickers.TryGetValue(Constants.Markets.ETH + Constants.Markets.BTC, out Ticker marketTicker))
+                {
+                    if (market == Constants.Markets.BTC)
+                    {
+                        return 1M / mainTicker.AskPrice * flippedTicker.BidPrice * marketTicker.BidPrice;
+
+                    }
+                    else if (market == Constants.Markets.ETH)
+                    {
+                        return 1M / mainTicker.AskPrice * flippedTicker.BidPrice * marketTicker.AskPrice;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            catch
+            {
+                return 1;
+            }
+        }
+
         public override async Task<IOrderDetails> PlaceOrder(IOrder order)
         {
             var result = await binanceApi.PlaceOrderAsync(new ExchangeOrderRequest

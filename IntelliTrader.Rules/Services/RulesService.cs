@@ -48,6 +48,8 @@ namespace IntelliTrader.Rules
                     condition.MaxPrice != null && (tradingService.GetCurrentPrice(pair) > condition.MaxPrice) ||
                     condition.MinSpread != null && (tradingService.GetCurrentSpread(pair) < condition.MinSpread) ||
                     condition.MaxSpread != null && (tradingService.GetCurrentSpread(pair) > condition.MaxSpread) ||
+                    condition.MinArbitrage != null && (tradingService.GetCurrentArbitrage(pair) < condition.MinArbitrage) ||
+                    condition.MaxArbitrage != null && (tradingService.GetCurrentArbitrage(pair) > condition.MaxArbitrage) ||
 
                     condition.MinVolume != null && (signal == null || signal.Volume == null || signal.Volume < condition.MinVolume) ||
                     condition.MaxVolume != null && (signal == null || signal.Volume == null || signal.Volume > condition.MaxVolume) ||

@@ -241,6 +241,8 @@ Is is not necessary to specify a Signal if none of the conditions are signal-spe
 |MaxPriceChange|Number|Yes|The maximal rate of change of price withing specified period frame (percentage)|
 |MinSpread|Number|No|Minimum difference between current bid and ask price (percentage)|
 |MaxSpread|Number|No|Maximum difference between current bid and ask price (percentage)|
+|MinArbitrage|Number|No|Minimum triangular arbitrage value|
+|MaxArbitrage|Number|No|Maximum triangular arbitrage value|
 |MinVolume|Number|Yes|Minimum coin volume within the specified signal's period. Do not expect 24h volume in this category|
 |MaxVolume|Number|Yes|Maximum coin volume within the specified signal's period. Do not expect 24h volume in this category|
 |MinVolumeChange|Number|Yes|The minimal rate of change of volume withing specified period frame (percentage)|
@@ -470,6 +472,7 @@ The log button will display the last 5 lines from the log file.
 |Price|Current pair's price (same for every signal)|
 |% Price Change|Percentage price change for each signal|
 |Spread|Difference between current bid and ask price|
+|Arbitrage|Triangular arbitrage value|
 |Volume|Volume for each signal|
 |% Volume Change|Percentage volume change for each signal|
 |Volatility|Volatility for each signal|
@@ -481,7 +484,9 @@ The log button will display the last 5 lines from the log file.
 Here you can see your total overall profit and current account balance.
 There is also a breakdown of profits by day, along with other information, like average margin.
 
-You can click on the number of trades to see information about the orders completed on that particular day.
+You can click on the number of trades to see information about the orders completed on that particular day.  
+
+You can also open the Rules Analyzer page to check how each rule is performing.
 
 #### Settings
 

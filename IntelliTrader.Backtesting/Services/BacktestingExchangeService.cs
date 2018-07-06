@@ -90,6 +90,42 @@ namespace IntelliTrader.Backtesting
             }
         }
 
+        public async Task<decimal> GetPriceArbitrage(string pair, string market)
+        {
+            try
+            {
+                string mainPair = pair;
+                string flippedPair = mainPair.Substring(0, mainPair.Length - market.Length) + (market == Constants.Markets.BTC ? Constants.Markets.ETH : Constants.Markets.BTC);
+
+                if (backtestingService.GetCurrentTickers().TryGetValue(mainPair, out ITicker mainTicker) &&
+                    backtestingService.GetCurrentTickers().TryGetValue(flippedPair, out ITicker flippedTicker) &&
+                    backtestingService.GetCurrentTickers().TryGetValue(Constants.Markets.ETH + Constants.Markets.BTC, out ITicker marketTicker))
+                {
+                    if (market == Constants.Markets.BTC)
+                    {
+                        return 1M / mainTicker.AskPrice * flippedTicker.BidPrice * marketTicker.BidPrice;
+
+                    }
+                    else if (market == Constants.Markets.ETH)
+                    {
+                        return 1M / mainTicker.AskPrice * flippedTicker.BidPrice * marketTicker.AskPrice;
+                    }
+                    else
+                    {
+                        return 1;
+                    }
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            catch
+            {
+                return 1;
+            }
+        }
+
         public Task<IEnumerable<string>> GetMarketPairs(string market)
         {
             return Task.FromResult(backtestingService.GetCurrentTickers().Keys.AsEnumerable());

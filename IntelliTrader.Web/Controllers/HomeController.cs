@@ -424,6 +424,7 @@ namespace IntelliTrader.Web.Controllers
                                       RatingChangeList = signalGroup.Value.Select(s => new { s.Name, s.RatingChange }),
                                       VolatilityList = signalGroup.Value.Select(s => new { s.Name, s.Volatility }),
                                       Spread = tradingService.GetCurrentSpread(pair).ToString("0.00"),
+                                      Arbitrage = tradingService.GetCurrentArbitrage(pair).ToString("0.0000"),
                                       SignalRules = signalsService.GetTrailingInfo(pair)?.Select(ti => ti.Rule.Name) ?? new string[0],
                                       HasTradingPair = tradingService.Account.HasTradingPair(pair),
                                       Config = pairConfig

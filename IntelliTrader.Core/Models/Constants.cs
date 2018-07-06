@@ -55,5 +55,13 @@ namespace IntelliTrader.Core
             public const int NormalDelay = 3300;
             public const int HighDelay = 4700;
         }
+
+        public static class Markets
+        {
+            public const string BTC = "BTC";
+            public const string ETH = "ETH";
+            public const string BNB = "BNB";
+            public const string USDT = "USDT";
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace IntelliTrader.Core
         Task<decimal> GetBidPrice(string pair);
         Task<decimal> GetLastPrice(string pair);
         Task<decimal> GetPriceSpread(string pair);
+        Task<decimal> GetPriceArbitrage(string pair, string market);
         Task<IOrderDetails> PlaceOrder(IOrder order);
     }
 }

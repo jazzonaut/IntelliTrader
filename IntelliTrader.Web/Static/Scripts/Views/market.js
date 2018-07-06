@@ -77,6 +77,13 @@ $(function () {
                 }
             },
             {
+                name: "Arbitrage",
+                data: "Arbitrage",
+                render: function (data, type, row, meta) {
+                    return data;
+                }
+            },
+            {
                 name: "Volume",
                 data: "VolumeList",
                 type: "multi-value",

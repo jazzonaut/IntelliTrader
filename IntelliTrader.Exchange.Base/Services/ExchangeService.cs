@@ -42,6 +42,8 @@ namespace IntelliTrader.Exchange.Base
 
         public abstract Task<decimal> GetPriceSpread(string pair);
 
+        public abstract Task<decimal> GetPriceArbitrage(string pair, string market);
+
         public abstract Task<IOrderDetails> PlaceOrder(IOrder order);
     }
 }
