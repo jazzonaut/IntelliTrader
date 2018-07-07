@@ -458,7 +458,7 @@ namespace IntelliTrader.Trading
 
         public IEnumerable<ITicker> GetTickers()
         {
-            return exchangeService.GetTickers(Config.Market).Result;
+            return exchangeService.GetTickers().Result;
         }
 
         public IEnumerable<string> GetMarketPairs()

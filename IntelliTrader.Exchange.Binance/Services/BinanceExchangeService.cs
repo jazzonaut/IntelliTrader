@@ -136,9 +136,9 @@ namespace IntelliTrader.Exchange.Binance
             }
         }
 
-        public override Task<IEnumerable<ITicker>> GetTickers(string market)
+        public override Task<IEnumerable<ITicker>> GetTickers()
         {
-            return Task.FromResult(tickers.Values.Where(t => t.Pair.EndsWith(market)).Select(t => (ITicker)t));
+            return Task.FromResult(tickers.Values.Select(t => (ITicker)t));
         }
 
         public override Task<IEnumerable<string>> GetMarketPairs(string market)

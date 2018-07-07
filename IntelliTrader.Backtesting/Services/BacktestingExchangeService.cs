@@ -148,7 +148,7 @@ namespace IntelliTrader.Backtesting
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ITicker>> GetTickers(string market)
+        public Task<IEnumerable<ITicker>> GetTickers()
         {
             throw new NotImplementedException();
         }

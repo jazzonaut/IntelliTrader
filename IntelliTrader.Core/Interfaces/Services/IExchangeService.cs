@@ -9,7 +9,7 @@ namespace IntelliTrader.Core
     {
         void Start(bool virtualTrading);
         void Stop();
-        Task<IEnumerable<ITicker>> GetTickers(string market);
+        Task<IEnumerable<ITicker>> GetTickers();
         Task<IEnumerable<string>> GetMarketPairs(string market);
         Task<Dictionary<string, decimal>> GetAvailableAmounts();
         Task<IEnumerable<IOrderDetails>> GetMyTrades(string pair);

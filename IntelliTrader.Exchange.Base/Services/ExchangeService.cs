@@ -26,7 +26,7 @@ namespace IntelliTrader.Exchange.Base
 
         public abstract void Stop();
 
-        public abstract Task<IEnumerable<ITicker>> GetTickers(string market);
+        public abstract Task<IEnumerable<ITicker>> GetTickers();
 
         public abstract Task<IEnumerable<string>> GetMarketPairs(string market);
 
