@@ -26,6 +26,8 @@ namespace IntelliTrader.Exchange.Base
 
         public abstract void Stop();
 
+        public abstract Task<IEnumerable<string>> GetMarkets();
+
         public abstract Task<IEnumerable<ITicker>> GetTickers();
 
         public abstract Task<IEnumerable<string>> GetMarketPairs(string market);
@@ -42,7 +44,7 @@ namespace IntelliTrader.Exchange.Base
 
         public abstract Task<decimal> GetPriceSpread(string pair);
 
-        public abstract Task<decimal> GetPriceArbitrage(string pair, string market);
+        public abstract Task<decimal> GetPriceArbitrage(string pair, string crossMarket, string market);
 
         public abstract Task<IOrderDetails> PlaceOrder(IOrder order);
     }

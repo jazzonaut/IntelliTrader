@@ -28,6 +28,7 @@ namespace IntelliTrader.Core
         void LogOrder(IOrderDetails order);
         List<string> GetTrailingBuys();
         List<string> GetTrailingSells();
+        IEnumerable<string> GetMarkets();
         IEnumerable<ITicker> GetTickers();
         IEnumerable<string> GetMarketPairs();
         Dictionary<string, decimal> GetAvailableAmounts();
@@ -35,6 +36,6 @@ namespace IntelliTrader.Core
         IOrderDetails PlaceOrder(IOrder order);
         decimal GetCurrentPrice(string pair, TradePriceType? priceType = null);
         decimal GetCurrentSpread(string pair);
-        decimal GetCurrentArbitrage(string pair);
+        decimal GetCurrentArbitrage(string pair, string crossMarket);
     }
 }

@@ -78,9 +78,10 @@ $(function () {
             },
             {
                 name: "Arbitrage",
-                data: "Arbitrage",
+                data: "ArbitrageList",
+                type: "multi-value",
                 render: function (data, type, row, meta) {
-                    return data;
+                    return data.map(function (item) { return '<div class="signal-details"><span class="signal-name">' + item.Name + '</span><span class="signal-value">' + (item.Arbitrage != null ? item.Arbitrage : "N/A") + '</span></div>'; }).join("");
                 }
             },
             {

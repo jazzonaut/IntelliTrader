@@ -20,6 +20,7 @@ namespace IntelliTrader.Exchange.Binance
         private ExchangeBinanceAPI binanceApi;
         private IDisposable socket;
         private ConcurrentDictionary<string, Ticker> tickers;
+        private ConcurrentBag<string> markets;
         private BinanceTickersMonitorTimedTask tickersMonitorTimedTask;
         private DateTimeOffset lastTickersUpdate;
         private bool tickersChecked;
@@ -33,7 +34,6 @@ namespace IntelliTrader.Exchange.Binance
         public override void Start(bool virtualTrading)
         {
             loggingService.Info("Start Binance Exchange service...");
-
             binanceApi = new ExchangeBinanceAPI();
             binanceApi.RateLimit = new RateGate(Config.RateLimitOccurences, TimeSpan.FromSeconds(Config.RateLimitTimeframe));
 
@@ -66,6 +66,7 @@ namespace IntelliTrader.Exchange.Binance
                     BidPrice = t.Value.Bid,
                     LastPrice = t.Value.Last
                 })));
+                markets = new ConcurrentBag<string>(tickers.Keys.Select(pair => binanceApi.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0]).Distinct().ToList());
 
                 lastTickersUpdate = DateTimeOffset.Now;
                 healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TickersUpdated, $"Updates: {tickers.Count}");
@@ -134,6 +135,11 @@ namespace IntelliTrader.Exchange.Binance
             {
                 loggingService.Error("Unable to disconnect from Binance Exchange tickers", ex);
             }
+        }
+
+        public override Task<IEnumerable<string>> GetMarkets()
+        {
+            return Task.FromResult(markets.OrderBy(m => m).AsEnumerable());
         }
 
         public override Task<IEnumerable<ITicker>> GetTickers()
@@ -230,40 +236,69 @@ namespace IntelliTrader.Exchange.Binance
             }
         }
 
-        public override async Task<decimal> GetPriceArbitrage(string pair, string market)
+        public override async Task<decimal> GetPriceArbitrage(string pair, string crossMarket, string market)
         {
             try
             {
-                string mainPair = pair;
-                string flippedPair = mainPair.Substring(0, mainPair.Length - market.Length) + (market == Constants.Markets.BTC ? Constants.Markets.ETH : Constants.Markets.BTC);
-
-                if (tickers.TryGetValue(mainPair, out Ticker mainTicker) &&
-                    tickers.TryGetValue(flippedPair, out Ticker flippedTicker) &&
-                    tickers.TryGetValue(Constants.Markets.ETH + Constants.Markets.BTC, out Ticker marketTicker))
+                if (market == Constants.Markets.BTC || market == Constants.Markets.ETH)
                 {
-                    if (market == Constants.Markets.BTC)
-                    {
-                        return 1M / mainTicker.AskPrice * flippedTicker.BidPrice * marketTicker.BidPrice;
 
-                    }
-                    else if (market == Constants.Markets.ETH)
+                    string crossMarketPair = pair.Substring(0, pair.Length - market.Length) + crossMarket;
+                    string marketpair = null;
+
+                    if (crossMarket == Constants.Markets.ETH || pair == Constants.Markets.BTC)
                     {
-                        return 1M / mainTicker.AskPrice * flippedTicker.BidPrice * marketTicker.AskPrice;
+                        marketpair = Constants.Markets.ETH + Constants.Markets.BTC;
                     }
-                    else
+                    else if (crossMarket == Constants.Markets.BNB)
                     {
-                        return 1;
+                        marketpair = Constants.Markets.BNB + Constants.Markets.BTC;
+                    }
+                    else if (crossMarket == Constants.Markets.USDT)
+                    {
+                        marketpair = Constants.Markets.BTC + Constants.Markets.USDT;
+                    }
+
+                    if (tickers.TryGetValue(pair, out Ticker pairTicker) &&
+                        tickers.TryGetValue(crossMarketPair, out Ticker crossTicker) &&
+                        tickers.TryGetValue(marketpair, out Ticker marketTicker))
+                    {
+                        if (market == Constants.Markets.BTC)
+                        {
+                            if (crossMarket == Constants.Markets.ETH)
+                            {
+                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice, 1);
+                            }
+                            else if (crossMarket == Constants.Markets.BNB)
+                            {
+                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice, 1);
+                            }
+                            else if (crossMarket == Constants.Markets.USDT)
+                            {
+                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice / marketTicker.AskPrice, 1);
+                            }
+                            
+                        }
+                        else if (market == Constants.Markets.ETH)
+                        {
+                            if (crossMarket == Constants.Markets.BTC)
+                            {
+                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.AskPrice, 1);
+                            }
+                            else if (crossMarket == Constants.Markets.BNB)
+                            {
+                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.AskPrice, 1);
+                            }
+                            else if (crossMarket == Constants.Markets.USDT)
+                            {
+                                return Utils.CalculateMargin(1M / pairTicker.BidPrice * crossTicker.AskPrice / marketTicker.BidPrice, 1);
+                            }
+                        }
                     }
                 }
-                else
-                {
-                    return 1;
-                }
             }
-            catch
-            {
-                return 1;
-            }
+            catch { }
+            return 0;
         }
 
         public override async Task<IOrderDetails> PlaceOrder(IOrder order)
@@ -328,6 +363,12 @@ namespace IntelliTrader.Exchange.Binance
                         BidPrice = update.Value.Bid,
                         LastPrice = update.Value.Last
                     });
+
+                    var market = binanceApi.ExchangeSymbolToGlobalSymbol(update.Key).Split('-')[0];
+                    if (!markets.Contains(market))
+                    {
+                        markets.Add(market);
+                    }
                 }
             }
         }

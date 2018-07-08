@@ -17,7 +17,7 @@ namespace IntelliTrader.Core
         ICoreConfig ICoreService.Config => Config;
 
         public string Version { get; private set; }
-        public string VersionType { get; private set; }
+        public string VersionType { get; private set; } = " Beta";
 
         private readonly ILoggingService loggingService;
         private readonly ITasksService tasksService;

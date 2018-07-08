@@ -456,6 +456,11 @@ namespace IntelliTrader.Trading
             return tradingTimedTask.GetTrailingSells();
         }
 
+        public IEnumerable<string> GetMarkets()
+        {
+            return exchangeService.GetMarkets().Result;
+        }
+
         public IEnumerable<ITicker> GetTickers()
         {
             return exchangeService.GetTickers().Result;
@@ -507,9 +512,9 @@ namespace IntelliTrader.Trading
             return exchangeService.GetPriceSpread(pair).Result;
         }
 
-        public decimal GetCurrentArbitrage(string pair)
+        public decimal GetCurrentArbitrage(string pair, string crossMarket)
         {
-            return exchangeService.GetPriceArbitrage(pair, Config.Market).Result;
+            return exchangeService.GetPriceArbitrage(pair, crossMarket, Config.Market).Result;
         }
 
         private void OnTradingRulesChanged()

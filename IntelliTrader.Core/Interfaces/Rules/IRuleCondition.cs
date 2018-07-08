@@ -11,6 +11,7 @@ namespace IntelliTrader.Core
         decimal? MaxPrice { get; }
         decimal? MinSpread { get; }
         decimal? MaxSpread { get; }
+        string ArbitrageMarket { get; }
         decimal? MinArbitrage { get; }
         decimal? MaxArbitrage { get; }
         long? MinVolume { get; }

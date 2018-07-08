@@ -9,6 +9,7 @@ namespace IntelliTrader.Core
     {
         void Start(bool virtualTrading);
         void Stop();
+        Task<IEnumerable<string>> GetMarkets();
         Task<IEnumerable<ITicker>> GetTickers();
         Task<IEnumerable<string>> GetMarketPairs(string market);
         Task<Dictionary<string, decimal>> GetAvailableAmounts();
@@ -17,7 +18,7 @@ namespace IntelliTrader.Core
         Task<decimal> GetBidPrice(string pair);
         Task<decimal> GetLastPrice(string pair);
         Task<decimal> GetPriceSpread(string pair);
-        Task<decimal> GetPriceArbitrage(string pair, string market);
+        Task<decimal> GetPriceArbitrage(string pair, string crossMarket, string market);
         Task<IOrderDetails> PlaceOrder(IOrder order);
     }
 }
