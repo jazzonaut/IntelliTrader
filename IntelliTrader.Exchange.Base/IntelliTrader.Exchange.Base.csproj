@@ -5,12 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IntelliTrader.Core\IntelliTrader.Core.csproj" />
-    <ProjectReference Include="..\Submodules\ExchangeSharp\ExchangeSharp\ExchangeSharp.csproj" />
+    <Compile Remove="Interfaces\**" />
+    <EmbeddedResource Remove="Interfaces\**" />
+    <None Remove="Interfaces\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
+    <ProjectReference Include="..\IntelliTrader.Core\IntelliTrader.Core.csproj" />
+    <ProjectReference Include="..\Submodules\ExchangeSharp\ExchangeSharp\ExchangeSharp.csproj" />
   </ItemGroup>
 
 </Project>

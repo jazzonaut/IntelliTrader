@@ -219,6 +219,9 @@ Trading modifiers support any trading setting that begins with Buy, Sell plus DC
 |SwapEnabled|Boolean|true|Swap badly performing pairs for better performing ones|
 |SwapSignalRules|Array|[ "Swap" ]|Rules used to buy the replacement pair with|
 |SwapTimeout|Number|10800|How long to wait before making a swap (in seconds)|
+|ArbitrageEnabled|Boolean|false|Enable arbitrage for that pair|
+|ArbitrageMarket|String|true|Market to use for the arbitrage value (e.g. ETH, BNB, USDT)|
+|ArgbitrageSignalRules|Array|[ "Arbitrage" ]|Rules used to arbitrage pairs|
 
 ###### Rule Conditions
 
@@ -241,6 +244,7 @@ Is is not necessary to specify a Signal if none of the conditions are signal-spe
 |MaxPriceChange|Number|Yes|The maximal rate of change of price withing specified period frame (percentage)|
 |MinSpread|Number|No|Minimum difference between current bid and ask price (percentage)|
 |MaxSpread|Number|No|Maximum difference between current bid and ask price (percentage)|
+|ArbitrageMarket|String|No|Market to use for the arbitrage value (e.g. ETH, BNB, USDT)|
 |MinArbitrage|Number|No|Minimum triangular arbitrage value|
 |MaxArbitrage|Number|No|Maximum triangular arbitrage value|
 |MinVolume|Number|Yes|Minimum coin volume within the specified signal's period. Do not expect 24h volume in this category|
@@ -402,7 +406,8 @@ Signal Rules are used to buy new pairs based on the specific conditions. This ca
 If enabled then Signal Trailing in IntelliTrader is the first stage of buying where it will trail a coin based on the settings you specify for the time duration's you specify. If a coin matches the trailing conditions it then checks the conditions of the coin and buys the coin if these are met. 
 If trailing isn't enabled it buys based only on the specific conditions set.
 
-Add "Action": "Swap" if you want the signal rule to only be used for pair swapping.
+Add "Action": "Swap" if you want the signal rule to only be used for pair swapping.  
+Add "Action": "Arbitrage" if you want the signal rule to only be used for arbitrage.
 
 #### Trading Rules
 
@@ -472,7 +477,7 @@ The log button will display the last 5 lines from the log file.
 |Price|Current pair's price (same for every signal)|
 |% Price Change|Percentage price change for each signal|
 |Spread|Difference between current bid and ask price|
-|Arbitrage|Triangular arbitrage value|
+|Arbitrage|Triangular arbitrage values for every available market|
 |Volume|Volume for each signal|
 |% Volume Change|Percentage volume change for each signal|
 |Volatility|Volatility for each signal|

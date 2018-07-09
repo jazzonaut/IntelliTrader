@@ -156,7 +156,7 @@ namespace IntelliTrader.Web.Controllers
             decimal accountBalance = tradingService.Account.GetBalance();
             foreach (var tradingPair in tradingService.Account.GetTradingPairs())
             {
-                accountBalance += tradingService.GetCurrentPrice(tradingPair.Pair) * tradingPair.TotalAmount;
+                accountBalance += tradingService.GetPrice(tradingPair.Pair) * tradingPair.TotalAmount;
             }
 
             var model = new StatsViewModel
@@ -418,14 +418,14 @@ namespace IntelliTrader.Web.Controllers
                                       TradingViewName = $"{tradingService.Config.Exchange.ToUpperInvariant()}:{pair}",
                                       VolumeList = signalGroup.Value.Select(s => new { s.Name, s.Volume }),
                                       VolumeChangeList = signalGroup.Value.Select(s => new { s.Name, s.VolumeChange }),
-                                      Price = tradingService.GetCurrentPrice(pair).ToString("0.00000000"),
+                                      Price = tradingService.GetPrice(pair).ToString("0.00000000"),
                                       PriceChangeList = signalGroup.Value.Select(s => new { s.Name, s.PriceChange }),
                                       RatingList = signalGroup.Value.Select(s => new { s.Name, s.Rating }),
                                       RatingChangeList = signalGroup.Value.Select(s => new { s.Name, s.RatingChange }),
                                       VolatilityList = signalGroup.Value.Select(s => new { s.Name, s.Volatility }),
-                                      Spread = tradingService.GetCurrentSpread(pair).ToString("0.00"),
-                                      ArbitrageList = tradingService.GetMarkets().Where(m => m != tradingService.Config.Market)
-                                        .Select(market => new { Name = market, Arbitrage = tradingService.GetCurrentArbitrage(pair, market).ToString("0.00") }),
+                                      Spread = tradingService.Exchange.GetPriceSpread(pair).ToString("0.00"),
+                                      ArbitrageList = tradingService.Exchange.GetMarkets().Where(m => m != tradingService.Config.Market)
+                                        .Select(market => new { Name = market, Arbitrage = tradingService.Exchange.GetPriceArbitrage(pair, market, tradingService.Config.Market).ToString("0.00") }),
                                       SignalRules = signalsService.GetTrailingInfo(pair)?.Select(ti => ti.Rule.Name) ?? new string[0],
                                       HasTradingPair = tradingService.Account.HasTradingPair(pair),
                                       Config = pairConfig

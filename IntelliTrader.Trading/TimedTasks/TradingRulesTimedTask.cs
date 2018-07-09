@@ -43,9 +43,7 @@ namespace IntelliTrader.Trading
                 ProcessRules();
                 if (!pairConfigs.TryGetValue(pair, out pairConfig))
                 {
-                    string error = $"Unable to get pair config for {pair}";
-                    loggingService.Error(error);
-                    throw new Exception(error);
+                    return CreatePairConfig(pair, tradingService.Config.Clone(), new PairConfig(), new List<IRule>());
                 }
             }
             return pairConfig;
@@ -54,7 +52,7 @@ namespace IntelliTrader.Trading
         private void ProcessRules()
         {
             IEnumerable<IRule> enabledRules = tradingService.Rules?.Entries?.Where(r => r.Enabled) ?? new List<IRule>();
-            List<string> allPairs = tradingService.GetMarketPairs().ToList();
+            List<string> allPairs = tradingService.Exchange.GetMarketPairs(tradingService.Config.Market).ToList();
             double? globalRating = signalsService.GetGlobalRating();
 
             foreach (string pair in allPairs)
@@ -116,6 +114,10 @@ namespace IntelliTrader.Trading
                                 modifiedPairConfig.SwapEnabled = modifiers.SwapEnabled ?? modifiedPairConfig.SwapEnabled;
                                 modifiedPairConfig.SwapSignalRules = modifiers.SwapSignalRules ?? modifiedPairConfig.SwapSignalRules;
                                 modifiedPairConfig.SwapTimeout = modifiers.SwapTimeout ?? modifiedPairConfig.SwapTimeout;
+
+                                modifiedPairConfig.ArbitrageEnabled = modifiers.ArbitrageEnabled ?? modifiedPairConfig.ArbitrageEnabled;
+                                modifiedPairConfig.ArbitrageMarket = modifiers.ArbitrageMarket ?? modifiedPairConfig.ArbitrageMarket;
+                                modifiedPairConfig.ArbitrageSignalRules = modifiers.ArbitrageSignalRules ?? modifiedPairConfig.ArbitrageSignalRules;
                             }
 
                             appliedRules.Add(rule);
@@ -170,6 +172,10 @@ namespace IntelliTrader.Trading
                 SwapEnabled = modifiedPairConfig.SwapEnabled,
                 SwapSignalRules = modifiedPairConfig.SwapSignalRules,
                 SwapTimeout = (int)Math.Round(modifiedPairConfig.SwapTimeout / Application.Speed),
+
+                ArbitrageEnabled = modifiedPairConfig.ArbitrageEnabled,
+                ArbitrageMarket = modifiedPairConfig.ArbitrageMarket,
+                ArbitrageSignalRules = modifiedPairConfig.ArbitrageSignalRules,
 
                 CurrentDCAMargin = currentDCALevel?.Margin,
                 NextDCAMargin = nextDCALevel?.Margin

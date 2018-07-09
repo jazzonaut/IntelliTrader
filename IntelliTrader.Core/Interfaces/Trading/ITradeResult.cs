@@ -8,6 +8,7 @@ namespace IntelliTrader.Core
     {
         bool IsSuccessful { get; }
         bool IsSwap { get; }
+        bool IsArbitrage { get; }
         string Pair { get; }
         decimal Amount { get; }
         List<DateTimeOffset> OrderDates { get; }
@@ -24,5 +25,6 @@ namespace IntelliTrader.Core
         OrderMetadata Metadata { get; }
 
         void SetSwap(bool isSwap);
+        void SetArbitrage(bool isArbitrage);
     }
 }

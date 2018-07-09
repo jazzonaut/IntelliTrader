@@ -36,6 +36,10 @@ namespace IntelliTrader.Trading
         public List<string> SwapSignalRules { get; set; }
         public int SwapTimeout { get; set; }
 
+        public bool ArbitrageEnabled { get; set; }
+        public string ArbitrageMarket { get; set; }
+        public List<string> ArbitrageSignalRules { get; set; }
+
         public decimal? CurrentDCAMargin { get; set; }
         public decimal? NextDCAMargin { get; set; }
     }

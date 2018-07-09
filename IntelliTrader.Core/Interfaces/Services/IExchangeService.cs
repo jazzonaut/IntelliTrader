@@ -9,16 +9,22 @@ namespace IntelliTrader.Core
     {
         void Start(bool virtualTrading);
         void Stop();
-        Task<IEnumerable<string>> GetMarkets();
-        Task<IEnumerable<ITicker>> GetTickers();
-        Task<IEnumerable<string>> GetMarketPairs(string market);
-        Task<Dictionary<string, decimal>> GetAvailableAmounts();
-        Task<IEnumerable<IOrderDetails>> GetMyTrades(string pair);
-        Task<decimal> GetAskPrice(string pair);
-        Task<decimal> GetBidPrice(string pair);
-        Task<decimal> GetLastPrice(string pair);
-        Task<decimal> GetPriceSpread(string pair);
-        Task<decimal> GetPriceArbitrage(string pair, string crossMarket, string market);
-        Task<IOrderDetails> PlaceOrder(IOrder order);
+        IOrderDetails PlaceOrder(IOrder order, string priceCurrency = null);
+        void ConnectTickersWebsocket();
+        void DisconnectTickersWebsocket();
+        IEnumerable<string> GetMarkets();
+        IEnumerable<ITicker> GetTickers();
+        IEnumerable<string> GetMarketPairs(string market);
+        string GetPairMarket(string pair);
+        string ChangePairMarket(string pair, string newMarket);
+        Dictionary<string, decimal> GetAvailableAmounts();
+        IEnumerable<IOrderDetails> GetTrades(string pair);
+        decimal GetAskPrice(string pair);
+        decimal GetBidPrice(string pair);
+        decimal GetLastPrice(string pair);
+        decimal GetPriceSpread(string pair);
+        decimal GetPriceArbitrage(string pair, string crossMarket, string market);
+        string GetArbitrageMarket(string crossMarket);
+        TimeSpan GetTimeElapsedSinceLastTickersUpdate();
     }
 }

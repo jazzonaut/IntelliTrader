@@ -10,7 +10,7 @@ namespace IntelliTrader.Rules
     {
         public bool Enabled { get; set; }
         public string Name { get; set; }
-        public string Action { get; set; }
+        public RuleAction Action { get; set; }
         public IEnumerable<RuleCondition> Conditions { get; set; }
         public RuleTrailing Trailing { get; set; }
         public IConfigurationSection Modifiers { get; set; }

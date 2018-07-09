@@ -21,5 +21,5 @@ $(function () {
 });
 
 function showRulesAnalyzer() {
-    window.location = "/Rules"
+    window.location = "/Rules";
 }

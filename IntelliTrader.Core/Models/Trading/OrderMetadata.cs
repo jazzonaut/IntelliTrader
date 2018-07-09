@@ -18,6 +18,7 @@ namespace IntelliTrader.Core
         public int? AdditionalDCALevels { get; set; }
         public decimal? AdditionalCosts { get; set; }
         public string SwapPair { get; set; }
+        public string ArbitrageMarket { get; set; }
 
         public OrderMetadata MergeWith(OrderMetadata metadata)
         {
@@ -33,7 +34,8 @@ namespace IntelliTrader.Core
                 LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin,
                 AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels,
                 AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts,
-                SwapPair = metadata.SwapPair ?? SwapPair
+                SwapPair = metadata.SwapPair ?? SwapPair,
+                ArbitrageMarket = metadata.ArbitrageMarket ?? ArbitrageMarket
             };
         }
     }

@@ -74,7 +74,7 @@ namespace IntelliTrader.Trading
                             }
                             else
                             {
-                                feesMarketCurrency = tradingService.GetCurrentPrice(feesPair) * order.Fees;
+                                feesMarketCurrency = tradingService.GetPrice(feesPair) * order.Fees;
                             }
                         }
                     }
@@ -107,7 +107,7 @@ namespace IntelliTrader.Trading
                             Metadata = order.Metadata
                         };
                         tradingPairs.TryAdd(order.Pair, tradingPair);
-                        tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(tradingPair.Pair), tradingService.GetCurrentSpread(tradingPair.Pair));
+                        tradingPair.SetCurrentValues(tradingService.GetPrice(tradingPair.Pair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
                         tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                         tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
                     }
@@ -135,7 +135,7 @@ namespace IntelliTrader.Trading
                             else
                             {
                                 string feesPair = order.FeesCurrency + tradingService.Config.Market;
-                                tradingPair.FeesMarketCurrency += tradingService.GetCurrentPrice(feesPair) * order.Fees;
+                                tradingPair.FeesMarketCurrency += tradingService.GetPrice(feesPair) * order.Fees;
                             }
                         }
                         balance += balanceDifference;

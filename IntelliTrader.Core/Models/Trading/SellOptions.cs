@@ -11,6 +11,8 @@ namespace IntelliTrader.Core
         public bool ManualOrder { get; set; }
         public bool Swap { get; set; }
         public string SwapPair { get; set; }
+        public bool Arbitrage { get; set; }
+        public string ArbitrageMarket { get; set; }
 
         public SellOptions(string pair)
         {

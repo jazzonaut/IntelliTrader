@@ -9,6 +9,7 @@ namespace IntelliTrader.Core
     {
         public bool IsSuccessful { get; set; }
         public bool IsSwap { get; set; }
+        public bool IsArbitrage { get; set; }
         public string Pair { get; set; }
         public decimal Amount { get; set; }
         public List<DateTimeOffset> OrderDates { get; set; }
@@ -27,6 +28,11 @@ namespace IntelliTrader.Core
         public void SetSwap(bool isSwap)
         {
             this.IsSwap = isSwap;
+        }
+
+        public void SetArbitrage(bool isArbitrage)
+        {
+            this.IsArbitrage = IsArbitrage;
         }
     }
 }

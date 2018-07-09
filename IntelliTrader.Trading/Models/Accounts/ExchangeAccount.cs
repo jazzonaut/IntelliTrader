@@ -32,12 +32,12 @@ namespace IntelliTrader.Trading
             {
                 loggingService.Info("Get account data...");
 
-                foreach (var kvp in tradingService.GetAvailableAmounts())
+                foreach (var kvp in tradingService.Exchange.GetAvailableAmounts())
                 {
                     string currency = kvp.Key;
                     string pair = currency + tradingService.Config.Market;
                     decimal amount = kvp.Value;
-                    decimal price = tradingService.GetCurrentPrice(pair);
+                    decimal price = tradingService.GetPrice(pair);
                     decimal cost = amount * price;
 
                     if (currency == tradingService.Config.Market)
@@ -48,7 +48,7 @@ namespace IntelliTrader.Trading
                     {
                         try
                         {
-                            IEnumerable<IOrderDetails> trades = tradingService.GetMyTrades(pair);
+                            IEnumerable<IOrderDetails> trades = tradingService.Exchange.GetTrades(pair);
                             availableTrades.Add(pair, trades);
                             availableAmounts.Add(pair, amount);
                         }

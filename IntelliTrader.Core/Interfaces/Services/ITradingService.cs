@@ -10,6 +10,7 @@ namespace IntelliTrader.Core
     {
         ITradingConfig Config { get; }
         IModuleRules Rules { get; }
+        IExchangeService Exchange { get; }
         bool IsTradingSuspended { get; }
         void Start();
         void Stop();
@@ -22,20 +23,15 @@ namespace IntelliTrader.Core
         void Buy(BuyOptions options);
         void Sell(SellOptions options);
         void Swap(SwapOptions options);
+        void Arbitrage(ArbitrageOptions options);
         bool CanBuy(BuyOptions options, out string message);
         bool CanSell(SellOptions options, out string message);
         bool CanSwap(SwapOptions options, out string message);
+        bool CanArbitrage(ArbitrageOptions options, out string message);
+        decimal GetAdditionalCosts(IOrderDetails order);
         void LogOrder(IOrderDetails order);
         List<string> GetTrailingBuys();
         List<string> GetTrailingSells();
-        IEnumerable<string> GetMarkets();
-        IEnumerable<ITicker> GetTickers();
-        IEnumerable<string> GetMarketPairs();
-        Dictionary<string, decimal> GetAvailableAmounts();
-        IEnumerable<IOrderDetails> GetMyTrades(string pair);
-        IOrderDetails PlaceOrder(IOrder order);
-        decimal GetCurrentPrice(string pair, TradePriceType? priceType = null);
-        decimal GetCurrentSpread(string pair);
-        decimal GetCurrentArbitrage(string pair, string crossMarket);
+        decimal GetPrice(string pair, TradePriceType? priceType = null);
     }
 }

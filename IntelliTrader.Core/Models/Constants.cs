@@ -36,11 +36,6 @@ namespace IntelliTrader.Core
             public const string BacktestingTickersSnapshotLoaded = "Backtesting tickers snapshot loaded";
         }
 
-        public static class SignalRuleActions
-        {
-            public const string Swap = "Swap";
-        }
-
         public static class SnapshotEntities
         {
             public const string Signals = "signals";

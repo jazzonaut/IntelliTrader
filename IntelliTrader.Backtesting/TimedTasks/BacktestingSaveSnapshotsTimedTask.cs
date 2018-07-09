@@ -46,7 +46,7 @@ namespace IntelliTrader.Backtesting
 
         private void TakeTickersSnapshot()
         {
-            var tickers = tradingService.GetTickers().Select(t => TickerData.FromTicker(t));
+            var tickers = tradingService.Exchange.GetTickers().Select(t => TickerData.FromTicker(t));
 
             byte[] tickerBytes = ZeroFormatterSerializer.Serialize(tickers);
             string tickersSnapshotFilePath = backtestingService.GetSnapshotFilePath(Constants.SnapshotEntities.Tickers);

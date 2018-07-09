@@ -27,6 +27,7 @@
                 <th>Gl. Rating Sold</th>
                 <th>Signal Rule</th>
                 <th>Swap Pair</th>
+                <th>Arbitrage</th>
             </tr>
         </thead>
         <tbody>
@@ -46,6 +47,7 @@
                 <td>@if (trade.Metadata?.CurrentGlobalRating != null) { @Html.Raw(trade.Metadata.CurrentGlobalRating.Value.ToString("0.000")); } else { <text>N/A</text> }</td>
                 <td>@if (trade.Metadata?.SignalRule != null) { @Html.Raw(trade.Metadata.SignalRule); } else { <text>N/A</text> }</td>
                 <td>@if (trade.Metadata?.SwapPair != null && trade.IsSwap) { @Html.Raw(trade.Metadata.SwapPair); } else { <text>N/A</text> }</td>
+                <td>@if (trade.Metadata?.ArbitrageMarket != null && trade.IsArbitrage) { @Html.Raw(trade.Metadata.ArbitrageMarket); } else { <text>N/A</text> }</td>
             </tr>
             }
         </tbody>

@@ -14,6 +14,10 @@ namespace IntelliTrader.Core
         List<string> SwapSignalRules { get; }
         int SwapTimeout { get; }
 
+        bool ArbitrageEnabled { get; }
+        string ArbitrageMarket { get; }
+        List<string> ArbitrageSignalRules { get; }
+
         decimal? CurrentDCAMargin { get; }
         decimal? NextDCAMargin { get; }
     }

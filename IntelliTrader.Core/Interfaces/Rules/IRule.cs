@@ -9,7 +9,7 @@ namespace IntelliTrader.Core
     {
         bool Enabled { get; }
         string Name { get; }
-        string Action { get; }
+        RuleAction Action { get; }
         IEnumerable<IRuleCondition> Conditions { get; }
         IRuleTrailing Trailing { get; }
         IConfigurationSection Modifiers { get; }

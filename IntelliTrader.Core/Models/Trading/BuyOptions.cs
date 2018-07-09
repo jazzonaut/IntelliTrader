@@ -12,6 +12,7 @@ namespace IntelliTrader.Core
         public bool IgnoreExisting { get; set; }
         public bool ManualOrder { get; set; }
         public bool Swap { get; set; }
+        public bool Arbitrage { get; set; }
         public OrderMetadata Metadata { get; set; }
 
         public BuyOptions(string pair)

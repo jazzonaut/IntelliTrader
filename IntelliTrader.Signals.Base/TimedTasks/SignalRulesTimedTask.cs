@@ -133,9 +133,10 @@ namespace IntelliTrader.Signals.Base
                                 List<SignalTrailingInfo> trailingInfoList;
 
                                 if (!excludedPairs.Contains(pair) && (!trailingSignals.TryGetValue(pair, out trailingInfoList) || !trailingInfoList.Any(t => t.Rule == rule)) &&
-                                    rulesService.CheckConditions(conditions, signals, globalRating, pair, tradingPair))
+                                    (conditions == null || rulesService.CheckConditions(conditions, signals, globalRating, pair, tradingPair)))
                                 {
-                                    IEnumerable<ISignal> ruleSignals = signals.Where(s => conditions.Any(c => c.Signal == s.Key)).Select(s => s.Value);
+                                    IEnumerable<ISignal> ruleSignals = conditions != null ? signals.Where(s => conditions.Any(c => c.Signal == s.Key)).Select(s => s.Value) : new List<ISignal>();
+
                                     if (rule.Trailing != null && rule.Trailing.Enabled)
                                     {
                                         if (trailingInfoList == null)

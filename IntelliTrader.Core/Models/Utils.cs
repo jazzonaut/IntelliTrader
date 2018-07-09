@@ -2,7 +2,7 @@
 {
     public static class Utils
     {
-        public static decimal CalculateMargin(decimal oldValue, decimal newValue)
+        public static decimal CalculatePercentage(decimal oldValue, decimal newValue)
         {
             if (oldValue != 0)
             {

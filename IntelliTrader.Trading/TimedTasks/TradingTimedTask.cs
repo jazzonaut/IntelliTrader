@@ -57,14 +57,14 @@ namespace IntelliTrader.Trading
         {
             IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
 
-            if (!options.ManualOrder && !options.Swap && pairConfig.BuyTrailing != 0)
+            if (!options.ManualOrder && pairConfig.BuyTrailing != 0)
             {
                 if (!trailingBuys.ContainsKey(options.Pair))
                 {
                     trailingSells.TryRemove(options.Pair, out SellTrailingInfo sellTrailingInfo);
 
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                    decimal currentPrice = tradingService.GetCurrentPrice(options.Pair);
+                    decimal currentPrice = tradingService.GetPrice(options.Pair);
                     decimal currentMargin = 0;
 
                     var trailingInfo = new BuyTrailingInfo
@@ -104,14 +104,14 @@ namespace IntelliTrader.Trading
         {
             IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
 
-            if (!options.ManualOrder && !options.Swap && pairConfig.SellTrailing != 0)
+            if (!options.ManualOrder && pairConfig.SellTrailing != 0)
             {
                 if (!trailingSells.ContainsKey(options.Pair))
                 {
                     trailingBuys.TryRemove(options.Pair, out BuyTrailingInfo buyTrailingInfo);
 
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                    tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(options.Pair), tradingService.GetCurrentSpread(options.Pair));
+                    tradingPair.SetCurrentValues(tradingService.GetPrice(options.Pair), tradingService.Exchange.GetPriceSpread(options.Pair));
 
                     var trailingInfo = new SellTrailingInfo
                     {
@@ -154,7 +154,7 @@ namespace IntelliTrader.Trading
             foreach (var tradingPair in tradingService.Account.GetTradingPairs())
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(tradingPair.Pair);
-                tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(tradingPair.Pair), tradingService.GetCurrentSpread(tradingPair.Pair));
+                tradingPair.SetCurrentValues(tradingService.GetPrice(tradingPair.Pair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
                 tradingPair.Metadata.TradingRules = pairConfig.Rules.ToList();
                 tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                 tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
@@ -258,8 +258,8 @@ namespace IntelliTrader.Trading
                 BuyTrailingInfo buyTrailingInfo = kvp.Value;
                 ITradingPair tradingPair = tradingService.Account.GetTradingPair(pair);
                 IPairConfig pairConfig = tradingService.GetPairConfig(pair);
-                decimal currentPrice = tradingService.GetCurrentPrice(pair);
-                decimal currentMargin = Utils.CalculateMargin(buyTrailingInfo.InitialPrice, currentPrice);
+                decimal currentPrice = tradingService.GetPrice(pair);
+                decimal currentMargin = Utils.CalculatePercentage(buyTrailingInfo.InitialPrice, currentPrice);
 
                 if (pairConfig.BuyEnabled)
                 {
@@ -315,7 +315,7 @@ namespace IntelliTrader.Trading
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
                 ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                decimal currentPrice = tradingService.GetCurrentPrice(options.Pair);
+                decimal currentPrice = tradingService.GetPrice(options.Pair);
                 options.Metadata.TradingRules = pairConfig.Rules.ToList();
                 if (options.Metadata.LastBuyMargin == null)
                 {
@@ -340,7 +340,7 @@ namespace IntelliTrader.Trading
                     {
                         lock (tradingService.Account.SyncRoot)
                         {
-                            orderDetails = tradingService.PlaceOrder(buyOrder);
+                            orderDetails = tradingService.Exchange.PlaceOrder(buyOrder);
                             orderDetails.SetMetadata(options.Metadata);
                             tradingService.Account.AddBuyOrder(orderDetails);
                             tradingService.Account.Save();
@@ -364,7 +364,7 @@ namespace IntelliTrader.Trading
 
                     lock (tradingService.Account.SyncRoot)
                     {
-                        decimal buyPrice = tradingService.GetCurrentPrice(options.Pair, TradePriceType.Ask);
+                        decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
                         decimal roundedAmount = Math.Round(buyOrder.Amount, 4);
                         orderDetails = new OrderDetails
                         {
@@ -411,7 +411,7 @@ namespace IntelliTrader.Trading
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
                 ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                tradingPair.SetCurrentValues(tradingService.GetCurrentPrice(options.Pair), tradingService.GetCurrentSpread(options.Pair));
+                tradingPair.SetCurrentValues(tradingService.GetPrice(options.Pair), tradingService.Exchange.GetPriceSpread(options.Pair));
 
                 SellOrder sellOrder = new SellOrder
                 {
@@ -430,11 +430,13 @@ namespace IntelliTrader.Trading
                     {
                         lock (tradingService.Account.SyncRoot)
                         {
-                            orderDetails = tradingService.PlaceOrder(sellOrder);
+                            orderDetails = tradingService.Exchange.PlaceOrder(sellOrder, options.ArbitrageMarket);
                             tradingPair.Metadata.SwapPair = options.SwapPair;
+                            tradingPair.Metadata.ArbitrageMarket = options.ArbitrageMarket;
                             orderDetails.SetMetadata(tradingPair.Metadata);
                             ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
                             tradeResult.SetSwap(options.Swap);
+                            tradeResult.SetArbitrage(options.Arbitrage);
                             tradingService.Account.Save();
                             tradingService.LogOrder(orderDetails);
 
@@ -458,7 +460,7 @@ namespace IntelliTrader.Trading
 
                     lock (tradingService.Account.SyncRoot)
                     {
-                        decimal sellPrice = tradingService.GetCurrentPrice(options.Pair, TradePriceType.Bid);
+                        decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
                         orderDetails = new OrderDetails
                         {
                             Metadata = tradingPair.Metadata,
@@ -475,8 +477,10 @@ namespace IntelliTrader.Trading
                             FeesCurrency = tradingService.Config.Market
                         };
                         tradingPair.Metadata.SwapPair = options.SwapPair;
+                        tradingPair.Metadata.ArbitrageMarket = options.ArbitrageMarket;
                         ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
                         tradeResult.SetSwap(options.Swap);
+                        tradeResult.SetArbitrage(options.Arbitrage);
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 

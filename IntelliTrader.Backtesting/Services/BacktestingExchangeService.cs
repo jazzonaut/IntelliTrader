@@ -9,31 +9,28 @@ using System.Threading.Tasks;
 
 namespace IntelliTrader.Backtesting
 {
-    public class BacktestingExchangeService : ConfigrableServiceBase<ExchangeConfig>, IExchangeService
+    public class BacktestingExchangeService : ExchangeService
     {
-        public override string ServiceName => Constants.ServiceNames.ExchangeService;
-
-        private readonly ILoggingService loggingService;
-        private readonly IHealthCheckService healthCheckService;
         private readonly IBacktestingService backtestingService;
         private ConcurrentBag<string> markets;
+        private ExchangeBinanceAPI dymmyApi;
 
-        public BacktestingExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService, IBacktestingService backtestingService)
+        public BacktestingExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService, ITasksService tasksService, IBacktestingService backtestingService)
+            : base(loggingService, healthCheckService, tasksService)
         {
-            this.loggingService = loggingService;
-            this.healthCheckService = healthCheckService;
             this.backtestingService = backtestingService;
         }
 
-        public void Start(bool virtualTrading)
+        public override void Start(bool virtualTrading)
         {
             loggingService.Info("Start Backtesting Exchange service...");
 
+            dymmyApi = new ExchangeBinanceAPI();
 
             loggingService.Info("Backtesting Exchange service started");
         }
 
-        public void Stop()
+        public override void Stop()
         {
             loggingService.Info("Stop Backtesting Exchange service...");
 
@@ -41,26 +38,30 @@ namespace IntelliTrader.Backtesting
             loggingService.Info("Backtesting Exchange service stopped");
         }
 
-        public Task<IEnumerable<string>> GetMarkets()
+        public override IEnumerable<string> GetMarkets()
         {
             if (markets == null && backtestingService.GetCurrentTickers() != null)
             {
                 this.markets = new ConcurrentBag<string>(backtestingService.GetCurrentTickers().Keys
-                    .Select(pair => new ExchangeBinanceAPI().ExchangeSymbolToGlobalSymbol(pair).Split('-')[0]).Distinct().ToList());
+                    .Select(pair => GetPairMarket(pair)).Distinct().ToList());
             }
 
             if (markets != null)
             {
-                return Task.FromResult(markets.OrderBy(m => m).AsEnumerable());
+                return markets.OrderBy(m => m);
             }
             else
             {
-                return Task.FromResult(new List<string>().AsEnumerable());
+                return new List<string>();
             }
         }
 
-#pragma warning disable CS1998
-        public async Task<decimal> GetAskPrice(string pair)
+        public override string GetPairMarket(string pair)
+        {
+            return dymmyApi.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0];
+        }
+
+        public override decimal GetAskPrice(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
             {
@@ -72,9 +73,7 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-
-#pragma warning disable CS1998
-        public async Task<decimal> GetBidPrice(string pair)
+        public override decimal GetBidPrice(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
             {
@@ -86,8 +85,7 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-#pragma warning disable CS1998
-        public async Task<decimal> GetLastPrice(string pair)
+        public override decimal GetLastPrice(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
             {
@@ -99,11 +97,11 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-        public async Task<decimal> GetPriceSpread(string pair)
+        public override decimal GetPriceSpread(string pair)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
             {
-                return Utils.CalculateMargin(ticker.BidPrice, ticker.AskPrice);
+                return Utils.CalculatePercentage(ticker.BidPrice, ticker.AskPrice);
             }
             else
             {
@@ -111,63 +109,42 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-        public async Task<decimal> GetPriceArbitrage(string pair, string crossMarket, string market)
+        public override decimal GetPriceArbitrage(string pair, string crossMarket, string market)
         {
             try
             {
-                if (market == Constants.Markets.BTC || market == Constants.Markets.ETH)
+                if (market == Constants.Markets.BTC)
                 {
-
                     string crossMarketPair = pair.Substring(0, pair.Length - market.Length) + crossMarket;
-                    string marketPair = null;
-
-                    if (crossMarket == Constants.Markets.ETH || pair == Constants.Markets.BTC)
-                    {
-                        marketPair = Constants.Markets.ETH + Constants.Markets.BTC;
-                    }
-                    else if (crossMarket == Constants.Markets.BNB)
-                    {
-                        marketPair = Constants.Markets.BNB + Constants.Markets.BTC;
-                    }
-                    else if (crossMarket == Constants.Markets.USDT)
-                    {
-                        marketPair = Constants.Markets.BTC + Constants.Markets.USDT;
-                    }
+                    string marketPair = GetArbitrageMarket(crossMarket);
 
                     if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker pairTicker) &&
                         backtestingService.GetCurrentTickers().TryGetValue(crossMarketPair, out ITicker crossTicker) &&
                         backtestingService.GetCurrentTickers().TryGetValue(marketPair, out ITicker marketTicker))
                     {
-                        if (market == Constants.Markets.BTC)
+                        if (crossMarket == Constants.Markets.ETH)
                         {
-                            if (crossMarket == Constants.Markets.ETH)
-                            {
-                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice, 1);
-                            }
-                            else if (crossMarket == Constants.Markets.BNB)
-                            {
-                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice, 1);
-                            }
-                            else if (crossMarket == Constants.Markets.USDT)
-                            {
-                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice / marketTicker.AskPrice, 1);
-                            }
-
+                            // Buy XVGBTC, Sell XVGETH, Sell ETHBTC
+                            decimal arb1 = Utils.CalculatePercentage(1, 1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice);
+                            // Buy ETHBTC, Buy XVGETH, Sell XVGBTC
+                            decimal arb2 = Utils.CalculatePercentage(1M / crossTicker.AskPrice * pairTicker.BidPrice * marketTicker.AskPrice, 0);
+                            return Math.Max(arb1, arb2);
                         }
-                        else if (market == Constants.Markets.ETH)
+                        else if (crossMarket == Constants.Markets.BNB)
                         {
-                            if (crossMarket == Constants.Markets.BTC)
-                            {
-                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.AskPrice, 1);
-                            }
-                            else if (crossMarket == Constants.Markets.BNB)
-                            {
-                                return Utils.CalculateMargin(1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.AskPrice, 1);
-                            }
-                            else if (crossMarket == Constants.Markets.USDT)
-                            {
-                                return Utils.CalculateMargin(1M / pairTicker.BidPrice * crossTicker.AskPrice / marketTicker.BidPrice, 1);
-                            }
+                            // Buy XVGBTC, Sell XVGBNB, Sell BNBBTC
+                            decimal arb1 = Utils.CalculatePercentage(1, 1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice);
+                            // Buy BNBBTC, Buy XVGBNB, Sell XVGBTC
+                            decimal arb2 = Utils.CalculatePercentage(1M / crossTicker.AskPrice * pairTicker.BidPrice * marketTicker.AskPrice, 0);
+                            return Math.Max(arb1, arb2);
+                        }
+                        else if (crossMarket == Constants.Markets.USDT)
+                        {
+                            // Buy XVGBTC, Sell XVGUSDT, Buy BTCUSDT
+                            decimal arb1 = Utils.CalculatePercentage(1, 1M / pairTicker.AskPrice * crossTicker.BidPrice / marketTicker.AskPrice);
+                            // Buy BTCUSDT, Buy XVGUSDT, Sell XVGBTC
+                            decimal arb2 = Utils.CalculatePercentage(1M / pairTicker.BidPrice * crossTicker.AskPrice / marketTicker.BidPrice, 0);
+                            return Math.Max(arb1, arb2);
                         }
                     }
                 }
@@ -176,29 +153,57 @@ namespace IntelliTrader.Backtesting
             return 0;
         }
 
-        public Task<IEnumerable<string>> GetMarketPairs(string market)
+        public override string GetArbitrageMarket(string crossMarket)
         {
-            return Task.FromResult(backtestingService.GetCurrentTickers().Keys.AsEnumerable());
+            if (crossMarket == Constants.Markets.ETH || crossMarket == Constants.Markets.BTC)
+            {
+                return Constants.Markets.ETH + Constants.Markets.BTC;
+            }
+            else if (crossMarket == Constants.Markets.BNB)
+            {
+                return Constants.Markets.BNB + Constants.Markets.BTC;
+            }
+            else if (crossMarket == Constants.Markets.USDT)
+            {
+                return Constants.Markets.BTC + Constants.Markets.USDT;
+            }
+            else
+            {
+                throw new NotSupportedException($"Unsupported arbitrage market: {crossMarket}");
+            }
         }
+
+        public override IEnumerable<string> GetMarketPairs(string market)
+        {
+            return backtestingService.GetCurrentTickers().Keys;
+        }
+
+
+
 
         #region Not Needed For Backtesting
 
-        public Task<IOrderDetails> PlaceOrder(IOrder order)
+        protected override ExchangeAPI InitializeApi()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Dictionary<string, decimal>> GetAvailableAmounts()
+        public override IOrderDetails PlaceOrder(IOrder order, string priceCurrency)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<IOrderDetails>> GetMyTrades(string pair)
+        public override Dictionary<string, decimal> GetAvailableAmounts()
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ITicker>> GetTickers()
+        public override IEnumerable<IOrderDetails> GetTrades(string pair)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<ITicker> GetTickers()
         {
             throw new NotImplementedException();
         }

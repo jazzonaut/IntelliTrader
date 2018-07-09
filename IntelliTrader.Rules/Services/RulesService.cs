@@ -44,12 +44,12 @@ namespace IntelliTrader.Rules
                     signal = s;
                 }
 
-                if (condition.MinPrice != null && (tradingService.GetCurrentPrice(pair) < condition.MinPrice) ||
-                    condition.MaxPrice != null && (tradingService.GetCurrentPrice(pair) > condition.MaxPrice) ||
-                    condition.MinSpread != null && (tradingService.GetCurrentSpread(pair) < condition.MinSpread) ||
-                    condition.MaxSpread != null && (tradingService.GetCurrentSpread(pair) > condition.MaxSpread) ||
-                    condition.MinArbitrage != null && (condition.ArbitrageMarket == null || tradingService.GetCurrentArbitrage(pair, condition.ArbitrageMarket) < condition.MinArbitrage) ||
-                    condition.MaxArbitrage != null && (condition.ArbitrageMarket == null || tradingService.GetCurrentArbitrage(pair, condition.ArbitrageMarket) > condition.MaxArbitrage) ||
+                if (condition.MinPrice != null && (tradingService.GetPrice(pair) < condition.MinPrice) ||
+                    condition.MaxPrice != null && (tradingService.GetPrice(pair) > condition.MaxPrice) ||
+                    condition.MinSpread != null && (tradingService.Exchange.GetPriceSpread(pair) < condition.MinSpread) ||
+                    condition.MaxSpread != null && (tradingService.Exchange.GetPriceSpread(pair) > condition.MaxSpread) ||
+                    condition.MinArbitrage != null && (condition.ArbitrageMarket == null || tradingService.Exchange.GetPriceArbitrage(pair, condition.ArbitrageMarket, tradingService.Config.Market) < condition.MinArbitrage) ||
+                    condition.MaxArbitrage != null && (condition.ArbitrageMarket == null || tradingService.Exchange.GetPriceArbitrage(pair, condition.ArbitrageMarket, tradingService.Config.Market) > condition.MaxArbitrage) ||
 
                     condition.MinVolume != null && (signal == null || signal.Volume == null || signal.Volume < condition.MinVolume) ||
                     condition.MaxVolume != null && (signal == null || signal.Volume == null || signal.Volume > condition.MaxVolume) ||
