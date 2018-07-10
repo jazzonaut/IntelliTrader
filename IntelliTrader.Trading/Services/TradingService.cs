@@ -346,7 +346,7 @@ namespace IntelliTrader.Trading
                             {
                                 Arbitrage = true,
                                 ManualOrder = options.ManualOrder,
-                                MaxCost = marketPair.Amount,
+                                Amount = marketPair.Amount / GetPrice(crossMarketPairName),
                                 Metadata = options.Metadata
                             };
                             buyCrossMarketPairOptions.Metadata.LastBuyMargin = 0;

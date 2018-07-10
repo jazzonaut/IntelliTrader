@@ -56,7 +56,8 @@ namespace IntelliTrader.Trading
                     decimal feesMarketCurrency = 0;
                     decimal amountAfterFees = order.AmountFilled;
                     decimal crossMarketConversionRate = 0;
-                    bool isCrossMarket = tradingService.Exchange.GetPairMarket(order.Pair) != tradingService.Config.Market;
+                    string pairMarket = tradingService.Exchange.GetPairMarket(order.Pair);
+                    bool isCrossMarket = pairMarket != tradingService.Config.Market;
                     if (isCrossMarket)
                     {
                         crossMarketConversionRate = tradingService.Exchange.ConvertPairPrice(order.Pair, order.AveragePrice, tradingService.Config.Market);
@@ -123,6 +124,27 @@ namespace IntelliTrader.Trading
                         tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                         tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
                     }
+
+                    if (isCrossMarket)
+                    {
+                        string crossPairName = pairMarket + tradingService.Config.Market;
+                        if (tradingPairs.TryGetValue(crossPairName, out TradingPair crossPair))
+                        {
+                            if (crossPair.Amount > order.RawCost)
+                            {
+                                crossPair.Amount -= order.RawCost;
+
+                                if (crossPair.ActualCost <= tradingService.Config.MinCost)
+                                {
+                                    tradingPairs.TryRemove(crossPairName, out crossPair);
+                                }
+                            }
+                            else
+                            {
+                                tradingPairs.TryRemove(crossPairName, out crossPair);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -136,7 +158,8 @@ namespace IntelliTrader.Trading
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
                         decimal crossMarketConversionRate = 0;
-                        bool isCrossMarket = tradingService.Exchange.GetPairMarket(order.Pair) != tradingService.Config.Market;
+                        string pairMarket = tradingService.Exchange.GetPairMarket(order.Pair);
+                        bool isCrossMarket = pairMarket != tradingService.Config.Market;
                         if (isCrossMarket)
                         {
                             crossMarketConversionRate = tradingService.Exchange.ConvertPairPrice(order.Pair, order.AveragePrice, tradingService.Config.Market);
