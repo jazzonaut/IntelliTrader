@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace IntelliTrader.Backtesting
 {
@@ -198,12 +197,12 @@ namespace IntelliTrader.Backtesting
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<IOrderDetails> GetTrades(string pair)
+        public override IEnumerable<ITicker> GetTickers()
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<ITicker> GetTickers()
+        public override IEnumerable<IOrderDetails> GetTrades(string pair)
         {
             throw new NotImplementedException();
         }

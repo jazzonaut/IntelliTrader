@@ -154,14 +154,19 @@ namespace IntelliTrader.Exchange.Base
             }
         }
 
-        public virtual IEnumerable<string> GetMarkets()
+        public virtual Dictionary<string, decimal> GetAvailableAmounts()
         {
-            return markets.OrderBy(m => m).AsEnumerable();
+            return Api.GetAmountsAvailableToTradeAsync().Result;
         }
 
         public virtual IEnumerable<ITicker> GetTickers()
         {
             return Tickers.Values;
+        }
+
+        public virtual IEnumerable<string> GetMarkets()
+        {
+            return markets.OrderBy(m => m).AsEnumerable();
         }
 
         public virtual IEnumerable<string> GetMarketPairs(string market)
@@ -174,15 +179,16 @@ namespace IntelliTrader.Exchange.Base
             return Api.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0];
         }
 
-        public virtual string ChangePairMarket(string pair, string newMarket)
+        public virtual string ChangePairMarket(string pair, string market)
         {
             string currentMarket = GetPairMarket(pair);
-            return pair.Substring(0, pair.Length - currentMarket.Length) + newMarket;
+            return pair.Substring(0, pair.Length - currentMarket.Length) + market;
         }
 
-        public virtual Dictionary<string, decimal> GetAvailableAmounts()
+        public virtual decimal ConvertPairPrice(string pair, decimal price, string market)
         {
-            return Api.GetAmountsAvailableToTradeAsync().Result;
+            string convertedPair = ChangePairMarket(pair, market);
+            return GetLastPrice(convertedPair) / price;
         }
 
         public virtual decimal GetAskPrice(string pair)

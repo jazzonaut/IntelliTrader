@@ -233,7 +233,7 @@ namespace IntelliTrader.Trading
                         {
                             var buyOptions = new BuyOptions(tradingPair.Pair)
                             {
-                                MaxCost = tradingPair.AverageCostPaid * pairConfig.BuyMultiplier,
+                                MaxCost = tradingPair.ActualCost * pairConfig.BuyMultiplier,
                                 IgnoreExisting = true
                             };
 
@@ -307,7 +307,7 @@ namespace IntelliTrader.Trading
 
         public IOrderDetails PlaceBuyOrder(BuyOptions options)
         {
-            IOrderDetails orderDetails = null;
+            OrderDetails orderDetails = null;
             trailingBuys.TryRemove(options.Pair, out BuyTrailingInfo buyTrailingInfo);
             trailingSells.TryRemove(options.Pair, out SellTrailingInfo sellTrailingInfo);
 
@@ -340,7 +340,7 @@ namespace IntelliTrader.Trading
                     {
                         lock (tradingService.Account.SyncRoot)
                         {
-                            orderDetails = tradingService.Exchange.PlaceOrder(buyOrder);
+                            orderDetails = tradingService.Exchange.PlaceOrder(buyOrder) as OrderDetails;
                             orderDetails.SetMetadata(options.Metadata);
                             tradingService.Account.AddBuyOrder(orderDetails);
                             tradingService.Account.Save();
@@ -348,8 +348,8 @@ namespace IntelliTrader.Trading
 
                             tradingPair = tradingService.Account.GetTradingPair(options.Pair);
                             loggingService.Info("{@Trade}", orderDetails);
-                            loggingService.Info($"Buy order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.AverageCost:0.00000000}");
-                            notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {orderDetails.AverageCost:0.00000000}");
+                            loggingService.Info($"Buy order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.RawCost:0.00000000}");
+                            notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {orderDetails.RawCost:0.00000000}");
                         }
                     }
                     catch (Exception ex)
@@ -365,7 +365,9 @@ namespace IntelliTrader.Trading
                     lock (tradingService.Account.SyncRoot)
                     {
                         decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
+                        string pairMarket = tradingService.Exchange.GetPairMarket(options.Pair);
                         decimal roundedAmount = Math.Round(buyOrder.Amount, 4);
+
                         orderDetails = new OrderDetails
                         {
                             Metadata = options.Metadata,
@@ -381,14 +383,19 @@ namespace IntelliTrader.Trading
                             Fees = roundedAmount * buyPrice * tradingService.Config.VirtualTradingFees,
                             FeesCurrency = tradingService.Config.Market
                         };
+                        if (pairMarket != tradingService.Config.Market)
+                        {
+                            orderDetails.Fees *= tradingService.Exchange.ConvertPairPrice(options.Pair, buyPrice, tradingService.Config.Market);
+                        }
+
                         tradingService.Account.AddBuyOrder(orderDetails);
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
                         tradingPair = tradingService.Account.GetTradingPair(options.Pair);
                         loggingService.Info("{@Trade}", orderDetails);
-                        loggingService.Info($"Virtual buy order result for {tradingPair.FormattedName}. Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Cost: {orderDetails.AverageCost:0.00000000}");
-                        notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {orderDetails.AverageCost:0.00000000}");
+                        loggingService.Info($"Virtual buy order result for {tradingPair.FormattedName}. Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Cost: {orderDetails.RawCost:0.00000000}");
+                        notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {orderDetails.RawCost:0.00000000}");
                     }
                 }
 
@@ -403,7 +410,7 @@ namespace IntelliTrader.Trading
 
         public IOrderDetails PlaceSellOrder(SellOptions options)
         {
-            IOrderDetails orderDetails = null;
+            OrderDetails orderDetails = null;
             trailingSells.TryRemove(options.Pair, out SellTrailingInfo sellTrailingInfo);
             trailingBuys.TryRemove(options.Pair, out BuyTrailingInfo buyTrailingInfo);
 
@@ -418,7 +425,7 @@ namespace IntelliTrader.Trading
                     Type = pairConfig.SellType,
                     Date = DateTimeOffset.Now,
                     Pair = options.Pair,
-                    Amount = options.Amount ?? tradingPair.TotalAmount,
+                    Amount = options.Amount ?? tradingPair.Amount,
                     Price = tradingPair.CurrentPrice
                 };
 
@@ -430,7 +437,7 @@ namespace IntelliTrader.Trading
                     {
                         lock (tradingService.Account.SyncRoot)
                         {
-                            orderDetails = tradingService.Exchange.PlaceOrder(sellOrder, options.ArbitrageMarket);
+                            orderDetails = tradingService.Exchange.PlaceOrder(sellOrder, options.ArbitrageMarket) as OrderDetails;
                             tradingPair.Metadata.SwapPair = options.SwapPair;
                             tradingPair.Metadata.ArbitrageMarket = options.ArbitrageMarket;
                             orderDetails.SetMetadata(tradingPair.Metadata);
@@ -440,7 +447,7 @@ namespace IntelliTrader.Trading
                             tradingService.Account.Save();
                             tradingService.LogOrder(orderDetails);
 
-                            decimal soldMargin = (tradeResult.Profit / (tradeResult.AverageCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
+                            decimal soldMargin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
                             string swapPair = options.SwapPair != null ? $", Swap Pair: {options.SwapPair}" : "";
                             loggingService.Info("{@Trade}", orderDetails);
                             loggingService.Info("{@Trade}", tradeResult);
@@ -461,6 +468,8 @@ namespace IntelliTrader.Trading
                     lock (tradingService.Account.SyncRoot)
                     {
                         decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
+                        string pairMarket = tradingService.Exchange.GetPairMarket(options.Pair);
+
                         orderDetails = new OrderDetails
                         {
                             Metadata = tradingPair.Metadata,
@@ -476,6 +485,11 @@ namespace IntelliTrader.Trading
                             Fees = sellOrder.Amount * sellPrice * tradingService.Config.VirtualTradingFees,
                             FeesCurrency = tradingService.Config.Market
                         };
+                        if (pairMarket != tradingService.Config.Market)
+                        {
+                            orderDetails.Fees *= tradingService.Exchange.ConvertPairPrice(options.Pair, sellPrice, tradingService.Config.Market);
+                        }
+
                         tradingPair.Metadata.SwapPair = options.SwapPair;
                         tradingPair.Metadata.ArbitrageMarket = options.ArbitrageMarket;
                         ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
@@ -484,7 +498,7 @@ namespace IntelliTrader.Trading
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
-                        decimal soldMargin = (tradeResult.Profit / (tradeResult.AverageCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
+                        decimal soldMargin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
                         string swapPair = options.SwapPair != null ? $", Swap Pair: {options.SwapPair}" : "";
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info("{@Trade}", tradeResult);

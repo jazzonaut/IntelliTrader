@@ -13,11 +13,12 @@ namespace IntelliTrader.Core
         public string Pair { get; set; }
         public decimal Amount { get; set; }
         public List<DateTimeOffset> OrderDates { get; set; }
-        public decimal AveragePricePaid { get; set; }
+        public decimal AveragePrice { get; set; }
         public decimal FeesPairCurrency { get; set; }
         public decimal FeesMarketCurrency { get; set; }
-        public decimal Fees => AveragePricePaid * FeesPairCurrency + FeesMarketCurrency;
-        public decimal AverageCost => AveragePricePaid * (Amount + FeesPairCurrency) + FeesMarketCurrency;
+        public decimal FeesTotal => AveragePrice * FeesPairCurrency + FeesMarketCurrency;
+        [JsonProperty(PropertyName = "AverageCost")]
+        public decimal ActualCost => AveragePrice * (Amount + FeesPairCurrency) + FeesMarketCurrency;
         public DateTimeOffset SellDate { get; set; }
         public decimal SellPrice { get; set; }
         public decimal SellCost => SellPrice * Amount;
@@ -32,7 +33,7 @@ namespace IntelliTrader.Core
 
         public void SetArbitrage(bool isArbitrage)
         {
-            this.IsArbitrage = IsArbitrage;
+            this.IsArbitrage = isArbitrage;
         }
     }
 }

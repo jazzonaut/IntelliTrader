@@ -112,16 +112,16 @@ namespace IntelliTrader.Trading
                             }
                         }
 
-                        if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair) && tradingPair.TotalAmount != amount)
+                        if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair) && tradingPair.Amount != amount)
                         {
-                            loggingService.Info($"Fix amount for {pair}: {tradingPair.TotalAmount:0.########} => {amount:0.########}");
-                            tradingPair.TotalAmount = amount;
+                            loggingService.Info($"Fix amount for {pair}: {tradingPair.Amount:0.########} => {amount:0.########}");
+                            tradingPair.Amount = amount;
                         }
                     }
 
                     foreach (var pair in tradingPairs.Keys.ToList())
                     {
-                        if (tradingPairs[pair].AverageCostPaid <= tradingService.Config.MinCost)
+                        if (tradingPairs[pair].ActualCost <= tradingService.Config.MinCost)
                         {
                             loggingService.Info($"Skip low value pair: {pair}");
                             tradingPairs.TryRemove(pair, out TradingPair p);

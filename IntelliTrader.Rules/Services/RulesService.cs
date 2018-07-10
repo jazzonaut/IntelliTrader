@@ -76,8 +76,8 @@ namespace IntelliTrader.Rules
                     condition.MaxMargin != null && (tradingPair == null || tradingPair.CurrentMargin > condition.MaxMargin) ||
                     condition.MinMarginChange != null && (tradingPair == null || tradingPair.Metadata.LastBuyMargin == null || (tradingPair.CurrentMargin - tradingPair.Metadata.LastBuyMargin) < condition.MinMarginChange) ||
                     condition.MaxMarginChange != null && (tradingPair == null || tradingPair.Metadata.LastBuyMargin == null || (tradingPair.CurrentMargin - tradingPair.Metadata.LastBuyMargin) > condition.MaxMarginChange) ||
-                    condition.MinAmount != null && (tradingPair == null || tradingPair.TotalAmount < condition.MinAmount) ||
-                    condition.MaxAmount != null && (tradingPair == null || tradingPair.TotalAmount > condition.MaxAmount) ||
+                    condition.MinAmount != null && (tradingPair == null || tradingPair.Amount < condition.MinAmount) ||
+                    condition.MaxAmount != null && (tradingPair == null || tradingPair.Amount > condition.MaxAmount) ||
                     condition.MinCost != null && (tradingPair == null || tradingPair.CurrentCost < condition.MinCost) ||
                     condition.MaxCost != null && (tradingPair == null || tradingPair.CurrentCost > condition.MaxCost) ||
                     condition.MinDCALevel != null && (tradingPair == null || tradingPair.DCALevel < condition.MinDCALevel) ||

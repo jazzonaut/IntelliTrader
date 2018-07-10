@@ -262,7 +262,7 @@ namespace IntelliTrader.Trading
                     if (CanSell(sellOptions, out message))
                     {
                         decimal currentMargin = oldTradingPair.CurrentMargin;
-                        decimal additionalCosts = oldTradingPair.AverageCostPaid - oldTradingPair.CurrentCost + (oldTradingPair.Metadata.AdditionalCosts ?? 0);
+                        decimal additionalCosts = oldTradingPair.ActualCost - oldTradingPair.CurrentCost + (oldTradingPair.Metadata.AdditionalCosts ?? 0);
                         int additionalDCALevels = oldTradingPair.DCALevel;
 
                         IOrderDetails sellOrderDetails = tradingTimedTask.PlaceSellOrder(sellOptions);
@@ -272,7 +272,7 @@ namespace IntelliTrader.Trading
                             {
                                 Swap = true,
                                 ManualOrder = options.ManualOrder,
-                                MaxCost = sellOrderDetails.AverageCost,
+                                MaxCost = sellOrderDetails.RawCost,
                                 Metadata = options.Metadata
                             };
                             buyOptions.Metadata.LastBuyMargin = currentMargin;
@@ -317,7 +317,7 @@ namespace IntelliTrader.Trading
                 if (CanArbitrage(options, out string message))
                 {
                     IPairConfig pairConfig = GetPairConfig(options.Pair);
-                    decimal totalAdditionalCosts = 0;
+                    decimal combinedAdditionalCosts = 0;
 
                     loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {Exchange.GetPriceArbitrage(options.Pair, options.Market, Config.Market).ToString("0.00")}");
 
@@ -325,7 +325,7 @@ namespace IntelliTrader.Trading
                     var buyMarketPairOptions = new BuyOptions(marketPairName)
                     {
                         Arbitrage = true,
-                        MaxCost = GetPrice(marketPairName) * pairConfig.BuyMaxCost,
+                        MaxCost = pairConfig.BuyMaxCost,
                         ManualOrder = options.ManualOrder,
                         Metadata = options.Metadata
                     };
@@ -339,14 +339,14 @@ namespace IntelliTrader.Trading
                         if (marketPair != null)
                         {
                             marketPair.Metadata.AdditionalCosts = GetAdditionalCosts(buyMarketPairOrderDetails);
-                            totalAdditionalCosts += marketPair.Metadata.AdditionalCosts.GetValueOrDefault();
+                            combinedAdditionalCosts += marketPair.Metadata.AdditionalCosts.GetValueOrDefault();
 
                             string crossMarketPairName = options.Pair.Substring(0, options.Pair.Length - options.Market.Length) + options.Market;
                             var buyCrossMarketPairOptions = new BuyOptions(crossMarketPairName)
                             {
                                 Arbitrage = true,
                                 ManualOrder = options.ManualOrder,
-                                MaxCost = buyMarketPairOrderDetails.AmountFilled,
+                                MaxCost = marketPair.Amount,
                                 Metadata = options.Metadata
                             };
                             buyCrossMarketPairOptions.Metadata.LastBuyMargin = 0;
@@ -356,23 +356,21 @@ namespace IntelliTrader.Trading
                             var crossMarketPair = Account.GetTradingPair(buyCrossMarketPairOptions.Pair) as TradingPair;
                             if (crossMarketPair != null)
                             {
-                                crossMarketPair.Metadata.AdditionalCosts = GetAdditionalCosts(buyCrossMarketPairOrderDetails);
-                                totalAdditionalCosts += crossMarketPair.Metadata.AdditionalCosts.GetValueOrDefault();
+                                crossMarketPair.Metadata.AdditionalCosts = GetAdditionalCosts(buyCrossMarketPairOrderDetails) + combinedAdditionalCosts;
 
                                 var sellCrossMarketPairOptions = new SellOptions(buyCrossMarketPairOptions.Pair)
                                 {
                                     Arbitrage = true,
                                     ArbitrageMarket = options.Market,
-                                    Amount = buyCrossMarketPairOrderDetails.AmountFilled,
+                                    Amount = crossMarketPair.Amount,
                                     ManualOrder = options.ManualOrder
                                 };
                                 IOrderDetails sellCrossMarketPairOrderDetails = tradingTimedTask.PlaceSellOrder(sellCrossMarketPairOptions);
-                                totalAdditionalCosts += GetAdditionalCosts(sellCrossMarketPairOrderDetails);
 
                                 if (!Account.HasTradingPair(sellCrossMarketPairOptions.Pair))
                                 {
-                                    decimal profit = buyCrossMarketPairOrderDetails.AverageCost - sellCrossMarketPairOrderDetails.AverageCost - totalAdditionalCosts;
-                                    loggingService.Info($"Arbitrage result: {options.Pair}->{buyCrossMarketPairOptions.Pair}->{buyMarketPairOptions.Pair}->{Config.Market}. Profit: {profit:0.00000000}");
+                                    decimal profit = buyCrossMarketPairOrderDetails.RawCost - sellCrossMarketPairOrderDetails.RawCost - combinedAdditionalCosts;
+                                    loggingService.Info($"Arbitrage successful: {options.Pair}->{buyCrossMarketPairOptions.Pair}->{buyMarketPairOptions.Pair}->{Config.Market}");
                                 }
                                 else
                                 {
@@ -432,7 +430,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel buy request for {options.Pair}. Reason: maximum pairs reached";
                 return false;
             }
-            else if (!options.ManualOrder && !options.Swap && pairConfig.BuyMinBalance != 0 && (Account.GetBalance() - options.MaxCost) < pairConfig.BuyMinBalance)
+            else if (!options.ManualOrder && !options.Swap && pairConfig.BuyMinBalance != 0 && (Account.GetBalance() - options.MaxCost) < pairConfig.BuyMinBalance && Exchange.GetPairMarket(options.Pair) == Config.Market)
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: minimum balance reached";
                 return false;
@@ -442,7 +440,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel buy request for {options.Pair}. Reason: invalid price";
                 return false;
             }
-            else if (Account.GetBalance() < options.MaxCost)
+            else if (Account.GetBalance() < options.MaxCost && Exchange.GetPairMarket(options.Pair) == Config.Market)
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: not enough balance";
                 return false;

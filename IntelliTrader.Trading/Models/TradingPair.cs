@@ -15,24 +15,28 @@ namespace IntelliTrader.Trading
         public List<string> OrderIds { get; set; }
         public List<DateTimeOffset> OrderDates { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal TotalAmount { get; set; }
+        public decimal Amount { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal AveragePricePaid { get; set; }
+        public decimal AveragePrice { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal FeesPairCurrency { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal FeesMarketCurrency { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal AverageCostPaid => GetAverageCostPaid(TotalAmount);
+        public decimal RawCost => AveragePrice * Amount;
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal CurrentCost => CurrentPrice * TotalAmount;
-        [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
+        public decimal ActualCost => GetActualCost(Amount);
+        [JsonIgnore]
+        public decimal CurrentCost => CurrentPrice * Amount;
+        [JsonIgnore]
         public decimal CurrentPrice { get; set; }
-        [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
+        [JsonIgnore]
         public decimal CurrentSpread { get; set; }
-        [JsonConverter(typeof(DecimalFormatJsonConverter), 2)]
-        public decimal CurrentMargin => Utils.CalculatePercentage(AverageCostPaid + (Metadata.AdditionalCosts ?? 0), CurrentCost);
+        [JsonIgnore]
+        public decimal CurrentMargin => Utils.CalculatePercentage(ActualCost + (Metadata.AdditionalCosts ?? 0), CurrentCost);
+        [JsonIgnore]
         public double CurrentAge => OrderDates != null && OrderDates.Count > 0 ? (DateTimeOffset.Now - OrderDates.Min()).TotalDays : 0;
+        [JsonIgnore]
         public double LastBuyAge => OrderDates != null && OrderDates.Count > 0 ? (DateTimeOffset.Now - OrderDates.Max()).TotalDays : 0;
         public OrderMetadata Metadata { get; set; } = new OrderMetadata();
 
@@ -42,9 +46,9 @@ namespace IntelliTrader.Trading
             CurrentSpread = currentSpread;
         }
 
-        public decimal GetAverageCostPaid(decimal partialAmount)
+        public decimal GetActualCost(decimal partialAmount)
         {
-            return AveragePricePaid * (partialAmount + FeesPairCurrency) + FeesMarketCurrency;
+            return AveragePrice * (partialAmount + FeesPairCurrency) + FeesMarketCurrency;
         }
     }
 }

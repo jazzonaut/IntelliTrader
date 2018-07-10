@@ -52,10 +52,21 @@ namespace IntelliTrader.Trading
             {
                 if (order.Side == OrderSide.Buy && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                 {
-                    decimal balanceDifference = -order.AverageCost;
                     decimal feesPairCurrency = 0;
                     decimal feesMarketCurrency = 0;
                     decimal amountAfterFees = order.AmountFilled;
+                    decimal crossMarketConversionRate = 0;
+                    bool isCrossMarket = tradingService.Exchange.GetPairMarket(order.Pair) != tradingService.Config.Market;
+                    if (isCrossMarket)
+                    {
+                        crossMarketConversionRate = tradingService.Exchange.ConvertPairPrice(order.Pair, order.AveragePrice, tradingService.Config.Market);
+                    }
+
+                    decimal balanceDifference = -order.RawCost;
+                    if (isCrossMarket)
+                    {
+                        balanceDifference *= crossMarketConversionRate;
+                    }
 
                     if (order.Fees != 0 && order.FeesCurrency != null)
                     {
@@ -80,6 +91,7 @@ namespace IntelliTrader.Trading
                     }
                     balance += balanceDifference;
 
+
                     if (tradingPairs.TryGetValue(order.Pair, out TradingPair tradingPair))
                     {
                         if (!tradingPair.OrderIds.Contains(order.OrderId))
@@ -87,10 +99,10 @@ namespace IntelliTrader.Trading
                             tradingPair.OrderIds.Add(order.OrderId);
                             tradingPair.OrderDates.Add(order.Date);
                         }
-                        tradingPair.AveragePricePaid = (tradingPair.AverageCostPaid + order.AverageCost) / (tradingPair.TotalAmount + order.AmountFilled);
+                        tradingPair.AveragePrice = (tradingPair.ActualCost + order.RawCost) / (tradingPair.Amount + order.AmountFilled);
                         tradingPair.FeesPairCurrency += feesPairCurrency;
                         tradingPair.FeesMarketCurrency += feesMarketCurrency;
-                        tradingPair.TotalAmount += amountAfterFees;
+                        tradingPair.Amount += amountAfterFees;
                         tradingPair.Metadata = tradingPair.Metadata.MergeWith(order.Metadata);
                     }
                     else
@@ -100,10 +112,10 @@ namespace IntelliTrader.Trading
                             Pair = order.Pair,
                             OrderIds = new List<string> { order.OrderId },
                             OrderDates = new List<DateTimeOffset> { order.Date },
-                            AveragePricePaid = order.AveragePrice,
+                            AveragePrice = order.AveragePrice,
                             FeesPairCurrency = feesPairCurrency,
                             FeesMarketCurrency = feesMarketCurrency,
-                            TotalAmount = amountAfterFees,
+                            Amount = amountAfterFees,
                             Metadata = order.Metadata
                         };
                         tradingPairs.TryAdd(order.Pair, tradingPair);
@@ -123,7 +135,18 @@ namespace IntelliTrader.Trading
                 {
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
-                        decimal balanceDifference = order.AverageCost;
+                        decimal crossMarketConversionRate = 0;
+                        bool isCrossMarket = tradingService.Exchange.GetPairMarket(order.Pair) != tradingService.Config.Market;
+                        if (isCrossMarket)
+                        {
+                            crossMarketConversionRate = tradingService.Exchange.ConvertPairPrice(order.Pair, order.AveragePrice, tradingService.Config.Market);
+                        }
+
+                        decimal balanceDifference = order.RawCost;
+                        if (isCrossMarket)
+                        {
+                            balanceDifference *= crossMarketConversionRate;
+                        }
 
                         if (order.Fees != 0 && order.FeesCurrency != null)
                         {
@@ -140,9 +163,16 @@ namespace IntelliTrader.Trading
                         }
                         balance += balanceDifference;
 
-                        decimal profit = 
-                            (order.AverageCost - tradingPair.GetAverageCostPaid(order.AmountFilled) - (tradingPair.Metadata.AdditionalCosts ?? 0)) * 
-                            (order.AmountFilled / tradingPair.TotalAmount);
+                        decimal costDifference = 0;
+                        if (isCrossMarket)
+                        {
+                            costDifference = order.RawCost * crossMarketConversionRate - tradingPair.GetActualCost(order.AmountFilled) * crossMarketConversionRate;
+                        }
+                        else
+                        {
+                            costDifference = order.RawCost - tradingPair.GetActualCost(order.AmountFilled);
+                        }
+                        decimal profit = (costDifference - (tradingPair.Metadata.AdditionalCosts ?? 0)) * (order.AmountFilled / tradingPair.Amount);
 
                         var tradeResult = new TradeResult
                         {
@@ -151,7 +181,7 @@ namespace IntelliTrader.Trading
                             Pair = order.Pair,
                             Amount = order.AmountFilled,
                             OrderDates = tradingPair.OrderDates,
-                            AveragePricePaid = tradingPair.AveragePricePaid,
+                            AveragePrice = tradingPair.AveragePrice,
                             FeesPairCurrency = tradingPair.FeesPairCurrency,
                             FeesMarketCurrency = tradingPair.FeesMarketCurrency,
                             SellDate = order.Date,
@@ -160,11 +190,11 @@ namespace IntelliTrader.Trading
                             Profit = profit
                         };
 
-                        if (tradingPair.TotalAmount > order.AmountFilled)
+                        if (tradingPair.Amount > order.AmountFilled)
                         {
-                            tradingPair.TotalAmount -= order.AmountFilled;
+                            tradingPair.Amount -= order.AmountFilled;
 
-                            if (!isInitialRefresh && tradingPair.AverageCostPaid <= tradingService.Config.MinCost)
+                            if (!isInitialRefresh && tradingPair.ActualCost <= tradingService.Config.MinCost)
                             {
                                 tradingPairs.TryRemove(order.Pair, out tradingPair);
                             }

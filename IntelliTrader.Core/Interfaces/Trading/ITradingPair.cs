@@ -11,11 +11,11 @@ namespace IntelliTrader.Core
         int DCALevel { get; }
         List<string> OrderIds { get; }
         List<DateTimeOffset> OrderDates { get; }
-        decimal TotalAmount { get; }
-        decimal AveragePricePaid { get; }
+        decimal Amount { get; }
+        decimal AveragePrice { get; }
         decimal FeesPairCurrency { get; }
         decimal FeesMarketCurrency { get; }
-        decimal AverageCostPaid { get; }
+        decimal ActualCost { get; }
         decimal CurrentCost { get; }
         decimal CurrentPrice { get; }
         decimal CurrentSpread { get; }
