@@ -11,8 +11,10 @@ namespace IntelliTrader.Core
         public string SignalRule { get; set; }
         public List<string> Signals { get; set; }
         public double? BoughtRating { get; set; }
+        [JsonIgnore]
         public double? CurrentRating { get; set; }
         public double? BoughtGlobalRating { get; set; }
+        [JsonIgnore]
         public double? CurrentGlobalRating { get; set; }
         public decimal? LastBuyMargin { get; set; }
         public int? AdditionalDCALevels { get; set; }

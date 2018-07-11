@@ -39,7 +39,7 @@ namespace IntelliTrader.Trading
                     string currency = kvp.Key;
                     decimal amount = kvp.Value;
                     string pair = currency + tradingService.Config.Market;
-                    decimal cost = amount * tradingService.GetPrice(pair, TradePriceType.Last);
+                    decimal cost = amount * tradingService.GetPrice(pair, TradePriceType.Bid);
 
                     if (currency == tradingService.Config.Market)
                     {

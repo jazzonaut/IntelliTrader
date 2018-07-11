@@ -54,29 +54,21 @@ namespace IntelliTrader.Trading
                 if (order.Side == OrderSide.Buy && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                 {
                     decimal feesPairCurrency = 0;
-                    decimal feesMarketCurrency = 0;
+                    decimal feesMarketCurrency = tradingService.CalculateFees(order);
                     decimal amountAfterFees = order.AmountFilled;
                     decimal balanceDifference = -order.RawCost;
 
-                    if (order.Fees != 0 && order.FeesCurrency != null)
+                    if (order.FeesCurrency == tradingService.Config.Market)
                     {
-                        if (order.FeesCurrency == tradingService.Config.Market)
+                        balanceDifference -= feesMarketCurrency;
+                    }
+                    else
+                    {
+                        string feesPair = order.FeesCurrency + tradingService.Config.Market;
+                        if (feesPair == order.Pair)
                         {
-                            feesMarketCurrency = order.Fees;
-                            balanceDifference -= order.Fees;
-                        }
-                        else
-                        {
-                            string feesPair = order.FeesCurrency + tradingService.Config.Market;
-                            if (feesPair == order.Pair)
-                            {
-                                feesPairCurrency = order.Fees;
-                                amountAfterFees -= order.Fees;
-                            }
-                            else
-                            {
-                                feesMarketCurrency = tradingService.GetPrice(feesPair, TradePriceType.Last) * order.Fees;
-                            }
+                            feesPairCurrency = order.Fees;
+                            amountAfterFees -= order.Fees;
                         }
                     }
                     balance += balanceDifference;
@@ -120,9 +112,11 @@ namespace IntelliTrader.Trading
                         string crossPairName = pairMarket + tradingService.Config.Market;
                         if (tradingPairs.TryGetValue(crossPairName, out TradingPair crossPair))
                         {
+                            balance += order.RawCost;
+
                             if (crossPair.RawCost > order.RawCost)
                             {
-                                crossPair.Amount -= order.RawCost / crossPair.AveragePrice;
+                                crossPair.Amount -= order.RawCost / tradingService.GetPrice(crossPairName, TradePriceType.Bid);
 
                                 if (crossPair.ActualCost <= tradingService.Config.MinCost)
                                 {
@@ -147,21 +141,14 @@ namespace IntelliTrader.Trading
                 {
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
+                        decimal feesMarketCurrency = tradingService.CalculateFees(order);
                         decimal balanceDifference = order.RawCost;
 
-                        if (order.Fees != 0 && order.FeesCurrency != null)
+                        if (order.FeesCurrency == tradingService.Config.Market)
                         {
-                            if (order.FeesCurrency == tradingService.Config.Market)
-                            {
-                                tradingPair.FeesMarketCurrency += order.Fees;
-                                balanceDifference -= order.Fees;
-                            }
-                            else
-                            {
-                                string feesPair = order.FeesCurrency + tradingService.Config.Market;
-                                tradingPair.FeesMarketCurrency += tradingService.GetPrice(feesPair, TradePriceType.Last) * order.Fees;
-                            }
+                            balanceDifference -= order.Fees;
                         }
+                        tradingPair.FeesMarketCurrency += feesMarketCurrency;
                         balance += balanceDifference;
 
                         decimal costDifference = order.RawCost - tradingPair.GetActualCost(order.AmountFilled);
@@ -182,6 +169,8 @@ namespace IntelliTrader.Trading
                             BalanceDifference = balanceDifference,
                             Profit = profit
                         };
+
+                        tradingPair.OverrideActualCost(null);
 
                         if (tradingPair.Amount > order.AmountFilled)
                         {

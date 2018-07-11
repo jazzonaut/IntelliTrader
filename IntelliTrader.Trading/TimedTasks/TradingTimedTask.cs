@@ -315,7 +315,7 @@ namespace IntelliTrader.Trading
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
                 ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                decimal currentPrice = tradingService.GetPrice(options.Pair);
+                decimal currentAskPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
                 options.Metadata.TradingRules = pairConfig.Rules.ToList();
                 if (options.Metadata.LastBuyMargin == null)
                 {
@@ -328,8 +328,8 @@ namespace IntelliTrader.Trading
                     Type = pairConfig.BuyType,
                     Date = DateTimeOffset.Now,
                     Pair = options.Pair,
-                    Amount = options.Amount ?? (options.MaxCost.Value / currentPrice),
-                    Price = currentPrice
+                    Amount = options.Amount ?? (options.MaxCost.Value / currentAskPrice),
+                    Price = currentAskPrice
                 };
 
                 if (!tradingService.Config.VirtualTrading)
@@ -350,6 +350,7 @@ namespace IntelliTrader.Trading
                                 if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
                                 {
                                     orderDetails.Fees *= convertedPrice;
+                                    orderDetails.FeesCurrency = tradingService.Config.Market;
                                 }
                             }
 
@@ -375,7 +376,7 @@ namespace IntelliTrader.Trading
 
                     lock (tradingService.Account.SyncRoot)
                     {
-                        decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
+                        decimal buyPrice = currentAskPrice;
                         decimal roundedAmount = Math.Round(buyOrder.Amount, 4);
 
                         orderDetails = new OrderDetails
@@ -396,12 +397,13 @@ namespace IntelliTrader.Trading
 
                         if (tradingService.Exchange.GetPairMarket(options.Pair) != tradingService.Config.Market)
                         {
-                            decimal convertedPrice = tradingService.Exchange.ConvertPrice(options.Pair, buyPrice, tradingService.Config.Market, TradePriceType.Ask);
+                            decimal convertedPrice = tradingService.Exchange.ConvertPrice(options.Pair, buyPrice, tradingService.Config.Market, TradePriceType.Bid);
                             orderDetails.Price *= convertedPrice;
                             orderDetails.AveragePrice *= convertedPrice;
                             if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
                             {
                                 orderDetails.Fees *= convertedPrice;
+                                orderDetails.FeesCurrency = tradingService.Config.Market;
                             }
                         }
 
@@ -466,6 +468,7 @@ namespace IntelliTrader.Trading
                                 if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
                                 {
                                     orderDetails.Fees *= convertedPrice;
+                                    orderDetails.FeesCurrency = tradingService.Config.Market;
                                 }
                             }
 
@@ -521,6 +524,7 @@ namespace IntelliTrader.Trading
                             if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
                             {
                                 orderDetails.Fees *= convertedPrice;
+                                orderDetails.FeesCurrency = tradingService.Config.Market;
                             }
                         }
 

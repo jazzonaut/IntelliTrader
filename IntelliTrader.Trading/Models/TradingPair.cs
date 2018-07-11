@@ -56,7 +56,7 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public void OverrideActualCost(decimal actualCostOverride)
+        public void OverrideActualCost(decimal? actualCostOverride)
         {
             ActualCostOverride = actualCostOverride;
         }

@@ -29,6 +29,7 @@ namespace IntelliTrader.Core
         bool CanSwap(SwapOptions options, out string message);
         bool CanArbitrage(ArbitrageOptions options, out string message);
         decimal GetPrice(string pair, TradePriceType? priceType = null);
+        decimal CalculateFees(IOrderDetails order);
         void LogOrder(IOrderDetails order);
         List<string> GetTrailingBuys();
         List<string> GetTrailingSells();

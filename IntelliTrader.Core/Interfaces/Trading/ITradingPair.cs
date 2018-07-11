@@ -28,7 +28,7 @@ namespace IntelliTrader.Core
         OrderMetadata Metadata { get; }
 
         decimal GetActualCost(decimal partialAmount);
-        void OverrideActualCost(decimal actualCostOverride);
+        void OverrideActualCost(decimal? actualCostOverride);
         void SetCurrentValues(decimal currentPrice, decimal currentSpread);
     }
 }

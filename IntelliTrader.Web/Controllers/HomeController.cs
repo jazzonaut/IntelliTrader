@@ -156,7 +156,7 @@ namespace IntelliTrader.Web.Controllers
             decimal accountBalance = tradingService.Account.GetBalance();
             foreach (var tradingPair in tradingService.Account.GetTradingPairs())
             {
-                accountBalance += tradingService.GetPrice(tradingPair.Pair, TradePriceType.Last) * tradingPair.Amount;
+                accountBalance += tradingService.GetPrice(tradingPair.Pair, TradePriceType.Bid) * tradingPair.Amount;
             }
 
             var model = new StatsViewModel
