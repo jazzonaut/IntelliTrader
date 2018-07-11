@@ -317,76 +317,76 @@ namespace IntelliTrader.Trading
                 if (CanArbitrage(options, out string message))
                 {
                     IPairConfig pairConfig = GetPairConfig(options.Pair);
-                    decimal combinedAdditionalCosts = 0;
+                    decimal arbitrage = Exchange.GetPriceArbitrage(options.Pair, options.Market, Config.Market);
+                    decimal combinedFees = 0;
 
-                    loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {Exchange.GetPriceArbitrage(options.Pair, options.Market, Config.Market).ToString("0.00")}");
+                    loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {arbitrage:0.00}");
 
-                    string marketPairName = Exchange.GetArbitrageMarket(options.Market);
-                    var buyMarketPairOptions = new BuyOptions(marketPairName)
+                    string arbitrageMarketPairName = Exchange.GetArbitrageMarket(options.Market);
+                    var buyArbitrageMarketPairOptions = new BuyOptions(arbitrageMarketPairName)
                     {
                         Arbitrage = true,
                         MaxCost = pairConfig.BuyMaxCost,
                         ManualOrder = options.ManualOrder,
                         Metadata = options.Metadata
                     };
-                    buyMarketPairOptions.Metadata.LastBuyMargin = 0;
-                    buyMarketPairOptions.Metadata.ArbitrageMarket = options.Market;
+                    buyArbitrageMarketPairOptions.Metadata.LastBuyMargin = 0;
+                    buyArbitrageMarketPairOptions.Metadata.ArbitrageMarket = options.Market;
 
-                    if (CanBuy(buyMarketPairOptions, out message))
+                    if (CanBuy(buyArbitrageMarketPairOptions, out message))
                     {
-                        IOrderDetails buyMarketPairOrderDetails = tradingTimedTask.PlaceBuyOrder(buyMarketPairOptions);
-                        var marketPair = Account.GetTradingPair(buyMarketPairOptions.Pair) as TradingPair;
-                        if (marketPair != null)
+                        IOrderDetails buyMarketPairOrderDetails = tradingTimedTask.PlaceBuyOrder(buyArbitrageMarketPairOptions);
+                        var arbitrageMarketPair = Account.GetTradingPair(arbitrageMarketPairName);
+                        if (arbitrageMarketPair != null)
                         {
-                            marketPair.Metadata.AdditionalCosts = GetAdditionalCosts(buyMarketPairOrderDetails);
-                            combinedAdditionalCosts += marketPair.Metadata.AdditionalCosts.GetValueOrDefault();
+                            combinedFees += arbitrageMarketPair.FeesTotal;
 
-                            string crossMarketPairName = options.Pair.Substring(0, options.Pair.Length - options.Market.Length) + options.Market;
+                            string crossMarketPairName = Exchange.ChangePairMarket(options.Pair, options.Market);
                             var buyCrossMarketPairOptions = new BuyOptions(crossMarketPairName)
                             {
                                 Arbitrage = true,
                                 ManualOrder = options.ManualOrder,
-                                Amount = marketPair.Amount / GetPrice(crossMarketPairName),
+                                Amount = arbitrageMarketPair.Amount / GetPrice(crossMarketPairName),
                                 Metadata = options.Metadata
                             };
                             buyCrossMarketPairOptions.Metadata.LastBuyMargin = 0;
                             buyCrossMarketPairOptions.Metadata.ArbitrageMarket = options.Market;
                             IOrderDetails buyCrossMarketPairOrderDetails = tradingTimedTask.PlaceBuyOrder(buyCrossMarketPairOptions);
 
-                            var crossMarketPair = Account.GetTradingPair(buyCrossMarketPairOptions.Pair) as TradingPair;
+                            var crossMarketPair = Account.GetTradingPair(crossMarketPairName);
                             if (crossMarketPair != null)
                             {
-                                crossMarketPair.Metadata.AdditionalCosts = GetAdditionalCosts(buyCrossMarketPairOrderDetails) + combinedAdditionalCosts;
+                                combinedFees += crossMarketPair.FeesTotal;
 
-                                var sellCrossMarketPairOptions = new SellOptions(buyCrossMarketPairOptions.Pair)
+                                var sellCrossMarketPairOptions = new SellOptions(crossMarketPairName)
                                 {
                                     Arbitrage = true,
                                     ArbitrageMarket = options.Market,
                                     Amount = crossMarketPair.Amount,
                                     ManualOrder = options.ManualOrder
                                 };
+                                crossMarketPair.Metadata.AdditionalCosts = combinedFees;
                                 IOrderDetails sellCrossMarketPairOrderDetails = tradingTimedTask.PlaceSellOrder(sellCrossMarketPairOptions);
 
-                                if (!Account.HasTradingPair(sellCrossMarketPairOptions.Pair))
+                                if (!Account.HasTradingPair(crossMarketPairName))
                                 {
-                                    decimal profit = buyCrossMarketPairOrderDetails.RawCost - sellCrossMarketPairOrderDetails.RawCost - combinedAdditionalCosts;
-                                    loggingService.Info($"Arbitrage successful: {options.Pair}->{buyCrossMarketPairOptions.Pair}->{buyMarketPairOptions.Pair}->{Config.Market}");
+                                    loggingService.Info($"Arbitrage successful: {options.Pair}->{crossMarketPairName}->{arbitrageMarketPairName}->{Config.Market}");
                                 }
                                 else
                                 {
-                                    loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to sell {sellCrossMarketPairOptions.Pair}");
-                                    notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to sell {sellCrossMarketPairOptions.Pair}");
+                                    loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to sell cross market pair {crossMarketPairName}");
+                                    notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to sell cross market pair {crossMarketPairName}");
                                 }
                             }
                             else
                             {
-                                loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy {buyCrossMarketPairOptions.Pair}");
-                                notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to buy {buyCrossMarketPairOptions.Pair}");
+                                loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy cross market pair {crossMarketPairName}");
+                                notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to buy cross market pair {crossMarketPairName}");
                             }
                         }
                         else
                         {
-                            loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy {buyMarketPairOptions.Pair}");
+                            loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy arbitrage market pair {arbitrageMarketPairName}");
                         }
                     }
                     else

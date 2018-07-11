@@ -15,6 +15,7 @@ namespace IntelliTrader.Core
         decimal AveragePrice { get; }
         decimal FeesPairCurrency { get; }
         decimal FeesMarketCurrency { get; }
+        decimal FeesTotal { get; }
         decimal ActualCost { get; }
         decimal CurrentCost { get; }
         decimal CurrentPrice { get; }
