@@ -342,6 +342,17 @@ namespace IntelliTrader.Trading
                         {
                             orderDetails = tradingService.Exchange.PlaceOrder(buyOrder) as OrderDetails;
                             orderDetails.SetMetadata(options.Metadata);
+                            if (tradingService.Exchange.GetPairMarket(options.Pair) != tradingService.Config.Market)
+                            {
+                                decimal convertedPrice = tradingService.Exchange.ConvertPrice(options.Pair, orderDetails.AveragePrice, tradingService.Config.Market, TradePriceType.Ask);
+                                orderDetails.Price *= convertedPrice;
+                                orderDetails.AveragePrice *= convertedPrice;
+                                if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
+                                {
+                                    orderDetails.Fees *= convertedPrice;
+                                }
+                            }
+
                             tradingService.Account.AddBuyOrder(orderDetails);
                             tradingService.Account.Save();
                             tradingService.LogOrder(orderDetails);
@@ -380,11 +391,18 @@ namespace IntelliTrader.Trading
                             Price = buyPrice,
                             AveragePrice = buyPrice,
                             Fees = roundedAmount * buyPrice * tradingService.Config.VirtualTradingFees,
-                            FeesCurrency = tradingService.Config.Market
+                            FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
                         };
+
                         if (tradingService.Exchange.GetPairMarket(options.Pair) != tradingService.Config.Market)
                         {
-                            orderDetails.Fees *= tradingService.Exchange.ConvertPrice(options.Pair, buyPrice, tradingService.Config.Market, TradePriceType.Ask);
+                            decimal convertedPrice = tradingService.Exchange.ConvertPrice(options.Pair, buyPrice, tradingService.Config.Market, TradePriceType.Ask);
+                            orderDetails.Price *= convertedPrice;
+                            orderDetails.AveragePrice *= convertedPrice;
+                            if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
+                            {
+                                orderDetails.Fees *= convertedPrice;
+                            }
                         }
 
                         tradingService.Account.AddBuyOrder(orderDetails);
@@ -440,6 +458,17 @@ namespace IntelliTrader.Trading
                             tradingPair.Metadata.SwapPair = options.SwapPair;
                             tradingPair.Metadata.ArbitrageMarket = options.ArbitrageMarket;
                             orderDetails.SetMetadata(tradingPair.Metadata);
+                            if (tradingService.Exchange.GetPairMarket(options.Pair) != tradingService.Config.Market)
+                            {
+                                decimal convertedPrice = tradingService.Exchange.ConvertPrice(options.Pair, orderDetails.AveragePrice, tradingService.Config.Market, TradePriceType.Bid);
+                                orderDetails.Price *= convertedPrice;
+                                orderDetails.AveragePrice *= convertedPrice;
+                                if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
+                                {
+                                    orderDetails.Fees *= convertedPrice;
+                                }
+                            }
+
                             ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
                             tradeResult.SetSwap(options.Swap);
                             tradeResult.SetArbitrage(options.Arbitrage);
@@ -481,11 +510,18 @@ namespace IntelliTrader.Trading
                             Price = sellPrice,
                             AveragePrice = sellPrice,
                             Fees = sellOrder.Amount * sellPrice * tradingService.Config.VirtualTradingFees,
-                            FeesCurrency = tradingService.Config.Market
+                            FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
                         };
+
                         if (tradingService.Exchange.GetPairMarket(options.Pair) != tradingService.Config.Market)
                         {
-                            orderDetails.Fees *= tradingService.Exchange.ConvertPrice(options.Pair, sellPrice, tradingService.Config.Market, TradePriceType.Bid);
+                            decimal convertedPrice = tradingService.Exchange.ConvertPrice(options.Pair, sellPrice, tradingService.Config.Market, TradePriceType.Bid);
+                            orderDetails.Price *= convertedPrice;
+                            orderDetails.AveragePrice *= convertedPrice;
+                            if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(options.Pair))
+                            {
+                                orderDetails.Fees *= convertedPrice;
+                            }
                         }
 
                         tradingPair.Metadata.SwapPair = options.SwapPair;

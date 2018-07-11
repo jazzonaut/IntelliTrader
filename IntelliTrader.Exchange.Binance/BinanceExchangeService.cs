@@ -94,26 +94,26 @@ namespace IntelliTrader.Exchange.Binance
                         if (crossMarket == Constants.Markets.ETH)
                         {
                             // Buy XVGBTC, Sell XVGETH, Sell ETHBTC
-                            decimal arb1 = Utils.CalculatePercentage(1, 1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice);
+                            // decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice - 1) * 100;
                             // Buy ETHBTC, Buy XVGETH, Sell XVGBTC
-                            decimal arb2 = Utils.CalculatePercentage(1M / crossTicker.AskPrice * pairTicker.BidPrice * marketTicker.AskPrice, 0);
-                            return Math.Max(arb1, arb2);
+                            decimal flipArbitrage = (1 - 1 / pairTicker.BidPrice * crossTicker.AskPrice * marketTicker.AskPrice) * 100;
+                            return flipArbitrage;
                         }
                         else if (crossMarket == Constants.Markets.BNB)
                         {
                             // Buy XVGBTC, Sell XVGBNB, Sell BNBBTC
-                            decimal arb1 = Utils.CalculatePercentage(1, 1M / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice);
+                            // decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice - 1) * 100;
                             // Buy BNBBTC, Buy XVGBNB, Sell XVGBTC
-                            decimal arb2 = Utils.CalculatePercentage(1M / crossTicker.AskPrice * pairTicker.BidPrice * marketTicker.AskPrice, 0);
-                            return Math.Max(arb1, arb2);
+                            decimal flipArbitrage = (1 - 1 / pairTicker.BidPrice * crossTicker.AskPrice * marketTicker.AskPrice) * 100;
+                            return flipArbitrage;
                         }
                         else if (crossMarket == Constants.Markets.USDT)
                         {
                             // Buy XVGBTC, Sell XVGUSDT, Buy BTCUSDT
-                            decimal arb1 = Utils.CalculatePercentage(1, 1M / pairTicker.AskPrice * crossTicker.BidPrice / marketTicker.AskPrice);
+                            //decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice / marketTicker.AskPrice - 1) * 100;
                             // Buy BTCUSDT, Buy XVGUSDT, Sell XVGBTC
-                            decimal arb2 = Utils.CalculatePercentage(1M / pairTicker.BidPrice * crossTicker.AskPrice / marketTicker.BidPrice, 0);
-                            return Math.Max(arb1, arb2);
+                            decimal flipArbitrage = (1 - 1 / pairTicker.BidPrice * crossTicker.AskPrice / marketTicker.BidPrice) * 100;
+                            return flipArbitrage;
                         }
                     }
                 }

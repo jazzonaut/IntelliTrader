@@ -56,20 +56,7 @@ namespace IntelliTrader.Trading
                     decimal feesPairCurrency = 0;
                     decimal feesMarketCurrency = 0;
                     decimal amountAfterFees = order.AmountFilled;
-                    decimal crossMarketConversionRate = 0;
-                    string pairMarket = tradingService.Exchange.GetPairMarket(order.Pair);
-                    bool isCrossMarket = pairMarket != tradingService.Config.Market;
-                    if (isCrossMarket)
-                    {
-                        crossMarketConversionRate = tradingService.Exchange.ConvertPrice(order.Pair, order.AveragePrice, tradingService.Config.Market, 
-                            IsVirtual ? TradePriceType.Ask : tradingService.Config.TradePriceType);
-                    }
-
                     decimal balanceDifference = -order.RawCost;
-                    if (isCrossMarket)
-                    {
-                        balanceDifference *= crossMarketConversionRate;
-                    }
 
                     if (order.Fees != 0 && order.FeesCurrency != null)
                     {
@@ -93,7 +80,6 @@ namespace IntelliTrader.Trading
                         }
                     }
                     balance += balanceDifference;
-
 
                     if (tradingPairs.TryGetValue(order.Pair, out TradingPair tradingPair))
                     {
@@ -127,14 +113,16 @@ namespace IntelliTrader.Trading
                         tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
                     }
 
+                    string pairMarket = tradingService.Exchange.GetPairMarket(order.Pair);
+                    bool isCrossMarket = pairMarket != tradingService.Config.Market;
                     if (isCrossMarket)
                     {
                         string crossPairName = pairMarket + tradingService.Config.Market;
                         if (tradingPairs.TryGetValue(crossPairName, out TradingPair crossPair))
                         {
-                            if (crossPair.Amount > order.RawCost)
+                            if (crossPair.RawCost > order.RawCost)
                             {
-                                crossPair.Amount -= order.RawCost;
+                                crossPair.Amount -= order.RawCost / crossPair.AveragePrice;
 
                                 if (crossPair.ActualCost <= tradingService.Config.MinCost)
                                 {
@@ -159,20 +147,7 @@ namespace IntelliTrader.Trading
                 {
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
-                        decimal crossMarketConversionRate = 0;
-                        string pairMarket = tradingService.Exchange.GetPairMarket(order.Pair);
-                        bool isCrossMarket = pairMarket != tradingService.Config.Market;
-                        if (isCrossMarket)
-                        {
-                            crossMarketConversionRate = tradingService.Exchange.ConvertPrice(order.Pair, order.AveragePrice, tradingService.Config.Market, 
-                                IsVirtual ? TradePriceType.Bid : tradingService.Config.TradePriceType);
-                        }
-
                         decimal balanceDifference = order.RawCost;
-                        if (isCrossMarket)
-                        {
-                            balanceDifference *= crossMarketConversionRate;
-                        }
 
                         if (order.Fees != 0 && order.FeesCurrency != null)
                         {
@@ -189,15 +164,7 @@ namespace IntelliTrader.Trading
                         }
                         balance += balanceDifference;
 
-                        decimal costDifference = 0;
-                        if (isCrossMarket)
-                        {
-                            costDifference = order.RawCost * crossMarketConversionRate - tradingPair.GetActualCost(order.AmountFilled) * crossMarketConversionRate;
-                        }
-                        else
-                        {
-                            costDifference = order.RawCost - tradingPair.GetActualCost(order.AmountFilled);
-                        }
+                        decimal costDifference = order.RawCost - tradingPair.GetActualCost(order.AmountFilled);
                         decimal profit = (costDifference - (tradingPair.Metadata.AdditionalCosts ?? 0)) * (order.AmountFilled / tradingPair.Amount);
 
                         var tradeResult = new TradeResult

@@ -29,6 +29,8 @@ namespace IntelliTrader.Trading
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal ActualCost => GetActualCost(Amount);
         [JsonIgnore]
+        public decimal? ActualCostOverride { get; set; }
+        [JsonIgnore]
         public decimal CurrentCost => CurrentPrice * Amount;
         [JsonIgnore]
         public decimal CurrentPrice { get; set; }
@@ -42,15 +44,27 @@ namespace IntelliTrader.Trading
         public double LastBuyAge => OrderDates != null && OrderDates.Count > 0 ? (DateTimeOffset.Now - OrderDates.Max()).TotalDays : 0;
         public OrderMetadata Metadata { get; set; } = new OrderMetadata();
 
+        public decimal GetActualCost(decimal partialAmount)
+        {
+            if (ActualCostOverride.HasValue)
+            {
+                return ActualCostOverride.Value;
+            }
+            else
+            {
+                return AveragePrice * (partialAmount + FeesPairCurrency) + FeesMarketCurrency;
+            }
+        }
+
+        public void OverrideActualCost(decimal actualCostOverride)
+        {
+            ActualCostOverride = actualCostOverride;
+        }
+
         public void SetCurrentValues(decimal currentPrice, decimal currentSpread)
         {
             CurrentPrice = currentPrice;
             CurrentSpread = currentSpread;
-        }
-
-        public decimal GetActualCost(decimal partialAmount)
-        {
-            return AveragePrice * (partialAmount + FeesPairCurrency) + FeesMarketCurrency;
         }
     }
 }

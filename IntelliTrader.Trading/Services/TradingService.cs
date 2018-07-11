@@ -334,7 +334,7 @@ namespace IntelliTrader.Trading
 
                     if (CanBuy(buyArbitrageMarketPairOptions, out message))
                     {
-                        IOrderDetails buyMarketPairOrderDetails = tradingTimedTask.PlaceBuyOrder(buyArbitrageMarketPairOptions);
+                        IOrderDetails buyArbitrageMarketPairOrderDetails = tradingTimedTask.PlaceBuyOrder(buyArbitrageMarketPairOptions);
                         var arbitrageMarketPair = Account.GetTradingPair(arbitrageMarketPairName);
                         if (arbitrageMarketPair != null)
                         {
@@ -364,7 +364,7 @@ namespace IntelliTrader.Trading
                                     Amount = crossMarketPair.Amount,
                                     ManualOrder = options.ManualOrder
                                 };
-                                crossMarketPair.Metadata.AdditionalCosts = combinedFees;
+                                crossMarketPair.OverrideActualCost(buyArbitrageMarketPairOrderDetails.RawCost + combinedFees);
                                 IOrderDetails sellCrossMarketPairOrderDetails = tradingTimedTask.PlaceSellOrder(sellCrossMarketPairOptions);
 
                                 if (!Account.HasTradingPair(crossMarketPairName))
