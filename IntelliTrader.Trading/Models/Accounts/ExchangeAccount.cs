@@ -12,6 +12,8 @@ namespace IntelliTrader.Trading
     {
         private const string BACKUP_DIR = "backup";
 
+        public override bool IsVirtual => false;
+
         public ExchangeAccount(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
             : base(loggingService, notificationService, healthCheckService, signalsService, tradingService)
         {
@@ -35,10 +37,9 @@ namespace IntelliTrader.Trading
                 foreach (var kvp in tradingService.Exchange.GetAvailableAmounts())
                 {
                     string currency = kvp.Key;
-                    string pair = currency + tradingService.Config.Market;
                     decimal amount = kvp.Value;
-                    decimal price = tradingService.GetPrice(pair);
-                    decimal cost = amount * price;
+                    string pair = currency + tradingService.Config.Market;
+                    decimal cost = amount * tradingService.GetPrice(pair, TradePriceType.Last);
 
                     if (currency == tradingService.Config.Market)
                     {

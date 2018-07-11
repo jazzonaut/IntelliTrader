@@ -10,6 +10,7 @@ namespace IntelliTrader.Trading
     internal abstract class TradingAccountBase : ITradingAccount
     {
         public object SyncRoot { get; private set; } = new object();
+        public abstract bool IsVirtual { get; }
 
         protected readonly ILoggingService loggingService;
         protected readonly INotificationService notificationService;
@@ -60,7 +61,8 @@ namespace IntelliTrader.Trading
                     bool isCrossMarket = pairMarket != tradingService.Config.Market;
                     if (isCrossMarket)
                     {
-                        crossMarketConversionRate = tradingService.Exchange.ConvertPairPrice(order.Pair, order.AveragePrice, tradingService.Config.Market);
+                        crossMarketConversionRate = tradingService.Exchange.ConvertPrice(order.Pair, order.AveragePrice, tradingService.Config.Market, 
+                            IsVirtual ? TradePriceType.Ask : tradingService.Config.TradePriceType);
                     }
 
                     decimal balanceDifference = -order.RawCost;
@@ -86,7 +88,7 @@ namespace IntelliTrader.Trading
                             }
                             else
                             {
-                                feesMarketCurrency = tradingService.GetPrice(feesPair) * order.Fees;
+                                feesMarketCurrency = tradingService.GetPrice(feesPair, TradePriceType.Last) * order.Fees;
                             }
                         }
                     }
@@ -162,7 +164,8 @@ namespace IntelliTrader.Trading
                         bool isCrossMarket = pairMarket != tradingService.Config.Market;
                         if (isCrossMarket)
                         {
-                            crossMarketConversionRate = tradingService.Exchange.ConvertPairPrice(order.Pair, order.AveragePrice, tradingService.Config.Market);
+                            crossMarketConversionRate = tradingService.Exchange.ConvertPrice(order.Pair, order.AveragePrice, tradingService.Config.Market, 
+                                IsVirtual ? TradePriceType.Bid : tradingService.Config.TradePriceType);
                         }
 
                         decimal balanceDifference = order.RawCost;
@@ -181,7 +184,7 @@ namespace IntelliTrader.Trading
                             else
                             {
                                 string feesPair = order.FeesCurrency + tradingService.Config.Market;
-                                tradingPair.FeesMarketCurrency += tradingService.GetPrice(feesPair) * order.Fees;
+                                tradingPair.FeesMarketCurrency += tradingService.GetPrice(feesPair, TradePriceType.Last) * order.Fees;
                             }
                         }
                         balance += balanceDifference;

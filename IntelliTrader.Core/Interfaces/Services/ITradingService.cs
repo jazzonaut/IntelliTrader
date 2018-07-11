@@ -11,13 +11,13 @@ namespace IntelliTrader.Core
         ITradingConfig Config { get; }
         IModuleRules Rules { get; }
         IExchangeService Exchange { get; }
+        ITradingAccount Account { get; }
+        ConcurrentStack<IOrderDetails> OrderHistory { get; }
         bool IsTradingSuspended { get; }
         void Start();
         void Stop();
         void ResumeTrading(bool forced = false);
         void SuspendTrading(bool forced = false);
-        ITradingAccount Account { get; }
-        ConcurrentStack<IOrderDetails> OrderHistory { get; }
         IPairConfig GetPairConfig(string pair);
         void ReapplyTradingRules();
         void Buy(BuyOptions options);
@@ -28,10 +28,9 @@ namespace IntelliTrader.Core
         bool CanSell(SellOptions options, out string message);
         bool CanSwap(SwapOptions options, out string message);
         bool CanArbitrage(ArbitrageOptions options, out string message);
-        decimal GetAdditionalCosts(IOrderDetails order);
+        decimal GetPrice(string pair, TradePriceType? priceType = null);
         void LogOrder(IOrderDetails order);
         List<string> GetTrailingBuys();
         List<string> GetTrailingSells();
-        decimal GetPrice(string pair, TradePriceType? priceType = null);
     }
 }

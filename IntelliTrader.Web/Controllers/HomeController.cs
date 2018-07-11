@@ -156,7 +156,7 @@ namespace IntelliTrader.Web.Controllers
             decimal accountBalance = tradingService.Account.GetBalance();
             foreach (var tradingPair in tradingService.Account.GetTradingPairs())
             {
-                accountBalance += tradingService.GetPrice(tradingPair.Pair) * tradingPair.Amount;
+                accountBalance += tradingService.GetPrice(tradingPair.Pair, TradePriceType.Last) * tradingPair.Amount;
             }
 
             var model = new StatsViewModel
@@ -618,7 +618,9 @@ namespace IntelliTrader.Web.Controllers
                         if (match.Success)
                         {
                             var data = match.Groups["data"].ToString();
-                            var json = Utils.FixInvalidJson(data.Replace(nameof(OrderMetadata), ""));
+                            var json = Utils.FixInvalidJson(data.Replace(nameof(OrderMetadata), ""))
+                                .Replace("AveragePricePaid", nameof(ITradeResult.AveragePrice)); // Old property migration
+
                             TradeResult tradeResult = JsonConvert.DeserializeObject<TradeResult>(json);
                             if (tradeResult.IsSuccessful)
                             {

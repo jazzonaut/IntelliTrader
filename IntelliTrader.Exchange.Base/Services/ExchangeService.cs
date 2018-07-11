@@ -11,10 +11,10 @@ namespace IntelliTrader.Exchange.Base
 {
     public abstract class ExchangeService : ConfigrableServiceBase<ExchangeConfig>, IExchangeService
     {
-        public const int MAX_TICKERS_AGE_TO_RECONNECT_SECONDS = 60;
-        public const int INITIAL_TICKERS_TIMEOUT_SECONDS = 5;
+        public const int SOCKET_DISPOSE_TIMEOUT_MILLISECONDS = 10000;
+        public const int MAX_TICKERS_AGE_TO_RECONNECT_MILLISECONDS = 60000;
+        public const int INITIAL_TICKERS_TIMEOUT_MILLISECONDS = 5000;
         public const int INITIAL_TICKERS_RETRY_LIMIT = 4;
-        public const int SOCKET_DISPOSE_TIMEOUT_SECONDS = 10;
 
         public override string ServiceName => Constants.ServiceNames.ExchangeService;
 
@@ -29,7 +29,7 @@ namespace IntelliTrader.Exchange.Base
         private ConcurrentBag<string> markets;
         private TickersMonitorTimedTask tickersMonitorTimedTask;
         private DateTimeOffset lastTickersUpdate;
-        private bool tickersChecked;
+        private bool tickersStarted;
 
         public ExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService, ITasksService tasksService)
         {
@@ -37,16 +37,6 @@ namespace IntelliTrader.Exchange.Base
             this.healthCheckService = healthCheckService;
             this.tasksService = tasksService;
         }
-
-        protected abstract ExchangeAPI InitializeApi();
-
-        public abstract IOrderDetails PlaceOrder(IOrder order, string priceCurrency = null);
-
-        public abstract IEnumerable<IOrderDetails> GetTrades(string pair);
-
-        public abstract decimal GetPriceArbitrage(string pair, string crossMarket, string market);
-
-        public abstract string GetArbitrageMarket(string crossMarket);
 
         public virtual void Start(bool virtualTrading)
         {
@@ -68,9 +58,9 @@ namespace IntelliTrader.Exchange.Base
 
             loggingService.Info("Get initial ticker values...");
             IEnumerable<KeyValuePair<string, ExchangeTicker>> exchangeTickers = null;
-            for (int retry = 0; retry < ExchangeService.INITIAL_TICKERS_RETRY_LIMIT; retry++)
+            for (int retry = 0; retry < INITIAL_TICKERS_RETRY_LIMIT; retry++)
             {
-                Task.Run(() => exchangeTickers = Api.GetTickers()).Wait(TimeSpan.FromSeconds(ExchangeService.INITIAL_TICKERS_TIMEOUT_SECONDS));
+                Task.Run(() => exchangeTickers = Api.GetTickers()).Wait(TimeSpan.FromMilliseconds(INITIAL_TICKERS_TIMEOUT_MILLISECONDS));
                 if (exchangeTickers != null) break;
             }
             if (exchangeTickers != null)
@@ -112,6 +102,9 @@ namespace IntelliTrader.Exchange.Base
             loggingService.Info("Exchange service stopped");
         }
 
+        protected abstract ExchangeAPI InitializeApi();
+
+        public abstract IOrderDetails PlaceOrder(IOrder order, string priceCurrency = null);
 
         public void ConnectTickersWebsocket()
         {
@@ -124,9 +117,9 @@ namespace IntelliTrader.Exchange.Base
                 tickersMonitorTimedTask = tasksService.AddTask(
                     name: nameof(TickersMonitorTimedTask),
                     task: new TickersMonitorTimedTask(loggingService, this),
-                    interval: MAX_TICKERS_AGE_TO_RECONNECT_SECONDS / 2,
+                    interval: MAX_TICKERS_AGE_TO_RECONNECT_MILLISECONDS / 2,
                     startDelay: Constants.TaskDelays.ZeroDelay,
-                    startTask: false,
+                    startTask: tickersStarted,
                     runNow: false,
                     skipIteration: 0);
             }
@@ -144,7 +137,7 @@ namespace IntelliTrader.Exchange.Base
 
                 loggingService.Info("Disconnect from Exchange tickers...");
                 // Give Dispose 10 seconds to complete and then time out if not
-                Task.Run(() => socket.Dispose()).Wait(TimeSpan.FromSeconds(SOCKET_DISPOSE_TIMEOUT_SECONDS));
+                Task.Run(() => socket.Dispose()).Wait(TimeSpan.FromMilliseconds(SOCKET_DISPOSE_TIMEOUT_MILLISECONDS));
                 socket = null;
                 loggingService.Info("Disconnected from Exchange tickers");
             }
@@ -152,11 +145,6 @@ namespace IntelliTrader.Exchange.Base
             {
                 loggingService.Error("Unable to disconnect from Exchange tickers", ex);
             }
-        }
-
-        public virtual Dictionary<string, decimal> GetAvailableAmounts()
-        {
-            return Api.GetAmountsAvailableToTradeAsync().Result;
         }
 
         public virtual IEnumerable<ITicker> GetTickers()
@@ -174,52 +162,29 @@ namespace IntelliTrader.Exchange.Base
             return Tickers.Keys.Where(t => t.EndsWith(market));
         }
 
-        public virtual string GetPairMarket(string pair)
+        public virtual Dictionary<string, decimal> GetAvailableAmounts()
         {
-            return Api.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0];
+            return Api.GetAmountsAvailableToTradeAsync().Result;
         }
 
-        public virtual string ChangePairMarket(string pair, string market)
-        {
-            string currentMarket = GetPairMarket(pair);
-            return pair.Substring(0, pair.Length - currentMarket.Length) + market;
-        }
+        public abstract IEnumerable<IOrderDetails> GetTrades(string pair);
 
-        public virtual decimal ConvertPairPrice(string pair, decimal price, string market)
-        {
-            string convertedPair = ChangePairMarket(pair, market);
-            return GetLastPrice(convertedPair) / price;
-        }
-
-        public virtual decimal GetAskPrice(string pair)
+        public virtual decimal GetPrice(string pair, TradePriceType priceType)
         {
             if (Tickers.TryGetValue(pair, out Ticker ticker))
             {
-                return ticker.AskPrice;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public virtual decimal GetBidPrice(string pair)
-        {
-            if (Tickers.TryGetValue(pair, out Ticker ticker))
-            {
-                return ticker.BidPrice;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public virtual decimal GetLastPrice(string pair)
-        {
-            if (Tickers.TryGetValue(pair, out Ticker ticker))
-            {
-                return ticker.LastPrice;
+                if (priceType == TradePriceType.Ask)
+                {
+                    return ticker.AskPrice;
+                }
+                else if (priceType == TradePriceType.Bid)
+                {
+                    return ticker.BidPrice;
+                }
+                else
+                {
+                    return ticker.LastPrice;
+                }
             }
             else
             {
@@ -239,6 +204,27 @@ namespace IntelliTrader.Exchange.Base
             }
         }
 
+        public abstract decimal GetPriceArbitrage(string pair, string crossMarket, string market);
+
+        public abstract string GetArbitrageMarket(string crossMarket);
+
+        public virtual string GetPairMarket(string pair)
+        {
+            return Api.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0];
+        }
+
+        public virtual string ChangeMarket(string pair, string market)
+        {
+            string currentMarket = GetPairMarket(pair);
+            return pair.Substring(0, pair.Length - currentMarket.Length) + market;
+        }
+
+        public virtual decimal ConvertPrice(string pair, decimal price, string market, TradePriceType priceType)
+        {
+            string convertedPair = ChangeMarket(pair, market);
+            return GetPrice(convertedPair, priceType) / price;
+        }
+
         public TimeSpan GetTimeElapsedSinceLastTickersUpdate()
         {
             return DateTimeOffset.Now - lastTickersUpdate;
@@ -246,10 +232,10 @@ namespace IntelliTrader.Exchange.Base
 
         private void OnTickersUpdated(IReadOnlyCollection<KeyValuePair<string, ExchangeTicker>> updatedTickers)
         {
-            if (!tickersChecked)
+            if (!tickersStarted)
             {
                 loggingService.Info("Ticker updates are working, good!");
-                tickersChecked = true;
+                tickersStarted = true;
             }
 
             healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TickersUpdated, $"Updates: {updatedTickers.Count}");

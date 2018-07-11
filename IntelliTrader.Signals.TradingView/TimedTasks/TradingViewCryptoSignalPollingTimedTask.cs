@@ -14,7 +14,7 @@ namespace IntelliTrader.Signals.TradingView
 {
     internal class TradingViewCryptoSignalPollingTimedTask : HighResolutionTimedTask
     {
-        private const int HISTORICAL_SIGNALS_SNAPSHOT_MIN_INTERVAL_SECONDS = 45;
+        private const int HISTORICAL_SIGNALS_SNAPSHOT_MIN_INTERVAL_MILLISECONDS = 45000;
         private const int HISTORICAL_SIGNALS_ADDITIONAL_SAVE_MINUTES = 5;
         private const int HISTORICAL_SIGNALS_MAX_ADDITIONAL_ELAPSED_MINUTES = 1;
 
@@ -94,7 +94,7 @@ namespace IntelliTrader.Signals.TradingView
 
                         if (signals.Count > 0)
                         {
-                            if ((DateTimeOffset.Now - lastSnapshotDate).TotalSeconds > HISTORICAL_SIGNALS_SNAPSHOT_MIN_INTERVAL_SECONDS)
+                            if ((DateTimeOffset.Now - lastSnapshotDate).TotalMilliseconds > HISTORICAL_SIGNALS_SNAPSHOT_MIN_INTERVAL_MILLISECONDS)
                             {
                                 signalsHistory.TryAdd(DateTimeOffset.Now, signals);
                                 lastSnapshotDate = DateTimeOffset.Now;

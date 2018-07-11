@@ -16,7 +16,7 @@ namespace IntelliTrader.Exchange
 
         protected override void Run()
         {
-            if (exchangeService.GetTimeElapsedSinceLastTickersUpdate().TotalSeconds > ExchangeService.MAX_TICKERS_AGE_TO_RECONNECT_SECONDS)
+            if (exchangeService.GetTimeElapsedSinceLastTickersUpdate().TotalMilliseconds > ExchangeService.MAX_TICKERS_AGE_TO_RECONNECT_MILLISECONDS)
             {
                 loggingService.Info("Exchange max tickers age reached, reconnecting...");
                 exchangeService.DisconnectTickersWebsocket();

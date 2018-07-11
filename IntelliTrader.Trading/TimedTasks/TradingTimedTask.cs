@@ -365,7 +365,6 @@ namespace IntelliTrader.Trading
                     lock (tradingService.Account.SyncRoot)
                     {
                         decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
-                        string pairMarket = tradingService.Exchange.GetPairMarket(options.Pair);
                         decimal roundedAmount = Math.Round(buyOrder.Amount, 4);
 
                         orderDetails = new OrderDetails
@@ -383,9 +382,9 @@ namespace IntelliTrader.Trading
                             Fees = roundedAmount * buyPrice * tradingService.Config.VirtualTradingFees,
                             FeesCurrency = tradingService.Config.Market
                         };
-                        if (pairMarket != tradingService.Config.Market)
+                        if (tradingService.Exchange.GetPairMarket(options.Pair) != tradingService.Config.Market)
                         {
-                            orderDetails.Fees *= tradingService.Exchange.ConvertPairPrice(options.Pair, buyPrice, tradingService.Config.Market);
+                            orderDetails.Fees *= tradingService.Exchange.ConvertPrice(options.Pair, buyPrice, tradingService.Config.Market, TradePriceType.Ask);
                         }
 
                         tradingService.Account.AddBuyOrder(orderDetails);
@@ -468,7 +467,6 @@ namespace IntelliTrader.Trading
                     lock (tradingService.Account.SyncRoot)
                     {
                         decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
-                        string pairMarket = tradingService.Exchange.GetPairMarket(options.Pair);
 
                         orderDetails = new OrderDetails
                         {
@@ -485,9 +483,9 @@ namespace IntelliTrader.Trading
                             Fees = sellOrder.Amount * sellPrice * tradingService.Config.VirtualTradingFees,
                             FeesCurrency = tradingService.Config.Market
                         };
-                        if (pairMarket != tradingService.Config.Market)
+                        if (tradingService.Exchange.GetPairMarket(options.Pair) != tradingService.Config.Market)
                         {
-                            orderDetails.Fees *= tradingService.Exchange.ConvertPairPrice(options.Pair, sellPrice, tradingService.Config.Market);
+                            orderDetails.Fees *= tradingService.Exchange.ConvertPrice(options.Pair, sellPrice, tradingService.Config.Market, TradePriceType.Bid);
                         }
 
                         tradingPair.Metadata.SwapPair = options.SwapPair;

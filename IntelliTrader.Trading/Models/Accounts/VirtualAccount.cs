@@ -10,6 +10,8 @@ namespace IntelliTrader.Trading
 {
     internal class VirtualAccount : TradingAccountBase
     {
+        public override bool IsVirtual => true;
+
         public VirtualAccount(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
             : base(loggingService, notificationService, healthCheckService, signalsService, tradingService)
         {

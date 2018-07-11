@@ -55,40 +55,27 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-        public override string GetPairMarket(string pair)
+        public override IEnumerable<string> GetMarketPairs(string market)
         {
-            return dymmyApi.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0];
+            return backtestingService.GetCurrentTickers().Keys;
         }
 
-        public override decimal GetAskPrice(string pair)
+        public override decimal GetPrice(string pair, TradePriceType priceType)
         {
             if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
             {
-                return ticker.AskPrice;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public override decimal GetBidPrice(string pair)
-        {
-            if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
-            {
-                return ticker.BidPrice;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public override decimal GetLastPrice(string pair)
-        {
-            if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker ticker))
-            {
-                return ticker.LastPrice;
+                if (priceType == TradePriceType.Ask)
+                {
+                    return ticker.AskPrice;
+                }
+                else if (priceType == TradePriceType.Bid)
+                {
+                    return ticker.BidPrice;
+                }
+                else
+                {
+                    return ticker.LastPrice;
+                }
             }
             else
             {
@@ -172,9 +159,9 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-        public override IEnumerable<string> GetMarketPairs(string market)
+        public override string GetPairMarket(string pair)
         {
-            return backtestingService.GetCurrentTickers().Keys;
+            return dymmyApi.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0];
         }
 
 
@@ -192,12 +179,12 @@ namespace IntelliTrader.Backtesting
             throw new NotImplementedException();
         }
 
-        public override Dictionary<string, decimal> GetAvailableAmounts()
+        public override IEnumerable<ITicker> GetTickers()
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<ITicker> GetTickers()
+        public override Dictionary<string, decimal> GetAvailableAmounts()
         {
             throw new NotImplementedException();
         }

@@ -17,7 +17,6 @@ namespace IntelliTrader.Core
         public decimal FeesPairCurrency { get; set; }
         public decimal FeesMarketCurrency { get; set; }
         public decimal FeesTotal => AveragePrice * FeesPairCurrency + FeesMarketCurrency;
-        [JsonProperty(PropertyName = "AverageCost")]
         public decimal ActualCost => AveragePrice * (Amount + FeesPairCurrency) + FeesMarketCurrency;
         public DateTimeOffset SellDate { get; set; }
         public decimal SellPrice { get; set; }
