@@ -22,7 +22,8 @@ namespace IntelliTrader.Trading
         protected decimal balance;
         protected ConcurrentDictionary<string, TradingPair> tradingPairs = new ConcurrentDictionary<string, TradingPair>();
 
-        public TradingAccountBase(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
+        public TradingAccountBase(ILoggingService loggingService, INotificationService notificationService, 
+            IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
         {
             this.loggingService = loggingService;
             this.notificationService = notificationService;
@@ -54,7 +55,7 @@ namespace IntelliTrader.Trading
                 if (order.Side == OrderSide.Buy && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                 {
                     decimal feesPairCurrency = 0;
-                    decimal feesMarketCurrency = tradingService.CalculateFees(order);
+                    decimal feesMarketCurrency = tradingService.CalculateOrderFees(order);
                     decimal amountAfterFees = order.AmountFilled;
                     decimal balanceDifference = -order.RawCost;
 
@@ -84,7 +85,7 @@ namespace IntelliTrader.Trading
                         tradingPair.FeesPairCurrency += feesPairCurrency;
                         tradingPair.FeesMarketCurrency += feesMarketCurrency;
                         tradingPair.Amount += amountAfterFees;
-                        tradingPair.Metadata = tradingPair.Metadata.MergeWith(order.Metadata);
+                        tradingPair.Metadata.MergeWith(order.Metadata);
                     }
                     else
                     {
@@ -100,32 +101,29 @@ namespace IntelliTrader.Trading
                             Metadata = order.Metadata
                         };
                         tradingPairs.TryAdd(order.Pair, tradingPair);
-                        string marketPair = tradingService.Exchange.ChangeMarket(tradingPair.Pair, tradingService.Config.Market);
-                        tradingPair.SetCurrentValues(tradingService.GetPrice(marketPair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
+                        tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(tradingPair.Pair)), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
                         tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                         tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
                     }
 
-                    string pairMarket = tradingService.Exchange.GetPairMarket(order.Pair);
-                    bool isCrossMarket = pairMarket != tradingService.Config.Market;
-                    if (isCrossMarket)
+                    if (!tradingService.IsNormalizedPair(order.Pair))
                     {
-                        string crossPairName = pairMarket + tradingService.Config.Market;
-                        if (tradingPairs.TryGetValue(crossPairName, out TradingPair crossPair))
+                        string normalizedMarket = tradingService.Exchange.GetPairMarket(order.Pair) + tradingService.Config.Market;
+                        if (tradingPairs.TryGetValue(normalizedMarket, out TradingPair normalizedMarketPair))
                         {
                             balance += order.RawCost;
 
-                            if (crossPair.RawCost > order.RawCost)
+                            if (normalizedMarketPair.RawCost > order.RawCost)
                             {
-                                crossPair.Amount -= order.RawCost / tradingService.GetPrice(crossPairName, TradePriceType.Bid);
-                                if (crossPair.ActualCost <= tradingService.Config.MinCost)
+                                normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
+                                if (normalizedMarketPair.ActualCost <= tradingService.Config.MinCost)
                                 {
-                                    tradingPairs.TryRemove(crossPairName, out crossPair);
+                                    tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
                                 }
                             }
                             else
                             {
-                                tradingPairs.TryRemove(crossPairName, out crossPair);
+                                tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
                             }
                         }
                     }
@@ -141,7 +139,7 @@ namespace IntelliTrader.Trading
                 {
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
-                        decimal feesMarketCurrency = tradingService.CalculateFees(order);
+                        decimal feesMarketCurrency = tradingService.CalculateOrderFees(order);
                         decimal balanceDifference = order.RawCost;
 
                         if (order.FeesCurrency == tradingService.Config.Market)
@@ -157,7 +155,6 @@ namespace IntelliTrader.Trading
                         var tradeResult = new TradeResult
                         {
                             IsSuccessful = true,
-                            Metadata = order.Metadata,
                             Pair = order.Pair,
                             Amount = order.AmountFilled,
                             OrderDates = tradingPair.OrderDates,
@@ -167,7 +164,8 @@ namespace IntelliTrader.Trading
                             SellDate = order.Date,
                             SellPrice = order.AveragePrice,
                             BalanceDifference = balanceDifference,
-                            Profit = profit
+                            Profit = profit,
+                            Metadata = order.Metadata,
                         };
 
                         tradingPair.OverrideActualCost(null);
@@ -175,7 +173,6 @@ namespace IntelliTrader.Trading
                         if (tradingPair.Amount > order.AmountFilled)
                         {
                             tradingPair.Amount -= order.AmountFilled;
-
                             if (!isInitialRefresh && tradingPair.ActualCost <= tradingService.Config.MinCost)
                             {
                                 tradingPairs.TryRemove(order.Pair, out tradingPair);

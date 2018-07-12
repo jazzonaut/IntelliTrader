@@ -14,7 +14,8 @@ namespace IntelliTrader.Backtesting
         private ConcurrentBag<string> markets;
         private ExchangeBinanceAPI dymmyApi;
 
-        public BacktestingExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService, ITasksService tasksService, IBacktestingService backtestingService)
+        public BacktestingExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService, 
+            ITasksService tasksService, IBacktestingService backtestingService)
             : base(loggingService, healthCheckService, tasksService)
         {
             this.backtestingService = backtestingService;
@@ -102,7 +103,7 @@ namespace IntelliTrader.Backtesting
                 if (market == Constants.Markets.BTC)
                 {
                     string crossMarketPair = pair.Substring(0, pair.Length - market.Length) + crossMarket;
-                    string marketPair = GetArbitrageMarket(crossMarket);
+                    string marketPair = GetArbitrageMarketPair(crossMarket);
 
                     if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker pairTicker) &&
                         backtestingService.GetCurrentTickers().TryGetValue(crossMarketPair, out ITicker crossTicker) &&
@@ -139,7 +140,7 @@ namespace IntelliTrader.Backtesting
             return 0;
         }
 
-        public override string GetArbitrageMarket(string crossMarket)
+        public override string GetArbitrageMarketPair(string crossMarket)
         {
             if (crossMarket == Constants.Markets.ETH || crossMarket == Constants.Markets.BTC)
             {

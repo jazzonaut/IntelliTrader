@@ -28,6 +28,7 @@
                 <th>Signal Rule</th>
                 <th>Swap Pair</th>
                 <th>Arbitrage</th>
+                <th>Percentage</th>
             </tr>
         </thead>
         <tbody>
@@ -48,6 +49,7 @@
                 <td>@if (trade.Metadata?.SignalRule != null) { @Html.Raw(trade.Metadata.SignalRule); } else { <text>N/A</text> }</td>
                 <td>@if (trade.Metadata?.SwapPair != null && trade.IsSwap) { @Html.Raw(trade.Metadata.SwapPair); } else { <text>N/A</text> }</td>
                 <td>@if (trade.Metadata?.ArbitrageMarket != null && trade.IsArbitrage) { @Html.Raw(trade.Metadata.ArbitrageMarket); } else { <text>N/A</text> }</td>
+                <td>@if (trade.Metadata?.ArbitragePercentage != null && trade.IsArbitrage) { @Html.Raw(trade.Metadata.ArbitragePercentage.GetValueOrDefault().ToString("0.00")); } else { <text>N/A</text> }</td>
             </tr>
             }
         </tbody>

@@ -206,7 +206,7 @@ namespace IntelliTrader.Exchange.Base
 
         public abstract decimal GetPriceArbitrage(string pair, string crossMarket, string market);
 
-        public abstract string GetArbitrageMarket(string crossMarket);
+        public abstract string GetArbitrageMarketPair(string crossMarket);
 
         public virtual string GetPairMarket(string pair)
         {

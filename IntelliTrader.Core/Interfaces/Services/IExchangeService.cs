@@ -18,7 +18,7 @@ namespace IntelliTrader.Core
         decimal GetPrice(string pair, TradePriceType priceType);
         decimal GetPriceSpread(string pair);
         decimal GetPriceArbitrage(string pair, string crossMarket, string market);
-        string GetArbitrageMarket(string crossMarket);
+        string GetArbitrageMarketPair(string crossMarket);
         string GetPairMarket(string pair);
         string ChangeMarket(string pair, string market);
         decimal ConvertPrice(string pair, decimal price, string market, TradePriceType priceType);

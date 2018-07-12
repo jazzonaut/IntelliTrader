@@ -1,5 +1,4 @@
 ﻿using IntelliTrader.Core;
-using IntelliTrader.Exchange.Base;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,18 +14,21 @@ namespace IntelliTrader.Trading
         private readonly INotificationService notificationService;
         private readonly IHealthCheckService healthCheckService;
         private readonly ISignalsService signalsService;
-        private readonly TradingService tradingService;
+        private readonly ITradingService tradingService;
+        private readonly IOrderingService orderingService;
 
         private readonly ConcurrentDictionary<string, BuyTrailingInfo> trailingBuys = new ConcurrentDictionary<string, BuyTrailingInfo>();
         private readonly ConcurrentDictionary<string, SellTrailingInfo> trailingSells = new ConcurrentDictionary<string, SellTrailingInfo>();
 
-        public TradingTimedTask(ILoggingService loggingService, INotificationService notificationService, IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
+        public TradingTimedTask(ILoggingService loggingService, INotificationService notificationService, 
+            IHealthCheckService healthCheckService, ISignalsService signalsService, IOrderingService orderingService, ITradingService tradingService)
         {
             this.loggingService = loggingService;
             this.notificationService = notificationService;
             this.healthCheckService = healthCheckService;
             this.signalsService = signalsService;
-            this.tradingService = tradingService as TradingService;
+            this.orderingService = orderingService;
+            this.tradingService = tradingService;
         }
 
         protected override void Run()
@@ -37,33 +39,14 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public void ClearTrailing()
-        {
-            trailingBuys.Clear();
-            trailingSells.Clear();
-        }
-
-        public List<string> GetTrailingBuys()
-        {
-            return trailingBuys.Keys.ToList();
-        }
-
-        public List<string> GetTrailingSells()
-        {
-            return trailingSells.Keys.ToList();
-        }
-
         public void InitiateBuy(BuyOptions options)
         {
             IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-
             if (!options.ManualOrder && pairConfig.BuyTrailing != 0)
             {
                 if (!trailingBuys.ContainsKey(options.Pair))
                 {
-                    trailingSells.TryRemove(options.Pair, out SellTrailingInfo sellTrailingInfo);
-
-                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
+                    StopTrailingSell(options.Pair);
                     decimal currentPrice = tradingService.GetPrice(options.Pair);
                     decimal currentMargin = 0;
 
@@ -82,37 +65,29 @@ namespace IntelliTrader.Trading
                     {
                         if (LoggingEnabled)
                         {
-                            loggingService.Info($"Start trailing buy {tradingPair?.FormattedName ?? options.Pair}. Price: {currentPrice:0.00000000}, Margin: {currentMargin:0.00}");
+                            ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
+                            loggingService.Info($"Start trailing buy {tradingPair?.FormattedName ?? options.Pair}. " +
+                                $"Price: {currentPrice:0.00000000}, Margin: {currentMargin:0.00}");
                         }
-                    }
-                }
-                else
-                {
-                    if (LoggingEnabled)
-                    {
-                        //loggingService.Info($"Cancel trailing buy {tradingPair?.FormattedName ?? pair}. Reason: already trailing");
                     }
                 }
             }
             else
             {
-                PlaceBuyOrder(options);
+                orderingService.PlaceBuyOrder(options);
             }
         }
 
         public void InitiateSell(SellOptions options)
         {
             IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-
             if (!options.ManualOrder && pairConfig.SellTrailing != 0)
             {
                 if (!trailingSells.ContainsKey(options.Pair))
                 {
-                    trailingBuys.TryRemove(options.Pair, out BuyTrailingInfo buyTrailingInfo);
-
+                    StopTrailingBuy(options.Pair);
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                    string marketPair = tradingService.Exchange.ChangeMarket(options.Pair, tradingService.Config.Market);
-                    tradingPair.SetCurrentValues(tradingService.GetPrice(marketPair), tradingService.Exchange.GetPriceSpread(options.Pair));
+                    tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(options.Pair)), tradingService.Exchange.GetPriceSpread(options.Pair));
 
                     var trailingInfo = new SellTrailingInfo
                     {
@@ -130,33 +105,26 @@ namespace IntelliTrader.Trading
                     {
                         if (LoggingEnabled)
                         {
-                            loggingService.Info($"Start trailing sell {tradingPair.FormattedName}. Price: {tradingPair.CurrentPrice:0.00000000}, Margin: {tradingPair.CurrentMargin:0.00}");
+                            loggingService.Info($"Start trailing sell {tradingPair.FormattedName}. " +
+                                $"Price: {tradingPair.CurrentPrice:0.00000000}, Margin: {tradingPair.CurrentMargin:0.00}");
                         }
-                    }
-                }
-                else
-                {
-                    if (LoggingEnabled)
-                    {
-                        //loggingService.Info($"Cancel trailing sell {tradingPair.FormattedName}. Reason: already trailing");
                     }
                 }
             }
             else
             {
-                PlaceSellOrder(options);
+                orderingService.PlaceSellOrder(options);
             }
         }
 
-        private void ProcessTradingPairs()
+        public void ProcessTradingPairs()
         {
             int traidingPairsCount = 0;
 
             foreach (var tradingPair in tradingService.Account.GetTradingPairs())
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(tradingPair.Pair);
-                string marketPair = tradingService.Exchange.ChangeMarket(tradingPair.Pair, tradingService.Config.Market);
-                tradingPair.SetCurrentValues(tradingService.GetPrice(marketPair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
+                tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(tradingPair.Pair)), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
                 tradingPair.Metadata.TradingRules = pairConfig.Rules.ToList();
                 tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                 tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
@@ -169,19 +137,21 @@ namespace IntelliTrader.Trading
                         {
                             if (LoggingEnabled)
                             {
-                                loggingService.Info($"Continue trailing sell {tradingPair.FormattedName}. Price: {tradingPair.CurrentPrice:0.00000000}, Margin: {tradingPair.CurrentMargin:0.00}");
+                                loggingService.Info($"Continue trailing sell {tradingPair.FormattedName}. " +
+                                    $"Price: {tradingPair.CurrentPrice:0.00000000}, Margin: {tradingPair.CurrentMargin:0.00}");
                             }
                         }
 
-                        if (tradingPair.CurrentMargin <= sellTrailingInfo.TrailingStopMargin || tradingPair.CurrentMargin < (sellTrailingInfo.BestTrailingMargin - sellTrailingInfo.Trailing))
+                        if (tradingPair.CurrentMargin <= sellTrailingInfo.TrailingStopMargin || tradingPair.CurrentMargin < 
+                            (sellTrailingInfo.BestTrailingMargin - sellTrailingInfo.Trailing))
                         {
-                            trailingSells.TryRemove(tradingPair.Pair, out SellTrailingInfo p);
+                            StopTrailingSell(tradingPair.Pair);
 
                             if (tradingPair.CurrentMargin > 0 || sellTrailingInfo.SellMargin < 0)
                             {
                                 if (sellTrailingInfo.TrailingStopAction == SellTrailingStopAction.Sell || tradingPair.CurrentMargin > sellTrailingInfo.TrailingStopMargin)
                                 {
-                                    PlaceSellOrder(sellTrailingInfo.SellOptions);
+                                    orderingService.PlaceSellOrder(sellTrailingInfo.SellOptions);
                                 }
                                 else
                                 {
@@ -210,7 +180,7 @@ namespace IntelliTrader.Trading
                     }
                     else
                     {
-                        trailingSells.TryRemove(tradingPair.Pair, out SellTrailingInfo p);
+                        StopTrailingSell(tradingPair.Pair);
                     }
                 }
                 else
@@ -219,14 +189,16 @@ namespace IntelliTrader.Trading
                     {
                         InitiateSell(new SellOptions(tradingPair.Pair));
                     }
-                    else if (pairConfig.SellEnabled && pairConfig.SellStopLossEnabled && tradingPair.CurrentMargin <= pairConfig.SellStopLossMargin && tradingPair.CurrentAge >= pairConfig.SellStopLossMinAge &&
+                    else if (pairConfig.SellEnabled && pairConfig.SellStopLossEnabled && 
+                        tradingPair.CurrentMargin <= pairConfig.SellStopLossMargin && 
+                        tradingPair.CurrentAge >= pairConfig.SellStopLossMinAge &&
                         (pairConfig.NextDCAMargin == null || !pairConfig.SellStopLossAfterDCA))
                     {
                         if (LoggingEnabled)
                         {
                             loggingService.Info($"Stop loss triggered for {tradingPair.FormattedName}. Margin: {tradingPair.CurrentMargin:0.00}");
                         }
-                        PlaceSellOrder(new SellOptions(tradingPair.Pair));
+                        orderingService.PlaceSellOrder(new SellOptions(tradingPair.Pair));
                     }
                     else if (pairConfig.NextDCAMargin != null && pairConfig.BuyEnabled && pairConfig.NextDCAMargin != null &&
                         !trailingBuys.ContainsKey(tradingPair.Pair) && !trailingSells.ContainsKey(tradingPair.Pair))
@@ -243,7 +215,8 @@ namespace IntelliTrader.Trading
                             {
                                 if (LoggingEnabled)
                                 {
-                                    loggingService.Info($"DCA triggered for {tradingPair.FormattedName}. Margin: {tradingPair.CurrentMargin:0.00}, Level: {pairConfig.NextDCAMargin:0.00}, Multiplier: {pairConfig.BuyMultiplier}");
+                                    loggingService.Info($"DCA triggered for {tradingPair.FormattedName}. Margin: {tradingPair.CurrentMargin:0.00}, " +
+                                        $"Level: {pairConfig.NextDCAMargin:0.00}, Multiplier: {pairConfig.BuyMultiplier}");
                                 }
                                 InitiateBuy(buyOptions);
                             }
@@ -275,11 +248,11 @@ namespace IntelliTrader.Trading
 
                     if (currentMargin >= buyTrailingInfo.TrailingStopMargin || currentMargin > (buyTrailingInfo.BestTrailingMargin - buyTrailingInfo.Trailing))
                     {
-                        trailingBuys.TryRemove(pair, out BuyTrailingInfo p);
+                        StopTrailingBuy(pair);
 
                         if (buyTrailingInfo.TrailingStopAction == BuyTrailingStopAction.Buy || currentMargin < buyTrailingInfo.TrailingStopMargin)
                         {
-                            PlaceBuyOrder(buyTrailingInfo.BuyOptions);
+                            orderingService.PlaceBuyOrder(buyTrailingInfo.BuyOptions);
                         }
                         else
                         {
@@ -300,234 +273,38 @@ namespace IntelliTrader.Trading
                 }
                 else
                 {
-                    trailingBuys.TryRemove(pair, out BuyTrailingInfo p);
+                    StopTrailingBuy(pair);
                 }
             }
 
-            healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TradingPairsProcessed, $"Pairs: {traidingPairsCount}, Trailing buys: {trailingBuys.Count}, Trailing sells: {trailingSells.Count}");
+            healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TradingPairsProcessed, 
+                $"Pairs: {traidingPairsCount}, Trailing buys: {trailingBuys.Count}, Trailing sells: {trailingSells.Count}");
         }
 
-        public IOrderDetails PlaceBuyOrder(BuyOptions options)
+        public List<string> GetTrailingBuys()
         {
-            IOrderDetails orderDetails = null;
-            trailingBuys.TryRemove(options.Pair, out BuyTrailingInfo buyTrailingInfo);
-            trailingSells.TryRemove(options.Pair, out SellTrailingInfo sellTrailingInfo);
-
-            if (tradingService.CanBuy(options, out string message))
-            {
-                IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-                ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                decimal currentAskPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
-                options.Metadata.TradingRules = pairConfig.Rules.ToList();
-                if (options.Metadata.LastBuyMargin == null)
-                {
-                    options.Metadata.LastBuyMargin = tradingPair?.CurrentMargin ?? 0;
-                }
-                string signalRule = options.Metadata.SignalRule ?? "N/A";
-
-                BuyOrder buyOrder = new BuyOrder
-                {
-                    Type = pairConfig.BuyType,
-                    Date = DateTimeOffset.Now,
-                    Pair = options.Pair,
-                    Amount = options.Amount ?? (options.MaxCost.Value / currentAskPrice),
-                    Price = currentAskPrice
-                };
-
-                if (!tradingService.Config.VirtualTrading)
-                {
-                    loggingService.Info($"Place buy order for {tradingPair?.FormattedName ?? options.Pair}. Price: {buyOrder.Price:0.00000000}, Amount: {buyOrder.Amount:0.########}, Signal Rule: {signalRule}");
-
-                    try
-                    {
-                        lock (tradingService.Account.SyncRoot)
-                        {
-                            orderDetails = tradingService.Exchange.PlaceOrder(buyOrder);
-                            orderDetails.SetMetadata(options.Metadata);
-                            ConvertToMarketPrice(orderDetails as OrderDetails, orderDetails.AveragePrice, TradePriceType.Ask);
-
-                            tradingService.Account.AddBuyOrder(orderDetails);
-                            tradingService.Account.Save();
-                            tradingService.LogOrder(orderDetails);
-
-                            tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                            loggingService.Info("{@Trade}", orderDetails);
-                            loggingService.Info($"Buy order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.RawCost:0.00000000}");
-                            notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {orderDetails.RawCost:0.00000000}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        loggingService.Error($"Unable to place buy order for {options.Pair}", ex);
-                        notificationService.Notify($"Unable to buy {options.Pair}: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    loggingService.Info($"Place virtual buy order for {tradingPair?.FormattedName ?? options.Pair}. Price: {buyOrder.Price:0.00000000}, Amount: {buyOrder.Amount:0.########}, Signal Rule: {signalRule}");
-
-                    lock (tradingService.Account.SyncRoot)
-                    {
-                        decimal buyPrice = currentAskPrice;
-                        decimal roundedAmount = Math.Round(buyOrder.Amount, 4);
-
-                        orderDetails = new OrderDetails
-                        {
-                            Metadata = options.Metadata,
-                            OrderId = DateTime.Now.ToFileTimeUtc().ToString(),
-                            Side = OrderSide.Buy,
-                            Result = OrderResult.Filled,
-                            Date = buyOrder.Date,
-                            Pair = buyOrder.Pair,
-                            Amount = roundedAmount,
-                            AmountFilled = roundedAmount,
-                            Price = buyPrice,
-                            AveragePrice = buyPrice,
-                            Fees = roundedAmount * buyPrice * tradingService.Config.VirtualTradingFees,
-                            FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
-                        };
-                        ConvertToMarketPrice(orderDetails as OrderDetails, buyPrice, TradePriceType.Bid);
-
-                        tradingService.Account.AddBuyOrder(orderDetails);
-                        tradingService.Account.Save();
-                        tradingService.LogOrder(orderDetails);
-
-                        tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                        loggingService.Info("{@Trade}", orderDetails);
-                        loggingService.Info($"Virtual buy order result for {tradingPair.FormattedName}. Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Cost: {orderDetails.RawCost:0.00000000}");
-                        notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {orderDetails.RawCost:0.00000000}");
-                    }
-                }
-
-                tradingService.ReapplyTradingRules();
-            }
-            else
-            {
-                loggingService.Info(message);
-            }
-            return orderDetails;
+            return trailingBuys.Keys.ToList();
         }
 
-        public IOrderDetails PlaceSellOrder(SellOptions options)
+        public List<string> GetTrailingSells()
         {
-            IOrderDetails orderDetails = null;
-            trailingSells.TryRemove(options.Pair, out SellTrailingInfo sellTrailingInfo);
-            trailingBuys.TryRemove(options.Pair, out BuyTrailingInfo buyTrailingInfo);
-
-            if (tradingService.CanSell(options, out string message))
-            {
-                IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-                ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                string marketPair = tradingService.Exchange.ChangeMarket(options.Pair, tradingService.Config.Market);
-                tradingPair.SetCurrentValues(tradingService.GetPrice(marketPair), tradingService.Exchange.GetPriceSpread(options.Pair));
-
-                SellOrder sellOrder = new SellOrder
-                {
-                    Type = pairConfig.SellType,
-                    Date = DateTimeOffset.Now,
-                    Pair = options.Pair,
-                    Amount = options.Amount ?? tradingPair.Amount,
-                    Price = tradingPair.CurrentPrice
-                };
-
-                if (!tradingService.Config.VirtualTrading)
-                {
-                    loggingService.Info($"Place sell order for {tradingPair.FormattedName}. Price: {sellOrder.Price:0.00000000}, Amount: {sellOrder.Amount:0.########}, Margin: {tradingPair.CurrentMargin:0.00}");
-
-                    try
-                    {
-                        lock (tradingService.Account.SyncRoot)
-                        {
-                            orderDetails = tradingService.Exchange.PlaceOrder(sellOrder, options.ArbitrageMarket);
-                            tradingPair.Metadata.SwapPair = options.SwapPair;
-                            tradingPair.Metadata.ArbitrageMarket = options.ArbitrageMarket;
-                            orderDetails.SetMetadata(tradingPair.Metadata);
-                            ConvertToMarketPrice(orderDetails as OrderDetails, orderDetails.AveragePrice, TradePriceType.Bid);
-
-                            ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
-                            tradeResult.SetSwap(options.Swap);
-                            tradeResult.SetArbitrage(options.Arbitrage);
-                            tradingService.Account.Save();
-                            tradingService.LogOrder(orderDetails);
-
-                            decimal soldMargin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
-                            string swapPair = options.SwapPair != null ? $", Swap Pair: {options.SwapPair}" : "";
-                            loggingService.Info("{@Trade}", orderDetails);
-                            loggingService.Info("{@Trade}", tradeResult);
-                            loggingService.Info($"Sell order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}");
-                            notificationService.Notify($"Sold {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        loggingService.Error($"Unable to place sell order for {options.Pair}", ex);
-                        notificationService.Notify($"Unable to sell {options.Pair}: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    loggingService.Info($"Place virtual sell order for {tradingPair.FormattedName}. Price: {sellOrder.Price:0.00000000}, Amount: {sellOrder.Amount:0.########}");
-
-                    lock (tradingService.Account.SyncRoot)
-                    {
-                        decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
-
-                        orderDetails = new OrderDetails
-                        {
-                            Metadata = tradingPair.Metadata,
-                            OrderId = DateTime.Now.ToFileTimeUtc().ToString(),
-                            Side = OrderSide.Sell,
-                            Result = OrderResult.Filled,
-                            Date = sellOrder.Date,
-                            Pair = sellOrder.Pair,
-                            Amount = sellOrder.Amount,
-                            AmountFilled = sellOrder.Amount,
-                            Price = sellPrice,
-                            AveragePrice = sellPrice,
-                            Fees = sellOrder.Amount * sellPrice * tradingService.Config.VirtualTradingFees,
-                            FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
-                        };
-                        ConvertToMarketPrice(orderDetails as OrderDetails, sellPrice, TradePriceType.Bid);
-
-                        tradingPair.Metadata.SwapPair = options.SwapPair;
-                        tradingPair.Metadata.ArbitrageMarket = options.ArbitrageMarket;
-                        ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
-                        tradeResult.SetSwap(options.Swap);
-                        tradeResult.SetArbitrage(options.Arbitrage);
-                        tradingService.Account.Save();
-                        tradingService.LogOrder(orderDetails);
-
-                        decimal soldMargin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
-                        string swapPair = options.SwapPair != null ? $", Swap Pair: {options.SwapPair}" : "";
-                        loggingService.Info("{@Trade}", orderDetails);
-                        loggingService.Info("{@Trade}", tradeResult);
-                        loggingService.Info($"Virtual sell order result for {tradingPair.FormattedName}. Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Margin: {tradingPair.CurrentMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}");
-                        notificationService.Notify($"Sold {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Margin: {tradingPair.CurrentMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}");
-                    }
-                }
-
-                tradingService.ReapplyTradingRules();
-            }
-            else
-            {
-                loggingService.Info(message);
-            }
-            return orderDetails;
+            return trailingSells.Keys.ToList();
         }
 
-        private void ConvertToMarketPrice(OrderDetails orderDetails, decimal price, TradePriceType priceType)
+        public void StopTrailing()
         {
-            if (tradingService.Exchange.GetPairMarket(orderDetails.Pair) != tradingService.Config.Market)
-            {
-                decimal convertedPrice = tradingService.Exchange.ConvertPrice(orderDetails.Pair, price, tradingService.Config.Market, priceType);
-                orderDetails.Price *= convertedPrice;
-                orderDetails.AveragePrice *= convertedPrice;
-                if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(orderDetails.Pair))
-                {
-                    orderDetails.Fees *= convertedPrice;
-                    orderDetails.FeesCurrency = tradingService.Config.Market;
-                }
-            }
+            trailingBuys.Clear();
+            trailingSells.Clear();
+        }
+
+        public void StopTrailingBuy(string pair)
+        {
+            trailingBuys.TryRemove(pair, out BuyTrailingInfo buyTrailingInfo);
+        }
+
+        public void StopTrailingSell(string pair)
+        {
+            trailingSells.TryRemove(pair, out SellTrailingInfo sellTrailingInfo);
         }
     }
 }

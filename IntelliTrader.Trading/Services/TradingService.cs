@@ -3,7 +3,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace IntelliTrader.Trading
 {
@@ -29,6 +28,7 @@ namespace IntelliTrader.Trading
         private readonly INotificationService notificationService;
         private readonly IHealthCheckService healthCheckService;
         private readonly ITasksService tasksService;
+        private IOrderingService orderingService;
         private IRulesService rulesService;
         private ISignalsService signalsService;
 
@@ -67,12 +67,11 @@ namespace IntelliTrader.Trading
 
             IsTradingSuspended = true;
 
+            orderingService = Application.Resolve<IOrderingService>();
             rulesService = Application.Resolve<IRulesService>();
             OnTradingRulesChanged();
             rulesService.RegisterRulesChangeCallback(OnTradingRulesChanged);
-
             Exchange.Start(Config.VirtualTrading);
-
             signalsService = Application.Resolve<ISignalsService>();
 
             if (!Config.VirtualTrading)
@@ -100,7 +99,7 @@ namespace IntelliTrader.Trading
 
             tradingTimedTask = tasksService.AddTask(
                 name: nameof(TradingTimedTask),
-                task: new TradingTimedTask(loggingService, notificationService, healthCheckService, signalsService, this),
+                task: new TradingTimedTask(loggingService, notificationService, healthCheckService, signalsService, orderingService, this),
                 interval: Config.TradingCheckInterval * 1000 / Application.Speed,
                 startDelay: Constants.TaskDelays.NormalDelay,
                 startTask: false,
@@ -169,7 +168,7 @@ namespace IntelliTrader.Trading
 
                 tradingRulesTimedTask.Stop();
                 tradingTimedTask.Stop();
-                tradingTimedTask.ClearTrailing();
+                tradingTimedTask.StopTrailing();
             }
         }
 
@@ -197,6 +196,8 @@ namespace IntelliTrader.Trading
 
                 if (isArbitragePair)
                 {
+                    options.Metadata.ArbitrageMarket = pairConfig.ArbitrageMarket;
+                    options.Metadata.ArbitragePercentage = Exchange.GetPriceArbitrage(options.Pair, pairConfig.ArbitrageMarket, Config.Market);
                     Arbitrage(new ArbitrageOptions(options.Pair, pairConfig.ArbitrageMarket, options.Metadata));
                 }
                 else
@@ -250,12 +251,11 @@ namespace IntelliTrader.Trading
                 if (CanSwap(options, out string message))
                 {
                     ITradingPair oldTradingPair = Account.GetTradingPair(options.OldPair);
-
                     var sellOptions = new SellOptions(options.OldPair)
                     {
                         Swap = true,
-                        SwapPair = options.NewPair,
-                        ManualOrder = options.ManualOrder
+                        ManualOrder = options.ManualOrder,
+                        Metadata = new OrderMetadata { SwapPair = options.NewPair }
                     };
 
                     if (CanSell(sellOptions, out message))
@@ -264,7 +264,7 @@ namespace IntelliTrader.Trading
                         decimal additionalCosts = oldTradingPair.ActualCost - oldTradingPair.CurrentCost + (oldTradingPair.Metadata.AdditionalCosts ?? 0);
                         int additionalDCALevels = oldTradingPair.DCALevel;
 
-                        IOrderDetails sellOrderDetails = tradingTimedTask.PlaceSellOrder(sellOptions);
+                        IOrderDetails sellOrderDetails = orderingService.PlaceSellOrder(sellOptions);
                         if (!Account.HasTradingPair(options.OldPair))
                         {
                             var buyOptions = new BuyOptions(options.NewPair)
@@ -278,13 +278,14 @@ namespace IntelliTrader.Trading
                             buyOptions.Metadata.SwapPair = options.OldPair;
                             buyOptions.Metadata.AdditionalDCALevels = additionalDCALevels;
                             buyOptions.Metadata.AdditionalCosts = additionalCosts;
-                            IOrderDetails buyOrderDetails = tradingTimedTask.PlaceBuyOrder(buyOptions);
+                            IOrderDetails buyOrderDetails = orderingService.PlaceBuyOrder(buyOptions);
 
                             var newTradingPair = Account.GetTradingPair(options.NewPair) as TradingPair;
                             if (newTradingPair != null)
                             {
                                 newTradingPair.Metadata.AdditionalCosts += sellOrderDetails.Fees;
-                                loggingService.Info($"Swap {oldTradingPair.FormattedName} for {newTradingPair.FormattedName}. Old margin: {oldTradingPair.CurrentMargin:0.00}, new margin: {newTradingPair.CurrentMargin:0.00}");
+                                loggingService.Info($"Swap {oldTradingPair.FormattedName} for {newTradingPair.FormattedName}. " +
+                                    $"Old margin: {oldTradingPair.CurrentMargin:0.00}, new margin: {newTradingPair.CurrentMargin:0.00}");
                             }
                             else
                             {
@@ -318,11 +319,9 @@ namespace IntelliTrader.Trading
                     if (CanBuy(new BuyOptions(Exchange.ChangeMarket(options.Pair, options.Market)) { Amount = 1 }, out message))
                     {
                         IPairConfig pairConfig = GetPairConfig(options.Pair);
-                        decimal combinedFees = 0;
-                        decimal arbitrage = Exchange.GetPriceArbitrage(options.Pair, options.Market, Config.Market);
-                        loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {arbitrage:0.00}");
+                        loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {options.Metadata.ArbitragePercentage:0.00}");
 
-                        string arbitrageMarketPair = Exchange.GetArbitrageMarket(options.Market);
+                        string arbitrageMarketPair = Exchange.GetArbitrageMarketPair(options.Market);
                         var buyArbitrageMarketPairOptions = new BuyOptions(arbitrageMarketPair)
                         {
                             Arbitrage = true,
@@ -330,15 +329,15 @@ namespace IntelliTrader.Trading
                             ManualOrder = options.ManualOrder,
                             Metadata = options.Metadata
                         };
-                        buyArbitrageMarketPairOptions.Metadata.LastBuyMargin = 0;
-                        buyArbitrageMarketPairOptions.Metadata.ArbitrageMarket = options.Market;
 
                         if (CanBuy(buyArbitrageMarketPairOptions, out message))
                         {
-                            IOrderDetails buyArbitrageMarketPairOrderDetails = tradingTimedTask.PlaceBuyOrder(buyArbitrageMarketPairOptions);
+                            decimal combinedFees = 0;
+
+                            IOrderDetails buyArbitrageMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyArbitrageMarketPairOptions);
                             if (buyArbitrageMarketPairOrderDetails.Result == OrderResult.Filled)
                             {
-                                combinedFees += CalculateFees(buyArbitrageMarketPairOrderDetails);
+                                combinedFees += CalculateOrderFees(buyArbitrageMarketPairOrderDetails);
 
                                 string crossMarketPair = Exchange.ChangeMarket(options.Pair, options.Market);
                                 var buyCrossMarketPairOptions = new BuyOptions(crossMarketPair)
@@ -348,24 +347,22 @@ namespace IntelliTrader.Trading
                                     Amount = buyArbitrageMarketPairOrderDetails.AmountFilled / GetPrice(crossMarketPair, TradePriceType.Ask),
                                     Metadata = options.Metadata
                                 };
-                                buyCrossMarketPairOptions.Metadata.LastBuyMargin = 0;
-                                buyCrossMarketPairOptions.Metadata.ArbitrageMarket = options.Market;
 
-                                IOrderDetails buyCrossMarketPairOrderDetails = tradingTimedTask.PlaceBuyOrder(buyCrossMarketPairOptions);
+                                IOrderDetails buyCrossMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyCrossMarketPairOptions);
                                 if (buyCrossMarketPairOrderDetails.Result == OrderResult.Filled)
                                 {
-                                    combinedFees += CalculateFees(buyCrossMarketPairOrderDetails);
+                                    combinedFees += CalculateOrderFees(buyCrossMarketPairOrderDetails);
 
                                     var sellCrossMarketPairOptions = new SellOptions(crossMarketPair)
                                     {
                                         Arbitrage = true,
-                                        ArbitrageMarket = options.Market,
                                         Amount = buyCrossMarketPairOptions.Amount,
-                                        ManualOrder = options.ManualOrder
+                                        ManualOrder = options.ManualOrder,
+                                        Metadata = options.Metadata
                                     };
 
                                     Account.GetTradingPair(crossMarketPair).OverrideActualCost(buyArbitrageMarketPairOrderDetails.RawCost + combinedFees);
-                                    IOrderDetails sellCrossMarketPairOrderDetails = tradingTimedTask.PlaceSellOrder(sellCrossMarketPairOptions);
+                                    IOrderDetails sellCrossMarketPairOrderDetails = orderingService.PlaceSellOrder(sellCrossMarketPairOptions);
 
                                     if (sellCrossMarketPairOrderDetails.Result == OrderResult.Filled)
                                     {
@@ -562,7 +559,7 @@ namespace IntelliTrader.Trading
             return Exchange.GetPrice(pair, priceType ?? Config.TradePriceType);
         }
 
-        public decimal CalculateFees(IOrderDetails order)
+        public decimal CalculateOrderFees(IOrderDetails order)
         {
             if (order.Fees != 0 && order.FeesCurrency != null)
             {
@@ -582,6 +579,16 @@ namespace IntelliTrader.Trading
             }
         }
 
+        public bool IsNormalizedPair(string pair)
+        {
+            return Exchange.GetPairMarket(pair) == Config.Market;
+        }
+
+        public string NormalizePair(string pair)
+        {
+            return Exchange.ChangeMarket(pair, Config.Market);
+        }
+
         public void LogOrder(IOrderDetails order)
         {
             OrderHistory.Push(order);
@@ -595,6 +602,16 @@ namespace IntelliTrader.Trading
         public List<string> GetTrailingSells()
         {
             return tradingTimedTask.GetTrailingSells();
+        }
+
+        public void StopTrailingBuy(string pair)
+        {
+            tradingTimedTask.StopTrailingBuy(pair);
+        }
+
+        public void StopTrailingSell(string pair)
+        {
+            tradingTimedTask.StopTrailingSell(pair);
         }
 
         private void OnTradingRulesChanged()

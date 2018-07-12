@@ -10,9 +10,8 @@ namespace IntelliTrader.Core
         public decimal? Amount { get; set; }
         public bool ManualOrder { get; set; }
         public bool Swap { get; set; }
-        public string SwapPair { get; set; }
         public bool Arbitrage { get; set; }
-        public string ArbitrageMarket { get; set; }
+        public OrderMetadata Metadata { get; set; }
 
         public SellOptions(string pair)
         {

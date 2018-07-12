@@ -21,24 +21,23 @@ namespace IntelliTrader.Core
         public decimal? AdditionalCosts { get; set; }
         public string SwapPair { get; set; }
         public string ArbitrageMarket { get; set; }
+        public decimal? ArbitragePercentage { get; set; }
 
-        public OrderMetadata MergeWith(OrderMetadata metadata)
+        public void MergeWith(OrderMetadata metadata)
         {
-            return new OrderMetadata
-            {
-                TradingRules = metadata.TradingRules ?? TradingRules,
-                SignalRule = metadata.SignalRule ?? SignalRule,
-                Signals = metadata.Signals ?? Signals,
-                BoughtRating = metadata.BoughtRating ?? BoughtRating,
-                CurrentRating = metadata.CurrentRating ?? CurrentRating,
-                BoughtGlobalRating = metadata.BoughtGlobalRating ?? BoughtGlobalRating,
-                CurrentGlobalRating = metadata.CurrentGlobalRating ?? CurrentGlobalRating,
-                LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin,
-                AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels,
-                AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts,
-                SwapPair = metadata.SwapPair ?? SwapPair,
-                ArbitrageMarket = metadata.ArbitrageMarket ?? ArbitrageMarket
-            };
+            TradingRules = metadata.TradingRules ?? TradingRules;
+            SignalRule = metadata.SignalRule ?? SignalRule;
+            Signals = metadata.Signals ?? Signals;
+            BoughtRating = metadata.BoughtRating ?? BoughtRating;
+            CurrentRating = metadata.CurrentRating ?? CurrentRating;
+            BoughtGlobalRating = metadata.BoughtGlobalRating ?? BoughtGlobalRating;
+            CurrentGlobalRating = metadata.CurrentGlobalRating ?? CurrentGlobalRating;
+            LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin;
+            AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels;
+            AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts;
+            SwapPair = metadata.SwapPair ?? SwapPair;
+            ArbitrageMarket = metadata.ArbitrageMarket ?? ArbitrageMarket;
+            ArbitragePercentage = metadata.ArbitragePercentage ?? ArbitragePercentage;
         }
     }
 }

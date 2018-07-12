@@ -9,6 +9,7 @@ namespace IntelliTrader.Core
     public interface ITradingService : IConfigurableService
     {
         ITradingConfig Config { get; }
+        object SyncRoot { get; }
         IModuleRules Rules { get; }
         IExchangeService Exchange { get; }
         ITradingAccount Account { get; }
@@ -29,9 +30,13 @@ namespace IntelliTrader.Core
         bool CanSwap(SwapOptions options, out string message);
         bool CanArbitrage(ArbitrageOptions options, out string message);
         decimal GetPrice(string pair, TradePriceType? priceType = null);
-        decimal CalculateFees(IOrderDetails order);
+        decimal CalculateOrderFees(IOrderDetails order);
+        bool IsNormalizedPair(string pair);
+        string NormalizePair(string pair);
         void LogOrder(IOrderDetails order);
         List<string> GetTrailingBuys();
         List<string> GetTrailingSells();
+        void StopTrailingBuy(string pair);
+        void StopTrailingSell(string pair);
     }
 }

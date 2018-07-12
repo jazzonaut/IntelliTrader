@@ -11,6 +11,7 @@ namespace IntelliTrader.Trading
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<TradingService>().As<ITradingService>().As<IConfigurableService>().Named<IConfigurableService>(Constants.ServiceNames.TradingService).SingleInstance();
+            builder.RegisterType<OrderingService>().As<IOrderingService>().SingleInstance();
         }
     }
 }

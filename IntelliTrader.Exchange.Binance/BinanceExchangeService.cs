@@ -85,7 +85,7 @@ namespace IntelliTrader.Exchange.Binance
                 if (market == Constants.Markets.BTC)
                 {
                     string crossMarketPair = ChangeMarket(pair, crossMarket);
-                    string marketPair = GetArbitrageMarket(crossMarket);
+                    string marketPair = GetArbitrageMarketPair(crossMarket);
 
                     if (Tickers.TryGetValue(pair, out Ticker pairTicker) &&
                         Tickers.TryGetValue(crossMarketPair, out Ticker crossTicker) &&
@@ -122,7 +122,7 @@ namespace IntelliTrader.Exchange.Binance
             return 0;
         }
 
-        public override string GetArbitrageMarket(string crossMarket)
+        public override string GetArbitrageMarketPair(string crossMarket)
         {
             if (crossMarket == Constants.Markets.ETH || crossMarket == Constants.Markets.BTC)
             {
