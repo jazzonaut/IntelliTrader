@@ -30,19 +30,21 @@ namespace IntelliTrader.Trading
                 {
                     IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                    decimal currentPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
+                    decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
+                    string signalRule = options.Metadata.SignalRule ?? "N/A";
                     options.Metadata.TradingRules = pairConfig.Rules.ToList();
                     options.Metadata.LastBuyMargin = options.Metadata.LastBuyMargin ?? tradingPair?.CurrentMargin ?? 0;
-                    string signalRule = options.Metadata.SignalRule ?? "N/A";
 
                     BuyOrder buyOrder = new BuyOrder
                     {
                         Type = pairConfig.BuyType,
                         Date = DateTimeOffset.Now,
                         Pair = options.Pair,
-                        Amount = options.Amount ?? (options.MaxCost.Value / currentPrice),
-                        Price = currentPrice
+                        Amount = options.Amount ?? (options.MaxCost.Value / buyPrice),
+                        Price = buyPrice
                     };
+                    buyOrder.Amount = tradingService.Exchange.ClampOrderAmount(buyOrder.Pair, buyOrder.Amount);
+                    buyOrder.Price = tradingService.Exchange.ClampOrderPrice(buyOrder.Pair, buyOrder.Price);
 
                     lock (tradingService.Account.SyncRoot)
                     {
@@ -56,8 +58,6 @@ namespace IntelliTrader.Trading
                         }
                         else
                         {
-                            decimal buyPrice = currentPrice;
-                            decimal roundedAmount = Math.Round(buyOrder.Amount, 4);
                             orderDetails = new OrderDetails
                             {
                                 OrderId = DateTime.Now.ToFileTimeUtc().ToString(),
@@ -65,15 +65,15 @@ namespace IntelliTrader.Trading
                                 Result = OrderResult.Filled,
                                 Date = buyOrder.Date,
                                 Pair = buyOrder.Pair,
-                                Amount = roundedAmount,
-                                AmountFilled = roundedAmount,
-                                Price = buyPrice,
-                                AveragePrice = buyPrice,
-                                Fees = roundedAmount * buyPrice * tradingService.Config.VirtualTradingFees,
+                                Amount = buyOrder.Amount,
+                                AmountFilled = buyOrder.Amount,
+                                Price = buyOrder.Price,
+                                AveragePrice = buyOrder.Price,
+                                Fees = buyOrder.Amount * buyOrder.Price * tradingService.Config.VirtualTradingFees,
                                 FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
                             };
                             orderDetails.SetMetadata(options.Metadata);
-                            ConvertToMarketPrice(orderDetails as OrderDetails, buyPrice, TradePriceType.Bid);
+                            ConvertToMarketPrice(orderDetails as OrderDetails, buyOrder.Price, TradePriceType.Ask);
                         }
 
                         tradingService.Account.AddBuyOrder(orderDetails);
@@ -114,6 +114,7 @@ namespace IntelliTrader.Trading
                     IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
                     tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(options.Pair)), tradingService.Exchange.GetPriceSpread(options.Pair));
+                    decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
 
                     SellOrder sellOrder = new SellOrder
                     {
@@ -121,8 +122,10 @@ namespace IntelliTrader.Trading
                         Date = DateTimeOffset.Now,
                         Pair = options.Pair,
                         Amount = options.Amount ?? tradingPair.Amount,
-                        Price = tradingPair.CurrentPrice
+                        Price = sellPrice
                     };
+                    sellOrder.Amount = tradingService.Exchange.ClampOrderAmount(sellOrder.Pair, sellOrder.Amount);
+                    sellOrder.Price = tradingService.Exchange.ClampOrderPrice(sellOrder.Pair, sellOrder.Price);
 
                     lock (tradingService.Account.SyncRoot)
                     {
@@ -137,7 +140,6 @@ namespace IntelliTrader.Trading
                         }
                         else
                         {
-                            decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
                             orderDetails = new OrderDetails
                             {
                                 OrderId = DateTime.Now.ToFileTimeUtc().ToString(),
@@ -147,9 +149,9 @@ namespace IntelliTrader.Trading
                                 Pair = sellOrder.Pair,
                                 Amount = sellOrder.Amount,
                                 AmountFilled = sellOrder.Amount,
-                                Price = sellPrice,
-                                AveragePrice = sellPrice,
-                                Fees = sellOrder.Amount * sellPrice * tradingService.Config.VirtualTradingFees,
+                                Price = sellOrder.Price,
+                                AveragePrice = sellOrder.Price,
+                                Fees = sellOrder.Amount * sellOrder.Price * tradingService.Config.VirtualTradingFees,
                                 FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
                             };
                             tradingPair.Metadata.MergeWith(options.Metadata);

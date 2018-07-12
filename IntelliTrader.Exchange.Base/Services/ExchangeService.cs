@@ -22,7 +22,7 @@ namespace IntelliTrader.Exchange.Base
         protected readonly IHealthCheckService healthCheckService;
         protected readonly ITasksService tasksService;
 
-        public ExchangeAPI Api { get; private set; }
+        public ExchangeAPI Api { get; set; }
         public ConcurrentDictionary<string, Ticker> Tickers { get; private set; }
 
         private IDisposable socket;
@@ -105,6 +105,18 @@ namespace IntelliTrader.Exchange.Base
         protected abstract ExchangeAPI InitializeApi();
 
         public abstract IOrderDetails PlaceOrder(IOrder order, string priceCurrency = null);
+
+        public virtual decimal ClampOrderAmount(string pair, decimal amount)
+        {
+            ExchangeMarket market = Api.GetExchangeMarketFromCache(pair);
+            return market == null ? amount : CryptoUtility.ClampDecimal(market.MinTradeSize, market.MaxTradeSize, market.QuantityStepSize, amount);
+        }
+
+        public virtual decimal ClampOrderPrice(string pair, decimal price)
+        {
+            ExchangeMarket market = Api.GetExchangeMarketFromCache(pair);
+            return market == null ? price : CryptoUtility.ClampDecimal(market.MinPrice, market.MaxPrice, market.PriceStepSize, price);
+        }
 
         public void ConnectTickersWebsocket()
         {

@@ -12,7 +12,6 @@ namespace IntelliTrader.Backtesting
     {
         private readonly IBacktestingService backtestingService;
         private ConcurrentBag<string> markets;
-        private ExchangeBinanceAPI dymmyApi;
 
         public BacktestingExchangeService(ILoggingService loggingService, IHealthCheckService healthCheckService, 
             ITasksService tasksService, IBacktestingService backtestingService)
@@ -25,7 +24,7 @@ namespace IntelliTrader.Backtesting
         {
             loggingService.Info("Start Backtesting Exchange service...");
 
-            dymmyApi = new ExchangeBinanceAPI();
+            Api = InitializeApi();
 
             loggingService.Info("Backtesting Exchange service started");
         }
@@ -36,6 +35,11 @@ namespace IntelliTrader.Backtesting
 
 
             loggingService.Info("Backtesting Exchange service stopped");
+        }
+
+        protected override ExchangeAPI InitializeApi()
+        {
+            return new ExchangeBinanceAPI();
         }
 
         public override IEnumerable<string> GetMarkets()
@@ -160,20 +164,10 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-        public override string GetPairMarket(string pair)
-        {
-            return dymmyApi.ExchangeSymbolToGlobalSymbol(pair).Split('-')[0];
-        }
-
 
 
 
         #region Not Needed For Backtesting
-
-        protected override ExchangeAPI InitializeApi()
-        {
-            throw new NotImplementedException();
-        }
 
         public override IOrderDetails PlaceOrder(IOrder order, string priceCurrency)
         {

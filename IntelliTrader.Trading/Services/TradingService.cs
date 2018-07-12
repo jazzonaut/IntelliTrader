@@ -9,6 +9,7 @@ namespace IntelliTrader.Trading
     internal class TradingService : ConfigrableServiceBase<TradingConfig>, ITradingService
     {
         private const int MIN_INTERVAL_BETWEEN_BUY_AND_SELL = 10000;
+        private const decimal ARBITRAGE_CROSSMARKETPAIR_BUY_GAP = 0.95M;
 
         public override string ServiceName => Constants.ServiceNames.TradingService;
 
@@ -333,26 +334,23 @@ namespace IntelliTrader.Trading
                         if (CanBuy(buyArbitrageMarketPairOptions, out message))
                         {
                             decimal combinedFees = 0;
-
                             IOrderDetails buyArbitrageMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyArbitrageMarketPairOptions);
                             if (buyArbitrageMarketPairOrderDetails.Result == OrderResult.Filled)
                             {
                                 combinedFees += CalculateOrderFees(buyArbitrageMarketPairOrderDetails);
-
                                 string crossMarketPair = Exchange.ChangeMarket(options.Pair, options.Market);
                                 var buyCrossMarketPairOptions = new BuyOptions(crossMarketPair)
                                 {
                                     Arbitrage = true,
                                     ManualOrder = options.ManualOrder,
-                                    Amount = buyArbitrageMarketPairOrderDetails.AmountFilled / GetPrice(crossMarketPair, TradePriceType.Ask),
+                                    Amount = buyArbitrageMarketPairOrderDetails.AmountFilled / GetPrice(crossMarketPair, TradePriceType.Ask) * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP,
                                     Metadata = options.Metadata
                                 };
 
                                 IOrderDetails buyCrossMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyCrossMarketPairOptions);
                                 if (buyCrossMarketPairOrderDetails.Result == OrderResult.Filled)
                                 {
-                                    combinedFees += CalculateOrderFees(buyCrossMarketPairOrderDetails);
-
+                                    combinedFees += CalculateOrderFees(buyCrossMarketPairOrderDetails) * 2;
                                     var sellCrossMarketPairOptions = new SellOptions(crossMarketPair)
                                     {
                                         Arbitrage = true,
@@ -361,12 +359,15 @@ namespace IntelliTrader.Trading
                                         Metadata = options.Metadata
                                     };
 
-                                    Account.GetTradingPair(crossMarketPair).OverrideActualCost(buyArbitrageMarketPairOrderDetails.RawCost + combinedFees);
+                                    TradingPair finalPair = Account.GetTradingPair(crossMarketPair) as TradingPair;
+                                    finalPair.FeesMarketCurrency += CalculateOrderFees(buyArbitrageMarketPairOrderDetails);
+                                    finalPair.OverrideActualCost(buyArbitrageMarketPairOrderDetails.RawCost * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP + combinedFees);
                                     IOrderDetails sellCrossMarketPairOrderDetails = orderingService.PlaceSellOrder(sellCrossMarketPairOptions);
+                                    finalPair.OverrideActualCost(null);
 
                                     if (sellCrossMarketPairOrderDetails.Result == OrderResult.Filled)
                                     {
-                                        loggingService.Info($"Arbitrage successful: {options.Pair}->{crossMarketPair}->{arbitrageMarketPair}->{Config.Market}");
+                                        loggingService.Info($"Arbitrage successful: {options.Pair} -> {crossMarketPair} -> {arbitrageMarketPair} -> {Config.Market}");
                                     }
                                 }
                                 else

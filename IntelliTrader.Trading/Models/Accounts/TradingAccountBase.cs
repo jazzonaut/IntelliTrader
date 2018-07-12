@@ -168,8 +168,6 @@ namespace IntelliTrader.Trading
                             Metadata = order.Metadata,
                         };
 
-                        tradingPair.OverrideActualCost(null);
-
                         if (tradingPair.Amount > order.AmountFilled)
                         {
                             tradingPair.Amount -= order.AmountFilled;
