@@ -100,7 +100,8 @@ namespace IntelliTrader.Trading
                             Metadata = order.Metadata
                         };
                         tradingPairs.TryAdd(order.Pair, tradingPair);
-                        tradingPair.SetCurrentValues(tradingService.GetPrice(tradingPair.Pair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
+                        string marketPair = tradingService.Exchange.ChangeMarket(tradingPair.Pair, tradingService.Config.Market);
+                        tradingPair.SetCurrentValues(tradingService.GetPrice(marketPair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
                         tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                         tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
                     }
@@ -117,7 +118,6 @@ namespace IntelliTrader.Trading
                             if (crossPair.RawCost > order.RawCost)
                             {
                                 crossPair.Amount -= order.RawCost / tradingService.GetPrice(crossPairName, TradePriceType.Bid);
-
                                 if (crossPair.ActualCost <= tradingService.Config.MinCost)
                                 {
                                     tradingPairs.TryRemove(crossPairName, out crossPair);

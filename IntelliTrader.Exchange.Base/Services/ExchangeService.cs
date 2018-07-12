@@ -215,8 +215,15 @@ namespace IntelliTrader.Exchange.Base
 
         public virtual string ChangeMarket(string pair, string market)
         {
-            string currentMarket = GetPairMarket(pair);
-            return pair.Substring(0, pair.Length - currentMarket.Length) + market;
+            if (!pair.EndsWith(market))
+            {
+                string currentMarket = GetPairMarket(pair);
+                return pair.Substring(0, pair.Length - currentMarket.Length) + market;
+            }
+            else
+            {
+                return pair;
+            }
         }
 
         public virtual decimal ConvertPrice(string pair, decimal price, string market, TradePriceType priceType)

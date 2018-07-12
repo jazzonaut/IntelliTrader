@@ -315,7 +315,7 @@ namespace IntelliTrader.Trading
             {
                 if (CanArbitrage(options, out string message))
                 {
-                    if (CanBuy(new BuyOptions(options.Pair) { Amount = 1 }, out message))
+                    if (CanBuy(new BuyOptions(Exchange.ChangeMarket(options.Pair, options.Market)) { Amount = 1 }, out message))
                     {
                         IPairConfig pairConfig = GetPairConfig(options.Pair);
                         decimal combinedFees = 0;
