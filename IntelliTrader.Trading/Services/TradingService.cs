@@ -1,4 +1,5 @@
 ﻿using IntelliTrader.Core;
+using IntelliTrader.Exchange.Base;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace IntelliTrader.Trading
     internal class TradingService : ConfigrableServiceBase<TradingConfig>, ITradingService
     {
         private const int MIN_INTERVAL_BETWEEN_BUY_AND_SELL = 10000;
-        private const decimal ARBITRAGE_CROSSMARKETPAIR_BUY_GAP = 0.95M;
+        private const decimal ARBITRAGE_CROSSMARKETPAIR_BUY_GAP = 0.99M;
 
         public override string ServiceName => Constants.ServiceNames.TradingService;
 
@@ -323,18 +324,31 @@ namespace IntelliTrader.Trading
                         loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {options.Metadata.ArbitragePercentage:0.00}");
 
                         string arbitrageMarketPair = Exchange.GetArbitrageMarketPair(options.Market);
+                        bool useExistingArbitrageMarketPair = Account.GetTradingPair(arbitrageMarketPair)?.CurrentCost > pairConfig.BuyMaxCost;
+
                         var buyArbitrageMarketPairOptions = new BuyOptions(arbitrageMarketPair)
                         {
                             Arbitrage = true,
                             MaxCost = pairConfig.BuyMaxCost,
                             ManualOrder = options.ManualOrder,
+                            IgnoreBalance = useExistingArbitrageMarketPair,
                             Metadata = options.Metadata
                         };
 
                         if (CanBuy(buyArbitrageMarketPairOptions, out message))
                         {
                             decimal combinedFees = 0;
-                            IOrderDetails buyArbitrageMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyArbitrageMarketPairOptions);
+                            IOrderDetails buyArbitrageMarketPairOrderDetails = null;
+                            if (useExistingArbitrageMarketPair)
+                            {
+                                buyArbitrageMarketPairOrderDetails = Account.RemoveAmount(buyArbitrageMarketPairOptions.Pair, 
+                                    buyArbitrageMarketPairOptions.MaxCost.Value / GetPrice(buyArbitrageMarketPairOptions.Pair, TradePriceType.Ask), false);
+                            }
+                            else
+                            {
+                                buyArbitrageMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyArbitrageMarketPairOptions);
+                            }
+
                             if (buyArbitrageMarketPairOrderDetails.Result == OrderResult.Filled)
                             {
                                 combinedFees += CalculateOrderFees(buyArbitrageMarketPairOrderDetails);
@@ -427,7 +441,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel buy request for {options.Pair}. Reason: maximum pairs reached";
                 return false;
             }
-            else if (!options.ManualOrder && !options.Swap && pairConfig.BuyMinBalance != 0 && (Account.GetBalance() - options.MaxCost) < pairConfig.BuyMinBalance && Exchange.GetPairMarket(options.Pair) == Config.Market)
+            else if (!options.ManualOrder && !options.Swap && !options.IgnoreBalance && pairConfig.BuyMinBalance != 0 && (Account.GetBalance() - options.MaxCost) < pairConfig.BuyMinBalance && Exchange.GetPairMarket(options.Pair) == Config.Market)
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: minimum balance reached";
                 return false;
@@ -437,7 +451,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel buy request for {options.Pair}. Reason: invalid price";
                 return false;
             }
-            else if (Account.GetBalance() < options.MaxCost && Exchange.GetPairMarket(options.Pair) == Config.Market)
+            else if (!options.IgnoreBalance && Account.GetBalance() < options.MaxCost && Exchange.GetPairMarket(options.Pair) == Config.Market)
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: not enough balance";
                 return false;

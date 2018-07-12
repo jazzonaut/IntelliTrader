@@ -10,6 +10,7 @@ namespace IntelliTrader.Core
         public decimal? Amount { get; set; }
         public decimal? MaxCost { get; set; }
         public bool IgnoreExisting { get; set; }
+        public bool IgnoreBalance { get; set; }
         public bool ManualOrder { get; set; }
         public bool Swap { get; set; }
         public bool Arbitrage { get; set; }

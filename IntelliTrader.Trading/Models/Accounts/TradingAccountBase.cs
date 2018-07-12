@@ -1,4 +1,5 @@
 ﻿using IntelliTrader.Core;
+using IntelliTrader.Exchange.Base;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace IntelliTrader.Trading
         protected decimal balance;
         protected ConcurrentDictionary<string, TradingPair> tradingPairs = new ConcurrentDictionary<string, TradingPair>();
 
-        public TradingAccountBase(ILoggingService loggingService, INotificationService notificationService, 
+        public TradingAccountBase(ILoggingService loggingService, INotificationService notificationService,
             IHealthCheckService healthCheckService, ISignalsService signalsService, ITradingService tradingService)
         {
             this.loggingService = loggingService;
@@ -116,10 +117,6 @@ namespace IntelliTrader.Trading
                             if (normalizedMarketPair.RawCost > order.RawCost)
                             {
                                 normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
-                                if (normalizedMarketPair.ActualCost <= tradingService.Config.MinCost)
-                                {
-                                    tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
-                                }
                             }
                             else
                             {
@@ -191,6 +188,51 @@ namespace IntelliTrader.Trading
                 else
                 {
                     return new TradeResult { IsSuccessful = false };
+                }
+            }
+        }
+
+        public IOrderDetails RemoveAmount(string pair, decimal amount, bool removeDust)
+        {
+            lock (SyncRoot)
+            {
+                if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair) && tradingPair.Amount >= amount)
+                {
+                    decimal initialTradingPairAmount = tradingPair.Amount;
+                    if (tradingPair.Amount > amount)
+                    {
+                        tradingPair.Amount -= amount;
+                        if (removeDust && tradingPair.ActualCost <= tradingService.Config.MinCost)
+                        {
+                            tradingPairs.TryRemove(pair, out tradingPair);
+                        }
+                        tradingPair.FeesMarketCurrency *= (1 - amount / initialTradingPairAmount);
+                        tradingPair.FeesPairCurrency *= (1 - amount / initialTradingPairAmount);
+                    }
+                    else
+                    {
+                        tradingPairs.TryRemove(pair, out tradingPair);
+                    }
+
+                    return new OrderDetails
+                    {
+                        OrderId = DateTime.Now.ToFileTimeUtc().ToString(),
+                        Side = OrderSide.Sell,
+                        Result = OrderResult.Filled,
+                        Date = DateTimeOffset.Now,
+                        Pair = pair,
+                        Amount = amount,
+                        AmountFilled = amount,
+                        Price = tradingPair.AveragePrice,
+                        AveragePrice = tradingPair.AveragePrice,
+                        Fees = tradingPair.FeesTotal * (amount / initialTradingPairAmount),
+                        FeesCurrency = tradingPair.FeesMarketCurrency > 0 ? tradingService.Config.Market : tradingService.Exchange.GetPairMarket(pair),
+                        Metadata = tradingPair.Metadata
+                    };
+                }
+                else
+                {
+                    return new OrderDetails();
                 }
             }
         }
