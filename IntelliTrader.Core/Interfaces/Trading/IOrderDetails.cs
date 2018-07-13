@@ -11,6 +11,7 @@ namespace IntelliTrader.Core
         DateTimeOffset Date { get; }
         string OrderId { get; }
         string Pair { get; }
+        string OriginalPair { get; }
         string Message { get; }
         decimal Amount { get; }
         decimal AmountFilled { get; }

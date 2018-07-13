@@ -12,6 +12,7 @@ namespace IntelliTrader.Exchange.Base
         public DateTimeOffset Date { get; set; }
         public string OrderId { get; set; }
         public string Pair { get; set; }
+        public string OriginalPair { get; set; }
         public string Message { get; set; }
         public decimal Amount { get; set; }
         public decimal AmountFilled { get; set; }

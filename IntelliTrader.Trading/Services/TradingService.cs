@@ -341,8 +341,9 @@ namespace IntelliTrader.Trading
                             IOrderDetails buyArbitrageMarketPairOrderDetails = null;
                             if (useExistingArbitrageMarketPair)
                             {
-                                buyArbitrageMarketPairOrderDetails = Account.RemoveAmount(buyArbitrageMarketPairOptions.Pair, 
-                                    buyArbitrageMarketPairOptions.MaxCost.Value / GetPrice(buyArbitrageMarketPairOptions.Pair, TradePriceType.Ask), false);
+                                buyArbitrageMarketPairOrderDetails = Account.AddFakeOrder(buyArbitrageMarketPairOptions.Pair, 
+                                    buyArbitrageMarketPairOptions.MaxCost.Value / GetPrice(buyArbitrageMarketPairOptions.Pair, TradePriceType.Ask), 
+                                    includeFees: false);
                             }
                             else
                             {
@@ -351,7 +352,7 @@ namespace IntelliTrader.Trading
 
                             if (buyArbitrageMarketPairOrderDetails.Result == OrderResult.Filled)
                             {
-                                combinedFees += CalculateOrderFees(buyArbitrageMarketPairOrderDetails);
+                                combinedFees += CalculateOrderFees(buyArbitrageMarketPairOrderDetails) * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP;
                                 string crossMarketPair = Exchange.ChangeMarket(options.Pair, options.Market);
                                 var buyCrossMarketPairOptions = new BuyOptions(crossMarketPair)
                                 {
@@ -374,15 +375,21 @@ namespace IntelliTrader.Trading
                                     };
 
                                     TradingPair finalPair = Account.GetTradingPair(crossMarketPair) as TradingPair;
-                                    finalPair.FeesMarketCurrency += CalculateOrderFees(buyArbitrageMarketPairOrderDetails);
+                                    finalPair.FeesMarketCurrency += CalculateOrderFees(buyArbitrageMarketPairOrderDetails) * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP;
                                     finalPair.OverrideActualCost(buyArbitrageMarketPairOrderDetails.RawCost * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP + combinedFees);
                                     IOrderDetails sellCrossMarketPairOrderDetails = orderingService.PlaceSellOrder(sellCrossMarketPairOptions);
                                     finalPair.OverrideActualCost(null);
 
                                     if (sellCrossMarketPairOrderDetails.Result == OrderResult.Filled)
                                     {
-                                        loggingService.Info($"Arbitrage successful: {options.Pair} -> {crossMarketPair} -> {arbitrageMarketPair} -> {Config.Market}");
+                                        loggingService.Info($"Arbitrage successful: {arbitrageMarketPair} -> {crossMarketPair} -> {NormalizePair(crossMarketPair)}");
                                     }
+                                    else
+                                    {
+                                        loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to sell cross market pair {crossMarketPair}");
+                                        notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to sell cross market pair {crossMarketPair}");
+                                    }
+
                                 }
                                 else
                                 {

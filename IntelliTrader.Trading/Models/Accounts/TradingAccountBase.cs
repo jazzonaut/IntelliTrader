@@ -132,7 +132,7 @@ namespace IntelliTrader.Trading
         {
             lock (SyncRoot)
             {
-                if (tradingPairs.TryGetValue(order.Pair, out TradingPair tradingPair))
+                if (tradingPairs.TryGetValue(order.OriginalPair ?? order.Pair, out TradingPair tradingPair))
                 {
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
@@ -170,12 +170,12 @@ namespace IntelliTrader.Trading
                             tradingPair.Amount -= order.AmountFilled;
                             if (!isInitialRefresh && tradingPair.ActualCost <= tradingService.Config.MinCost)
                             {
-                                tradingPairs.TryRemove(order.Pair, out tradingPair);
+                                tradingPairs.TryRemove(order.OriginalPair ?? order.Pair, out tradingPair);
                             }
                         }
                         else
                         {
-                            tradingPairs.TryRemove(order.Pair, out tradingPair);
+                            tradingPairs.TryRemove(order.OriginalPair ?? order.Pair, out tradingPair);
                         }
 
                         return tradeResult;
@@ -192,43 +192,34 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public IOrderDetails RemoveAmount(string pair, decimal amount, bool removeDust)
+        public IOrderDetails AddFakeOrder(string pair, decimal amount, bool includeFees)
         {
             lock (SyncRoot)
             {
                 if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair) && tradingPair.Amount >= amount)
                 {
-                    decimal initialTradingPairAmount = tradingPair.Amount;
                     if (tradingPair.Amount > amount)
                     {
-                        tradingPair.Amount -= amount;
-                        if (removeDust && tradingPair.ActualCost <= tradingService.Config.MinCost)
+                        return new OrderDetails
                         {
-                            tradingPairs.TryRemove(pair, out tradingPair);
-                        }
-                        tradingPair.FeesMarketCurrency *= (1 - amount / initialTradingPairAmount);
-                        tradingPair.FeesPairCurrency *= (1 - amount / initialTradingPairAmount);
+                            OrderId = DateTime.Now.ToFileTimeUtc().ToString(),
+                            Side = OrderSide.Sell,
+                            Result = OrderResult.Filled,
+                            Date = DateTimeOffset.Now,
+                            Pair = pair,
+                            Amount = amount,
+                            AmountFilled = amount,
+                            Price = tradingPair.AveragePrice,
+                            AveragePrice = tradingPair.AveragePrice,
+                            Fees = includeFees ? tradingPair.FeesTotal * (amount / tradingPair.Amount) : 0,
+                            FeesCurrency = includeFees ? tradingPair.FeesMarketCurrency > 0 ? tradingService.Config.Market : tradingService.Exchange.GetPairMarket(pair) : null,
+                            Metadata = tradingPair.Metadata
+                        };
                     }
                     else
                     {
-                        tradingPairs.TryRemove(pair, out tradingPair);
+                        return new OrderDetails();
                     }
-
-                    return new OrderDetails
-                    {
-                        OrderId = DateTime.Now.ToFileTimeUtc().ToString(),
-                        Side = OrderSide.Sell,
-                        Result = OrderResult.Filled,
-                        Date = DateTimeOffset.Now,
-                        Pair = pair,
-                        Amount = amount,
-                        AmountFilled = amount,
-                        Price = tradingPair.AveragePrice,
-                        AveragePrice = tradingPair.AveragePrice,
-                        Fees = tradingPair.FeesTotal * (amount / initialTradingPairAmount),
-                        FeesCurrency = tradingPair.FeesMarketCurrency > 0 ? tradingService.Config.Market : tradingService.Exchange.GetPairMarket(pair),
-                        Metadata = tradingPair.Metadata
-                    };
                 }
                 else
                 {

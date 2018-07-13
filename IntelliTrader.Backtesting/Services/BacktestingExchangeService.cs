@@ -169,7 +169,7 @@ namespace IntelliTrader.Backtesting
 
         #region Not Needed For Backtesting
 
-        public override IOrderDetails PlaceOrder(IOrder order, string priceCurrency)
+        public override IOrderDetails PlaceOrder(IOrder order, string originalPair = null)
         {
             throw new NotImplementedException();
         }

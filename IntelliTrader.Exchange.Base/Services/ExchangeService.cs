@@ -104,7 +104,7 @@ namespace IntelliTrader.Exchange.Base
 
         protected abstract ExchangeAPI InitializeApi();
 
-        public abstract IOrderDetails PlaceOrder(IOrder order, string priceCurrency = null);
+        public abstract IOrderDetails PlaceOrder(IOrder order, string originalPair = null);
 
         public virtual decimal ClampOrderAmount(string pair, decimal amount)
         {

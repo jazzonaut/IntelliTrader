@@ -12,7 +12,7 @@ namespace IntelliTrader.Core
         void AddOrder(IOrderDetails order);
         void AddBuyOrder(IOrderDetails order);
         ITradeResult AddSellOrder(IOrderDetails order);
-        IOrderDetails RemoveAmount(string pair, decimal amount, bool removeDust);
+        IOrderDetails AddFakeOrder(string pair, decimal amount, bool includeFees);
         decimal GetBalance();
         bool HasTradingPair(string pair);
         ITradingPair GetTradingPair(string pair);
