@@ -79,6 +79,7 @@ namespace IntelliTrader.Core
             if (!IsRunning)
             {
                 IsRunning = true;
+
                 if (StartDelay > 0)
                 {
                     Task.Delay((int)StartDelay).ContinueWith(t =>
@@ -151,6 +152,22 @@ namespace IntelliTrader.Core
                 this.syncMutex.WaitOne();
                 this.syncMutex.Set();
             }
+        }
+
+        /// <summary>
+        /// Temporarily pause the task
+        /// </summary>
+        public void Pause()
+        {
+            this.timer.Enabled = false;
+        }
+
+        /// <summary>
+        ///  Continue running the task
+        /// </summary>
+        public void Continue()
+        {
+            this.timer.Enabled = true;
         }
 
         /// <summary>

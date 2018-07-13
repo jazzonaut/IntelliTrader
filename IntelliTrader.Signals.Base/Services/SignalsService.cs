@@ -98,9 +98,18 @@ namespace IntelliTrader.Signals.Base
             loggingService.Info("Signals service stopped");
         }
 
-        public void ClearTrailing()
+        public void ProcessPair(string pair, Dictionary<string, ISignal> signals)
         {
-            signalRulesTimedTask.ClearTrailing();
+            IEnumerable<IRule> enabledRules = Rules.Entries.Where(r => r.Enabled);
+            foreach (IRule rule in enabledRules)
+            {
+                signalRulesTimedTask.ProcessRule(rule, signals, pair, signalRulesTimedTask.GetExcludedPairs(), GetGlobalRating());
+            }
+        }
+
+        public void StopTrailing()
+        {
+            signalRulesTimedTask.StopTrailing();
         }
 
         public List<string> GetTrailingSignals()

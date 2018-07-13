@@ -30,12 +30,17 @@ namespace IntelliTrader.Signals.Base
         protected override void Run()
         {
             ProcessTrailingSignals();
-            ProcessRules();
+            ProcessAllRules();
         }
 
-        public void ClearTrailing()
+        public void StopTrailing()
         {
             trailingSignals.Clear();
+        }
+
+        public void StopTrailing(string pair)
+        {
+            trailingSignals.TryRemove(pair, out List<SignalTrailingInfo> trailingInfo);
         }
 
         public List<string> GetTrailingSignals()
@@ -89,7 +94,7 @@ namespace IntelliTrader.Signals.Base
                         trailingInfoList.RemoveAt(i);
                         if (trailingInfoList.Count == 0)
                         {
-                            trailingSignals.TryRemove(pair, out trailingInfoList);
+                            StopTrailing(pair);
                         }
                         if (LoggingEnabled)
                         {
@@ -100,72 +105,31 @@ namespace IntelliTrader.Signals.Base
             }
         }
 
-        private void ProcessRules()
+        public void ProcessAllRules()
         {
             if (tradingService.Config.BuyEnabled)
             {
-                var allSignals = signalsService.GetAllSignals();
+                IEnumerable<ISignal> allSignals = signalsService.GetAllSignals();
                 if (allSignals != null)
                 {
-                    var enabledRules = signalsService.Rules.Entries.Where(r => r.Enabled);
+                    IEnumerable<IRule> enabledRules = signalsService.Rules.Entries.Where(r => r.Enabled);
                     if (enabledRules.Any())
                     {
                         var groupedSignals = allSignals.Where(s => tradingService.GetPairConfig(s.Pair).BuyEnabled).GroupBy(s => s.Pair).ToDictionary(g => g.Key, g => g.ToDictionary(s => s.Name, s => s));
                         double? globalRating = signalsService.GetGlobalRating();
-
-                        var excludedPairs = tradingService.Config.ExcludedPairs
-                            .Concat(tradingService.Account.GetTradingPairs().Select(p => p.Pair))
-                            .Concat(tradingService.GetTrailingBuys()).ToList();
+                        List<String> excludedPairs = GetExcludedPairs();
 
                         if (signalsService.RulesConfig.ProcessingMode == RuleProcessingMode.FirstMatch)
                         {
                             excludedPairs.AddRange(trailingSignals.Keys);
                         }
 
-                        foreach (var rule in enabledRules)
+                        foreach (IRule rule in enabledRules)
                         {
                             foreach (var group in groupedSignals)
                             {
-                                string pair = group.Key;
                                 Dictionary<string, ISignal> signals = group.Value;
-                                ITradingPair tradingPair = tradingService.Account.GetTradingPair(pair);
-                                IEnumerable<IRuleCondition> conditions = rule.Trailing != null && rule.Trailing.Enabled ? rule.Trailing.StartConditions : rule.Conditions;
-                                List<SignalTrailingInfo> trailingInfoList;
-
-                                if (!excludedPairs.Contains(pair) && (!trailingSignals.TryGetValue(pair, out trailingInfoList) || !trailingInfoList.Any(t => t.Rule == rule)) &&
-                                    (conditions == null || rulesService.CheckConditions(conditions, signals, globalRating, pair, tradingPair)))
-                                {
-                                    IEnumerable<ISignal> ruleSignals = conditions != null ? signals.Where(s => conditions.Any(c => c.Signal == s.Key)).Select(s => s.Value) : new List<ISignal>();
-
-                                    if (rule.Trailing != null && rule.Trailing.Enabled)
-                                    {
-                                        if (trailingInfoList == null)
-                                        {
-                                            trailingInfoList = new List<SignalTrailingInfo>();
-                                            trailingSignals.TryAdd(pair, trailingInfoList);
-                                        }
-
-                                        trailingInfoList.Add(new SignalTrailingInfo
-                                        {
-                                            Rule = rule,
-                                            StartTime = DateTimeOffset.Now
-                                        });
-
-                                        if (LoggingEnabled)
-                                        {
-                                            loggingService.Info($"Start trailing signal for {pair}. Rule: {rule.Name}");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        InitiateBuy(pair, rule, ruleSignals);
-                                    }
-
-                                    if (signalsService.RulesConfig.ProcessingMode == RuleProcessingMode.FirstMatch)
-                                    {
-                                        excludedPairs.Add(pair);
-                                    }
-                                }
+                                ProcessRule(rule, signals, group.Key, excludedPairs, globalRating);
                             }
                         }
                     }
@@ -175,9 +139,58 @@ namespace IntelliTrader.Signals.Base
             }
         }
 
+        public void ProcessRule(IRule rule, Dictionary<string, ISignal> signals, string pair, List<string> excludedPairs, double? globalRating)
+        {
+            IEnumerable<IRuleCondition> conditions = rule.Trailing != null && rule.Trailing.Enabled ? rule.Trailing.StartConditions : rule.Conditions;
+            ITradingPair tradingPair = tradingService.Account.GetTradingPair(pair);
+            List<SignalTrailingInfo> trailingInfoList;
+
+            if (!excludedPairs.Contains(pair) && (!trailingSignals.TryGetValue(pair, out trailingInfoList) || !trailingInfoList.Any(t => t.Rule == rule)) &&
+                (conditions == null || rulesService.CheckConditions(conditions, signals, globalRating, pair, tradingPair)))
+            {
+                IEnumerable<ISignal> ruleSignals = conditions != null ? signals.Where(s => conditions.Any(c => c.Signal == s.Key)).Select(s => s.Value) : new List<ISignal>();
+
+                if (rule.Trailing != null && rule.Trailing.Enabled)
+                {
+                    if (trailingInfoList == null)
+                    {
+                        trailingInfoList = new List<SignalTrailingInfo>();
+                        trailingSignals.TryAdd(pair, trailingInfoList);
+                    }
+
+                    trailingInfoList.Add(new SignalTrailingInfo
+                    {
+                        Rule = rule,
+                        StartTime = DateTimeOffset.Now
+                    });
+
+                    if (LoggingEnabled)
+                    {
+                        loggingService.Info($"Start trailing signal for {pair}. Rule: {rule.Name}");
+                    }
+                }
+                else
+                {
+                    InitiateBuy(pair, rule, ruleSignals);
+                }
+
+                if (signalsService.RulesConfig.ProcessingMode == RuleProcessingMode.FirstMatch)
+                {
+                    excludedPairs.Add(pair);
+                }
+            }
+        }
+
+        public List<string> GetExcludedPairs()
+        {
+            return tradingService.Config.ExcludedPairs
+                .Concat(tradingService.Account.GetTradingPairs().Select(p => p.Pair))
+                .Concat(tradingService.GetTrailingBuys()).ToList();
+        }
+
         private void InitiateBuy(string pair, IRule rule, IEnumerable<ISignal> ruleSignals)
         {
-            trailingSignals.TryRemove(pair, out List<SignalTrailingInfo> trailingInfo);
+            StopTrailing(pair);
 
             IPairConfig pairConfig = tradingService.GetPairConfig(pair);
             SignalRuleModifiers ruleModifiers = rule.GetModifiers<SignalRuleModifiers>();

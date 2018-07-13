@@ -16,6 +16,7 @@ namespace IntelliTrader.Core
         public SellOptions(string pair)
         {
             this.Pair = pair;
+            this.Metadata = new OrderMetadata();
         }
     }
 }

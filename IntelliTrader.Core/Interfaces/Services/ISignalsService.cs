@@ -11,7 +11,8 @@ namespace IntelliTrader.Core
         ISignalRulesConfig RulesConfig { get; }
         void Start();
         void Stop();
-        void ClearTrailing();
+        void ProcessPair(string pair, Dictionary<string, ISignal> signals);
+        void StopTrailing();
         List<string> GetTrailingSignals();
         IEnumerable<ISignalTrailingInfo> GetTrailingInfo(string pair);
         IEnumerable<string> GetSignalNames();

@@ -117,6 +117,10 @@ namespace IntelliTrader.Trading
                             if (normalizedMarketPair.RawCost > order.RawCost)
                             {
                                 normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
+                                if (normalizedMarketPair.Amount <= 0)
+                                {
+                                    tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
+                                }
                             }
                             else
                             {

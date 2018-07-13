@@ -33,10 +33,7 @@ namespace IntelliTrader.Trading
 
         protected override void Run()
         {
-            lock (tradingService.SyncRoot)
-            {
-                ProcessTradingPairs();
-            }
+            ProcessTradingPairs();
         }
 
         public void InitiateBuy(BuyOptions options)

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace IntelliTrader.Trading
 {
@@ -29,10 +30,7 @@ namespace IntelliTrader.Trading
 
         protected override void Run()
         {
-            lock (tradingService.SyncRoot)
-            {
-                ProcessRules();
-            }
+            ProcessAllRules();
         }
 
         public IPairConfig GetPairConfig(string pair)
@@ -40,7 +38,7 @@ namespace IntelliTrader.Trading
             PairConfig pairConfig;
             if (!pairConfigs.TryGetValue(pair, out pairConfig))
             {
-                ProcessRules();
+                ProcessAllRules();
                 if (!pairConfigs.TryGetValue(pair, out pairConfig))
                 {
                     return CreatePairConfig(pair, tradingService.Config.Clone(), new PairConfig(), new List<IRule>());
@@ -49,7 +47,7 @@ namespace IntelliTrader.Trading
             return pairConfig;
         }
 
-        private void ProcessRules()
+        public void ProcessAllRules()
         {
             IEnumerable<IRule> enabledRules = tradingService.Rules?.Entries?.Where(r => r.Enabled) ?? new List<IRule>();
             List<string> allPairs = tradingService.Exchange.GetMarketPairs(tradingService.Config.Market).ToList();
@@ -64,6 +62,7 @@ namespace IntelliTrader.Trading
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(pair);
                     TradingConfig modifiedTradingConfig = tradingService.Config.Clone() as TradingConfig;
                     PairConfig modifiedPairConfig = new PairConfig();
+                    pairConfigs.TryGetValue(pair, out PairConfig oldPairConfig);
                     var appliedRules = new List<IRule>();
 
                     foreach (var rule in enabledRules)
@@ -118,6 +117,11 @@ namespace IntelliTrader.Trading
                                 modifiedPairConfig.ArbitrageEnabled = modifiers.ArbitrageEnabled ?? modifiedPairConfig.ArbitrageEnabled;
                                 modifiedPairConfig.ArbitrageMarket = modifiers.ArbitrageMarket ?? modifiedPairConfig.ArbitrageMarket;
                                 modifiedPairConfig.ArbitrageSignalRules = modifiers.ArbitrageSignalRules ?? modifiedPairConfig.ArbitrageSignalRules;
+
+                                if (oldPairConfig != null && !oldPairConfig.ArbitrageEnabled && modifiedPairConfig.ArbitrageEnabled)
+                                {
+                                    signalsService.ProcessPair(pair, signals);
+                                }
                             }
 
                             appliedRules.Add(rule);

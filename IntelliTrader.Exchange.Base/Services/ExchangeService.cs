@@ -240,8 +240,8 @@ namespace IntelliTrader.Exchange.Base
 
         public virtual decimal ConvertPrice(string pair, decimal price, string market, TradePriceType priceType)
         {
-            string convertedPair = ChangeMarket(pair, market);
-            return GetPrice(convertedPair, priceType) / price;
+            string marketPair = GetPairMarket(pair) + market;
+            return GetPrice(marketPair, priceType) * price;
         }
 
         public TimeSpan GetTimeElapsedSinceLastTickersUpdate()

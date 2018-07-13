@@ -20,6 +20,8 @@ namespace IntelliTrader.Core
 
         void Start();
         void Stop();
+        void Pause();
+        void Continue();
         void RunNow();
     }
 }

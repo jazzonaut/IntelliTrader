@@ -128,7 +128,7 @@ namespace IntelliTrader.Backtesting
             loggingService.Info($"Skipped ticker snapshots: {skippedTickerSnapshots}");
 
             tradingService.SuspendTrading(forced: true);
-            signalsService.ClearTrailing();
+            signalsService.StopTrailing();
             signalsService.Stop();
         }
 

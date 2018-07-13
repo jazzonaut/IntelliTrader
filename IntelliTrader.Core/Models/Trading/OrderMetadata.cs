@@ -25,22 +25,19 @@ namespace IntelliTrader.Core
 
         public void MergeWith(OrderMetadata metadata)
         {
-            if (metadata != null)
-            {
-                TradingRules = metadata.TradingRules ?? TradingRules;
-                SignalRule = metadata.SignalRule ?? SignalRule;
-                Signals = metadata.Signals ?? Signals;
-                BoughtRating = metadata.BoughtRating ?? BoughtRating;
-                CurrentRating = metadata.CurrentRating ?? CurrentRating;
-                BoughtGlobalRating = metadata.BoughtGlobalRating ?? BoughtGlobalRating;
-                CurrentGlobalRating = metadata.CurrentGlobalRating ?? CurrentGlobalRating;
-                LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin;
-                AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels;
-                AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts;
-                SwapPair = metadata.SwapPair ?? SwapPair;
-                ArbitrageMarket = metadata.ArbitrageMarket ?? ArbitrageMarket;
-                ArbitragePercentage = metadata.ArbitragePercentage ?? ArbitragePercentage;
-            }
+            TradingRules = metadata.TradingRules ?? TradingRules;
+            SignalRule = metadata.SignalRule ?? SignalRule;
+            Signals = metadata.Signals ?? Signals;
+            BoughtRating = metadata.BoughtRating ?? BoughtRating;
+            CurrentRating = metadata.CurrentRating ?? CurrentRating;
+            BoughtGlobalRating = metadata.BoughtGlobalRating ?? BoughtGlobalRating;
+            CurrentGlobalRating = metadata.CurrentGlobalRating ?? CurrentGlobalRating;
+            LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin;
+            AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels;
+            AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts;
+            SwapPair = metadata.SwapPair ?? SwapPair;
+            ArbitrageMarket = metadata.ArbitrageMarket ?? ArbitrageMarket;
+            ArbitragePercentage = metadata.ArbitragePercentage ?? ArbitragePercentage;
         }
     }
 }

@@ -9,7 +9,6 @@ namespace IntelliTrader.Core
     public interface ITradingService : IConfigurableService
     {
         ITradingConfig Config { get; }
-        object SyncRoot { get; }
         IModuleRules Rules { get; }
         IExchangeService Exchange { get; }
         ITradingAccount Account { get; }

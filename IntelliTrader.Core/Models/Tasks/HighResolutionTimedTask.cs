@@ -58,7 +58,8 @@ namespace IntelliTrader.Core
 
         private Thread timerThread;
         private Stopwatch runWatch;
-        private ManualResetEvent resetEvent;
+        private ManualResetEvent timingEvent;
+        private ManualResetEvent blockingEvent;
 
         /// <summary>
         /// Start the task
@@ -69,7 +70,8 @@ namespace IntelliTrader.Core
             {
                 IsRunning = true;
                 runWatch = new Stopwatch();
-                resetEvent = new ManualResetEvent(false);
+                timingEvent = new ManualResetEvent(false);
+                blockingEvent = new ManualResetEvent(true);
 
                 timerThread = new Thread(() =>
                 {
@@ -87,11 +89,12 @@ namespace IntelliTrader.Core
 
                     while (IsRunning)
                     {
+                        blockingEvent.WaitOne();
                         long elapsedTime = Stopwatch.ElapsedMilliseconds;
                         double waitTime = nextRunTime - (elapsedTime - startTime);
                         if (waitTime > 0)
                         {
-                            if (resetEvent.WaitOne((int)(waitTime)))
+                            if (timingEvent.WaitOne((int)(waitTime)))
                             {
                                 break;
                             }
@@ -134,7 +137,8 @@ namespace IntelliTrader.Core
             if (IsRunning)
             {
                 IsRunning = false;
-                resetEvent.Set();
+                timingEvent.Set();
+                blockingEvent.Set();
                 runWatch.Stop();
 
                 if (!terminateThread)
@@ -143,8 +147,24 @@ namespace IntelliTrader.Core
                     timerThread = null;
                 }
 
-                resetEvent.Dispose();
+                timingEvent.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Temporarily pause the task
+        /// </summary>
+        public void Pause()
+        {
+            blockingEvent.Reset();
+        }
+
+        /// <summary>
+        ///  Continue running the task
+        /// </summary>
+        public void Continue()
+        {
+            blockingEvent.Set();
         }
 
         /// <summary>

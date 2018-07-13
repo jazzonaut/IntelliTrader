@@ -54,7 +54,7 @@ namespace IntelliTrader.Trading
                         {
                             orderDetails = tradingService.Exchange.PlaceOrder(buyOrder);
                             orderDetails.SetMetadata(options.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, orderDetails.AveragePrice, TradePriceType.Ask);
+                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Ask);
                         }
                         else
                         {
@@ -73,7 +73,7 @@ namespace IntelliTrader.Trading
                                 FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
                             };
                             orderDetails.SetMetadata(options.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, buyOrder.Price, TradePriceType.Ask);
+                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Ask);
                         }
 
                         tradingService.Account.AddBuyOrder(orderDetails);
@@ -130,14 +130,14 @@ namespace IntelliTrader.Trading
 
                     lock (tradingService.Account.SyncRoot)
                     {
-                        loggingService.Info($"Place sell order for {tradingPair.FormattedName}. Price: {sellOrder.Price:0.00000000}, Amount: {sellOrder.Amount:0.########}, Margin: {tradingPair.CurrentMargin:0.00}");
+                        loggingService.Info($"Place sell order for {normalizedPair ?? tradingPair.FormattedName}. Price: {sellOrder.Price:0.00000000}, Amount: {sellOrder.Amount:0.########}, Margin: {tradingPair.CurrentMargin:0.00}");
 
                         if (!tradingService.Config.VirtualTrading)
                         {
                             orderDetails = tradingService.Exchange.PlaceOrder(sellOrder, options.Pair);
                             tradingPair.Metadata.MergeWith(options.Metadata);
                             orderDetails.SetMetadata(tradingPair.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, orderDetails.AveragePrice, TradePriceType.Bid);
+                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Bid);
                         }
                         else
                         {
@@ -158,7 +158,7 @@ namespace IntelliTrader.Trading
                             };
                             tradingPair.Metadata.MergeWith(options.Metadata);
                             orderDetails.SetMetadata(tradingPair.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, sellPrice, TradePriceType.Bid);
+                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Bid);
                         }
 
                         ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
@@ -171,8 +171,8 @@ namespace IntelliTrader.Trading
                         string swapPair = options.Metadata.SwapPair != null ? $", Swap Pair: {options.Metadata.SwapPair}" : "";
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info("{@Trade}", tradeResult);
-                        loggingService.Info($"Sell order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}");
-                        notificationService.Notify($"Sold {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}");
+                        loggingService.Info($"Sell order result for {normalizedPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}");
+                        notificationService.Notify($"Sold {normalizedPair ?? tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}");
                     }
 
                     tradingService.ReapplyTradingRules();
@@ -190,16 +190,15 @@ namespace IntelliTrader.Trading
             return orderDetails;
         }
 
-        private void NormalizePrice(OrderDetails orderDetails, decimal price, TradePriceType priceType)
+        private void NormalizePrice(OrderDetails orderDetails, TradePriceType priceType)
         {
             if (!tradingService.IsNormalizedPair(orderDetails.Pair))
             {
-                decimal convertedPrice = tradingService.Exchange.ConvertPrice(orderDetails.Pair, price, tradingService.Config.Market, priceType);
-                orderDetails.Price *= convertedPrice;
-                orderDetails.AveragePrice *= convertedPrice;
+                orderDetails.Price = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.Price, tradingService.Config.Market, priceType);
+                orderDetails.AveragePrice = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.AveragePrice, tradingService.Config.Market, priceType);
                 if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(orderDetails.Pair))
                 {
-                    orderDetails.Fees *= convertedPrice;
+                    orderDetails.Fees = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.Fees, tradingService.Config.Market, priceType);
                     orderDetails.FeesCurrency = tradingService.Config.Market;
                 }
             }
