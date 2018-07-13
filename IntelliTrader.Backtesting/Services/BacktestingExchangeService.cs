@@ -62,7 +62,7 @@ namespace IntelliTrader.Backtesting
 
         public override IEnumerable<string> GetMarketPairs(string market)
         {
-            return backtestingService.GetCurrentTickers().Keys;
+            return backtestingService.GetCurrentTickers().Keys.Where(t => t.EndsWith(market));
         }
 
         public override decimal GetPrice(string pair, TradePriceType priceType)
