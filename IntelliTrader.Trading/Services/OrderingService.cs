@@ -53,8 +53,6 @@ namespace IntelliTrader.Trading
                         if (!tradingService.Config.VirtualTrading)
                         {
                             orderDetails = tradingService.Exchange.PlaceOrder(buyOrder);
-                            orderDetails.SetMetadata(options.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Ask);
                         }
                         else
                         {
@@ -72,10 +70,10 @@ namespace IntelliTrader.Trading
                                 Fees = buyOrder.Amount * buyOrder.Price * tradingService.Config.VirtualTradingFees,
                                 FeesCurrency = tradingService.Exchange.GetPairMarket(options.Pair)
                             };
-                            orderDetails.SetMetadata(options.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Ask);
                         }
 
+                        orderDetails.SetMetadata(options.Metadata);
+                        NormalizePrice(orderDetails as OrderDetails, TradePriceType.Ask);
                         tradingService.Account.AddBuyOrder(orderDetails);
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
@@ -135,9 +133,6 @@ namespace IntelliTrader.Trading
                         if (!tradingService.Config.VirtualTrading)
                         {
                             orderDetails = tradingService.Exchange.PlaceOrder(sellOrder, options.Pair);
-                            tradingPair.Metadata.MergeWith(options.Metadata);
-                            orderDetails.SetMetadata(tradingPair.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Bid);
                         }
                         else
                         {
@@ -156,10 +151,11 @@ namespace IntelliTrader.Trading
                                 Fees = sellOrder.Amount * sellOrder.Price * tradingService.Config.VirtualTradingFees,
                                 FeesCurrency = tradingService.Config.Market
                             };
-                            tradingPair.Metadata.MergeWith(options.Metadata);
-                            orderDetails.SetMetadata(tradingPair.Metadata);
-                            NormalizePrice(orderDetails as OrderDetails, TradePriceType.Bid);
                         }
+
+                        tradingPair.Metadata.MergeWith(options.Metadata);
+                        orderDetails.SetMetadata(tradingPair.Metadata);
+                        NormalizePrice(orderDetails as OrderDetails, TradePriceType.Bid);
 
                         ITradeResult tradeResult = tradingService.Account.AddSellOrder(orderDetails);
                         tradeResult.SetSwap(options.Swap);

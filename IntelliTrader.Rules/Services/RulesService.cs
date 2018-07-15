@@ -37,55 +37,59 @@ namespace IntelliTrader.Rules
 
         public bool CheckConditions(IEnumerable<IRuleCondition> conditions, Dictionary<string, ISignal> signals, double? globalRating, string pair, ITradingPair tradingPair)
         {
-            foreach (var condition in conditions)
+            if (conditions != null)
             {
-                ISignal signal = null;
-                if (condition.Signal != null && signals.TryGetValue(condition.Signal, out ISignal s)) {
-                    signal = s;
-                }
-
-                if (condition.MinPrice != null && (tradingService.GetPrice(pair) < condition.MinPrice) ||
-                    condition.MaxPrice != null && (tradingService.GetPrice(pair) > condition.MaxPrice) ||
-                    condition.MinSpread != null && (tradingService.Exchange.GetPriceSpread(pair) < condition.MinSpread) ||
-                    condition.MaxSpread != null && (tradingService.Exchange.GetPriceSpread(pair) > condition.MaxSpread) ||
-                    condition.MinArbitrage != null && (condition.ArbitrageMarket == null || tradingService.Exchange.GetPriceArbitrage(pair, condition.ArbitrageMarket, tradingService.Config.Market) < condition.MinArbitrage) ||
-                    condition.MaxArbitrage != null && (condition.ArbitrageMarket == null || tradingService.Exchange.GetPriceArbitrage(pair, condition.ArbitrageMarket, tradingService.Config.Market) > condition.MaxArbitrage) ||
-
-                    condition.MinVolume != null && (signal == null || signal.Volume == null || signal.Volume < condition.MinVolume) ||
-                    condition.MaxVolume != null && (signal == null || signal.Volume == null || signal.Volume > condition.MaxVolume) ||
-                    condition.MinVolumeChange != null && (signal == null || signal.VolumeChange == null || signal.VolumeChange < condition.MinVolumeChange) ||
-                    condition.MaxVolumeChange != null && (signal == null || signal.VolumeChange == null || signal.VolumeChange > condition.MaxVolumeChange) ||
-                    condition.MinPriceChange != null && (signal == null || signal.PriceChange == null || signal.PriceChange < condition.MinPriceChange) ||
-                    condition.MaxPriceChange != null && (signal == null || signal.PriceChange == null || signal.PriceChange > condition.MaxPriceChange) ||
-                    condition.MinRating != null && (signal == null || signal.Rating == null || signal.Rating < condition.MinRating) ||
-                    condition.MaxRating != null && (signal == null || signal.Rating == null || signal.Rating > condition.MaxRating) ||
-                    condition.MinRatingChange != null && (signal == null || signal.RatingChange == null || signal.RatingChange < condition.MinRatingChange) ||
-                    condition.MaxRatingChange != null && (signal == null || signal.RatingChange == null || signal.RatingChange > condition.MaxRatingChange) ||
-                    condition.MinVolatility != null && (signal == null || signal.Volatility == null || signal.Volatility < condition.MinVolatility) ||
-                    condition.MaxVolatility != null && (signal == null || signal.Volatility == null || signal.Volatility > condition.MaxVolatility) ||
-                    condition.MinGlobalRating != null && (globalRating == null || globalRating < condition.MinGlobalRating) ||
-                    condition.MaxGlobalRating != null && (globalRating == null || globalRating > condition.MaxGlobalRating) ||
-                    condition.Pairs != null && (pair == null || !condition.Pairs.Contains(pair)) ||
-                    condition.NotPairs != null && (pair == null || condition.NotPairs.Contains(pair)) || 
-
-                    condition.MinAge != null && (tradingPair == null || tradingPair.CurrentAge < condition.MinAge / Application.Speed) ||
-                    condition.MaxAge != null && (tradingPair == null || tradingPair.CurrentAge > condition.MaxAge / Application.Speed) ||
-                    condition.MinLastBuyAge != null && (tradingPair == null || tradingPair.LastBuyAge < condition.MinLastBuyAge / Application.Speed) ||
-                    condition.MaxLastBuyAge != null && (tradingPair == null || tradingPair.LastBuyAge > condition.MaxLastBuyAge / Application.Speed) ||
-                    condition.MinMargin != null && (tradingPair == null || tradingPair.CurrentMargin < condition.MinMargin) ||
-                    condition.MaxMargin != null && (tradingPair == null || tradingPair.CurrentMargin > condition.MaxMargin) ||
-                    condition.MinMarginChange != null && (tradingPair == null || tradingPair.Metadata.LastBuyMargin == null || (tradingPair.CurrentMargin - tradingPair.Metadata.LastBuyMargin) < condition.MinMarginChange) ||
-                    condition.MaxMarginChange != null && (tradingPair == null || tradingPair.Metadata.LastBuyMargin == null || (tradingPair.CurrentMargin - tradingPair.Metadata.LastBuyMargin) > condition.MaxMarginChange) ||
-                    condition.MinAmount != null && (tradingPair == null || tradingPair.Amount < condition.MinAmount) ||
-                    condition.MaxAmount != null && (tradingPair == null || tradingPair.Amount > condition.MaxAmount) ||
-                    condition.MinCost != null && (tradingPair == null || tradingPair.CurrentCost < condition.MinCost) ||
-                    condition.MaxCost != null && (tradingPair == null || tradingPair.CurrentCost > condition.MaxCost) ||
-                    condition.MinDCALevel != null && (tradingPair == null || tradingPair.DCALevel < condition.MinDCALevel) ||
-                    condition.MaxDCALevel != null && (tradingPair == null || tradingPair.DCALevel > condition.MaxDCALevel) ||
-                    condition.SignalRules != null && (tradingPair == null || tradingPair.Metadata.SignalRule == null || !condition.SignalRules.Contains(tradingPair.Metadata.SignalRule)) ||
-                    condition.NotSignalRules != null && (tradingPair == null || tradingPair.Metadata.SignalRule == null || condition.NotSignalRules.Contains(tradingPair.Metadata.SignalRule)))
+                foreach (var condition in conditions)
                 {
-                    return false;
+                    ISignal signal = null;
+                    if (condition.Signal != null && signals.TryGetValue(condition.Signal, out ISignal s))
+                    {
+                        signal = s;
+                    }
+
+                    if (condition.MinPrice != null && (tradingService.GetPrice(pair) < condition.MinPrice) ||
+                        condition.MaxPrice != null && (tradingService.GetPrice(pair) > condition.MaxPrice) ||
+                        condition.MinSpread != null && (tradingService.Exchange.GetPriceSpread(pair) < condition.MinSpread) ||
+                        condition.MaxSpread != null && (tradingService.Exchange.GetPriceSpread(pair) > condition.MaxSpread) ||
+                        condition.MinArbitrage != null && (condition.ArbitrageMarket == null || tradingService.Exchange.GetPriceArbitrage(pair, condition.ArbitrageMarket, tradingService.Config.Market) < condition.MinArbitrage) ||
+                        condition.MaxArbitrage != null && (condition.ArbitrageMarket == null || tradingService.Exchange.GetPriceArbitrage(pair, condition.ArbitrageMarket, tradingService.Config.Market) > condition.MaxArbitrage) ||
+
+                        condition.MinVolume != null && (signal == null || signal.Volume == null || signal.Volume < condition.MinVolume) ||
+                        condition.MaxVolume != null && (signal == null || signal.Volume == null || signal.Volume > condition.MaxVolume) ||
+                        condition.MinVolumeChange != null && (signal == null || signal.VolumeChange == null || signal.VolumeChange < condition.MinVolumeChange) ||
+                        condition.MaxVolumeChange != null && (signal == null || signal.VolumeChange == null || signal.VolumeChange > condition.MaxVolumeChange) ||
+                        condition.MinPriceChange != null && (signal == null || signal.PriceChange == null || signal.PriceChange < condition.MinPriceChange) ||
+                        condition.MaxPriceChange != null && (signal == null || signal.PriceChange == null || signal.PriceChange > condition.MaxPriceChange) ||
+                        condition.MinRating != null && (signal == null || signal.Rating == null || signal.Rating < condition.MinRating) ||
+                        condition.MaxRating != null && (signal == null || signal.Rating == null || signal.Rating > condition.MaxRating) ||
+                        condition.MinRatingChange != null && (signal == null || signal.RatingChange == null || signal.RatingChange < condition.MinRatingChange) ||
+                        condition.MaxRatingChange != null && (signal == null || signal.RatingChange == null || signal.RatingChange > condition.MaxRatingChange) ||
+                        condition.MinVolatility != null && (signal == null || signal.Volatility == null || signal.Volatility < condition.MinVolatility) ||
+                        condition.MaxVolatility != null && (signal == null || signal.Volatility == null || signal.Volatility > condition.MaxVolatility) ||
+                        condition.MinGlobalRating != null && (globalRating == null || globalRating < condition.MinGlobalRating) ||
+                        condition.MaxGlobalRating != null && (globalRating == null || globalRating > condition.MaxGlobalRating) ||
+                        condition.Pairs != null && (pair == null || !condition.Pairs.Contains(pair)) ||
+                        condition.NotPairs != null && (pair == null || condition.NotPairs.Contains(pair)) ||
+
+                        condition.MinAge != null && (tradingPair == null || tradingPair.CurrentAge < condition.MinAge / Application.Speed) ||
+                        condition.MaxAge != null && (tradingPair == null || tradingPair.CurrentAge > condition.MaxAge / Application.Speed) ||
+                        condition.MinLastBuyAge != null && (tradingPair == null || tradingPair.LastBuyAge < condition.MinLastBuyAge / Application.Speed) ||
+                        condition.MaxLastBuyAge != null && (tradingPair == null || tradingPair.LastBuyAge > condition.MaxLastBuyAge / Application.Speed) ||
+                        condition.MinMargin != null && (tradingPair == null || tradingPair.CurrentMargin < condition.MinMargin) ||
+                        condition.MaxMargin != null && (tradingPair == null || tradingPair.CurrentMargin > condition.MaxMargin) ||
+                        condition.MinMarginChange != null && (tradingPair == null || tradingPair.Metadata.LastBuyMargin == null || (tradingPair.CurrentMargin - tradingPair.Metadata.LastBuyMargin) < condition.MinMarginChange) ||
+                        condition.MaxMarginChange != null && (tradingPair == null || tradingPair.Metadata.LastBuyMargin == null || (tradingPair.CurrentMargin - tradingPair.Metadata.LastBuyMargin) > condition.MaxMarginChange) ||
+                        condition.MinAmount != null && (tradingPair == null || tradingPair.Amount < condition.MinAmount) ||
+                        condition.MaxAmount != null && (tradingPair == null || tradingPair.Amount > condition.MaxAmount) ||
+                        condition.MinCost != null && (tradingPair == null || tradingPair.CurrentCost < condition.MinCost) ||
+                        condition.MaxCost != null && (tradingPair == null || tradingPair.CurrentCost > condition.MaxCost) ||
+                        condition.MinDCALevel != null && (tradingPair == null || tradingPair.DCALevel < condition.MinDCALevel) ||
+                        condition.MaxDCALevel != null && (tradingPair == null || tradingPair.DCALevel > condition.MaxDCALevel) ||
+                        condition.SignalRules != null && (tradingPair == null || tradingPair.Metadata.SignalRule == null || !condition.SignalRules.Contains(tradingPair.Metadata.SignalRule)) ||
+                        condition.NotSignalRules != null && (tradingPair == null || tradingPair.Metadata.SignalRule == null || condition.NotSignalRules.Contains(tradingPair.Metadata.SignalRule)))
+                    {
+                        return false;
+                    }
                 }
             }
             return true;

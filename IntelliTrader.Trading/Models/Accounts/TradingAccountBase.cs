@@ -58,7 +58,39 @@ namespace IntelliTrader.Trading
                     decimal feesPairCurrency = 0;
                     decimal feesMarketCurrency = tradingService.CalculateOrderFees(order);
                     decimal amountAfterFees = order.AmountFilled;
-                    decimal balanceDifference = -order.RawCost;
+                    decimal balanceDifference = 0;
+
+                    if (tradingService.IsNormalizedPair(order.Pair))
+                    {
+                        balanceDifference = -order.RawCost;
+                    }
+                    else
+                    {
+                        string normalizedMarket = tradingService.Exchange.GetPairMarket(order.Pair) + tradingService.Config.Market;
+                        if (tradingPairs.TryGetValue(normalizedMarket, out TradingPair normalizedMarketPair))
+                        {
+                            if (normalizedMarketPair.RawCost > order.RawCost)
+                            {
+                                normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
+                                if (normalizedMarketPair.Amount <= 0)
+                                {
+                                    tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
+                                    if (normalizedMarketPair.Amount < 0)
+                                    {
+                                        loggingService.Error($"Normalized pair {normalizedMarketPair} has negative amount: {normalizedMarketPair.Amount}");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
+                            }
+                        }
+                        else
+                        {
+                            loggingService.Error($"Unable to get the normalized pair {normalizedMarketPair}");
+                        }
+                    }
 
                     if (order.FeesCurrency == tradingService.Config.Market)
                     {
@@ -105,28 +137,6 @@ namespace IntelliTrader.Trading
                         tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(tradingPair.Pair)), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
                         tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                         tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
-                    }
-
-                    if (!tradingService.IsNormalizedPair(order.Pair))
-                    {
-                        string normalizedMarket = tradingService.Exchange.GetPairMarket(order.Pair) + tradingService.Config.Market;
-                        if (tradingPairs.TryGetValue(normalizedMarket, out TradingPair normalizedMarketPair))
-                        {
-                            balance += order.RawCost;
-
-                            if (normalizedMarketPair.RawCost > order.RawCost)
-                            {
-                                normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
-                                if (normalizedMarketPair.Amount <= 0)
-                                {
-                                    tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
-                                }
-                            }
-                            else
-                            {
-                                tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
-                            }
-                        }
                     }
                 }
             }

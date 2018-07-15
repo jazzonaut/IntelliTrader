@@ -350,8 +350,15 @@ namespace IntelliTrader.Trading
                             IPairConfig pairConfig = GetPairConfig(options.Pair);
                             loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {options.Metadata.ArbitragePercentage:0.00}");
 
+                            bool useExistingArbitrageMarketPair = false;
                             string arbitrageMarketPair = Exchange.GetArbitrageMarketPair(options.Market);
-                            bool useExistingArbitrageMarketPair = Account.GetTradingPair(arbitrageMarketPair)?.CurrentCost > pairConfig.BuyMaxCost;
+                            ITradingPair existingArbitrageMarketPair = Account.GetTradingPair(arbitrageMarketPair);
+                            if (existingArbitrageMarketPair != null && 
+                                existingArbitrageMarketPair.CurrentCost > pairConfig.BuyMaxCost && 
+                                existingArbitrageMarketPair.AveragePrice <= existingArbitrageMarketPair.CurrentPrice)
+                            {
+                                useExistingArbitrageMarketPair = true;
+                            }
 
                             var buyArbitrageMarketPairOptions = new BuyOptions(arbitrageMarketPair)
                             {
@@ -364,7 +371,6 @@ namespace IntelliTrader.Trading
 
                             if (CanBuy(buyArbitrageMarketPairOptions, out message))
                             {
-                                decimal combinedFees = 0;
                                 IOrderDetails buyArbitrageMarketPairOrderDetails = null;
                                 if (useExistingArbitrageMarketPair)
                                 {
@@ -379,7 +385,6 @@ namespace IntelliTrader.Trading
 
                                 if (buyArbitrageMarketPairOrderDetails.Result == OrderResult.Filled)
                                 {
-                                    combinedFees += CalculateOrderFees(buyArbitrageMarketPairOrderDetails) * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP;
                                     string crossMarketPair = Exchange.ChangeMarket(options.Pair, options.Market);
                                     var buyCrossMarketPairOptions = new BuyOptions(crossMarketPair)
                                     {
@@ -392,7 +397,9 @@ namespace IntelliTrader.Trading
                                     IOrderDetails buyCrossMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyCrossMarketPairOptions);
                                     if (buyCrossMarketPairOrderDetails.Result == OrderResult.Filled)
                                     {
-                                        combinedFees += CalculateOrderFees(buyCrossMarketPairOrderDetails) * 2;
+                                        decimal buyCrossMarketPairFees = CalculateOrderFees(buyCrossMarketPairOrderDetails);
+                                        decimal combinedFees = buyCrossMarketPairFees * (useExistingArbitrageMarketPair ? 2 : 3);
+
                                         var sellCrossMarketPairOptions = new SellOptions(crossMarketPair)
                                         {
                                             Arbitrage = true,
@@ -402,8 +409,8 @@ namespace IntelliTrader.Trading
                                         };
 
                                         TradingPair finalPair = Account.GetTradingPair(crossMarketPair) as TradingPair;
-                                        finalPair.FeesMarketCurrency += CalculateOrderFees(buyArbitrageMarketPairOrderDetails) * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP;
-                                        finalPair.OverrideActualCost(buyArbitrageMarketPairOrderDetails.RawCost * ARBITRAGE_CROSSMARKETPAIR_BUY_GAP + combinedFees);
+                                        finalPair.FeesMarketCurrency += buyCrossMarketPairFees;
+                                        finalPair.OverrideActualCost(buyCrossMarketPairOrderDetails.RawCost + combinedFees);
                                         IOrderDetails sellCrossMarketPairOrderDetails = orderingService.PlaceSellOrder(sellCrossMarketPairOptions);
                                         finalPair.OverrideActualCost(null);
 
