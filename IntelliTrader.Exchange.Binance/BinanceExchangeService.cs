@@ -79,42 +79,49 @@ namespace IntelliTrader.Exchange.Binance
             return myTrades;
         }
 
-        public override decimal GetPriceArbitrage(string pair, string crossMarket, string market)
+        public override decimal GetPriceArbitrage(string pair, string tradingMarket, ArbitrageMarket arbitrageMarket, ArbitrageType? arbitrageType = null)
         {
             try
             {
-                if (market == Constants.Markets.BTC)
+                if (tradingMarket == Constants.Markets.BTC)
                 {
-                    string crossMarketPair = ChangeMarket(pair, crossMarket);
-                    string marketPair = GetArbitrageMarketPair(crossMarket);
+                    string marketPair = ChangeMarket(pair, arbitrageMarket.ToString());
+                    string arbitragePair = GetArbitrageMarketPair(arbitrageMarket);
 
                     if (Tickers.TryGetValue(pair, out Ticker pairTicker) &&
-                        Tickers.TryGetValue(crossMarketPair, out Ticker crossTicker) &&
-                        Tickers.TryGetValue(marketPair, out Ticker marketTicker))
+                        Tickers.TryGetValue(marketPair, out Ticker marketTicker) &&
+                        Tickers.TryGetValue(arbitragePair, out Ticker arbitrageTicker))
                     {
-                        if (crossMarket == Constants.Markets.ETH)
+                        decimal directArbitrage = 0;
+                        decimal reverseArbitrage = 0;
+
+                        if (arbitrageMarket == ArbitrageMarket.ETH)
                         {
-                            // Buy XVGBTC, Sell XVGETH, Sell ETHBTC
-                            // decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice - 1) * 100;
-                            // Buy ETHBTC, Buy XVGETH, Sell XVGBTC
-                            decimal flipArbitrage = (1 / marketTicker.AskPrice / crossTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
-                            return flipArbitrage;
+                            directArbitrage = (1 / pairTicker.AskPrice * marketTicker.BidPrice * arbitrageTicker.BidPrice - 1) * 100;
+                            reverseArbitrage = (1 / arbitrageTicker.AskPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
                         }
-                        else if (crossMarket == Constants.Markets.BNB)
+                        else if (arbitrageMarket == ArbitrageMarket.BNB)
                         {
-                            // Buy XVGBTC, Sell XVGBNB, Sell BNBBTC
-                            // decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice - 1) * 100;
-                            // Buy BNBBTC, Buy XVGBNB, Sell XVGBTC
-                            decimal flipArbitrage = (1 / marketTicker.AskPrice / crossTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
-                            return flipArbitrage;
+                            directArbitrage = (1 / pairTicker.AskPrice * marketTicker.BidPrice * arbitrageTicker.BidPrice - 1) * 100;
+                            reverseArbitrage = (1 / arbitrageTicker.AskPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
                         }
-                        else if (crossMarket == Constants.Markets.USDT)
+                        else if (arbitrageMarket == ArbitrageMarket.USDT)
                         {
-                            // Buy XVGBTC, Sell XVGUSDT, Buy BTCUSDT
-                            //decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice / marketTicker.AskPrice - 1) * 100;
-                            // Buy BTCUSDT, Buy XVGUSDT, Sell XVGBTC
-                            decimal flipArbitrage = (marketTicker.BidPrice / crossTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
-                            return flipArbitrage;
+                            directArbitrage = (1 / pairTicker.AskPrice * marketTicker.BidPrice / arbitrageTicker.AskPrice - 1) * 100;
+                            reverseArbitrage = (arbitrageTicker.BidPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
+                        }
+
+                        if (arbitrageType == ArbitrageType.Direct)
+                        {
+                            return directArbitrage;
+                        }
+                        else if (arbitrageType == ArbitrageType.Reverse)
+                        {
+                            return reverseArbitrage;
+                        }
+                        else
+                        {
+                            return Math.Max(directArbitrage, reverseArbitrage);
                         }
                     }
                 }
@@ -123,23 +130,23 @@ namespace IntelliTrader.Exchange.Binance
             return 0;
         }
 
-        public override string GetArbitrageMarketPair(string crossMarket)
+        public override string GetArbitrageMarketPair(ArbitrageMarket arbitrageMarket)
         {
-            if (crossMarket == Constants.Markets.ETH || crossMarket == Constants.Markets.BTC)
+            if (arbitrageMarket == ArbitrageMarket.ETH)
             {
                 return Constants.Markets.ETH + Constants.Markets.BTC;
             }
-            else if (crossMarket == Constants.Markets.BNB)
+            else if (arbitrageMarket == ArbitrageMarket.BNB)
             {
                 return Constants.Markets.BNB + Constants.Markets.BTC;
             }
-            else if (crossMarket == Constants.Markets.USDT)
+            else if (arbitrageMarket == ArbitrageMarket.USDT)
             {
                 return Constants.Markets.BTC + Constants.Markets.USDT;
             }
             else
             {
-                throw new NotSupportedException($"Unsupported arbitrage market: {crossMarket}");
+                throw new NotSupportedException($"Unsupported arbitrage market: {arbitrageMarket}");
             }
         }
     }

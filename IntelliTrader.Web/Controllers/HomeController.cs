@@ -425,7 +425,7 @@ namespace IntelliTrader.Web.Controllers
                                       VolatilityList = signalGroup.Value.Select(s => new { s.Name, s.Volatility }),
                                       Spread = tradingService.Exchange.GetPriceSpread(pair).ToString("0.00"),
                                       ArbitrageList = tradingService.Exchange.GetMarkets().Where(m => m != tradingService.Config.Market)
-                                        .Select(market => new { Name = market, Arbitrage = tradingService.Exchange.GetPriceArbitrage(pair, market, tradingService.Config.Market).ToString("0.00") }),
+                                        .Select(market => new { Name = market, Arbitrage = tradingService.Exchange.GetPriceArbitrage(pair, tradingService.Config.Market, Enum.Parse<ArbitrageMarket>(market)).ToString("0.00") }),
                                       SignalRules = signalsService.GetTrailingInfo(pair)?.Select(ti => ti.Rule.Name) ?? new string[0],
                                       HasTradingPair = tradingService.Account.HasTradingPair(pair),
                                       Config = pairConfig

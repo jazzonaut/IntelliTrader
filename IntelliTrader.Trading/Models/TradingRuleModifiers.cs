@@ -49,7 +49,7 @@ namespace IntelliTrader.Trading
         public int? SwapTimeout { get; set; }
 
         public bool? ArbitrageEnabled { get; set; }
-        public string ArbitrageMarket { get; set; }
+        public ArbitrageMarket? ArbitrageMarket { get; set; }
         public List<String> ArbitrageSignalRules { get; set; }
     }
 }

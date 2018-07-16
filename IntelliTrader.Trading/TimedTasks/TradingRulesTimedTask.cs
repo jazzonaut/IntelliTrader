@@ -179,6 +179,8 @@ namespace IntelliTrader.Trading
 
                 ArbitrageEnabled = modifiedPairConfig.ArbitrageEnabled,
                 ArbitrageMarket = modifiedPairConfig.ArbitrageMarket,
+                ArbitrageType = modifiedPairConfig.ArbitrageType,
+                ArbitrageBuyMultiplier = modifiedPairConfig.ArbitrageBuyMultiplier,
                 ArbitrageSignalRules = modifiedPairConfig.ArbitrageSignalRules,
 
                 CurrentDCAMargin = currentDCALevel?.Margin,

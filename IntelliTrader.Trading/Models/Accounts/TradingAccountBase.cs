@@ -88,7 +88,7 @@ namespace IntelliTrader.Trading
                         }
                         else
                         {
-                            loggingService.Error($"Unable to get the normalized pair {normalizedMarketPair}");
+                            loggingService.Error($"Unable to get normalized pair {normalizedMarketPair}");
                         }
                     }
 
@@ -172,6 +172,7 @@ namespace IntelliTrader.Trading
                             AveragePrice = tradingPair.AveragePrice,
                             FeesPairCurrency = tradingPair.FeesPairCurrency,
                             FeesMarketCurrency = tradingPair.FeesMarketCurrency,
+                            FeesNonDeductible = tradingPair.FeesNonDeductible,
                             SellDate = order.Date,
                             SellPrice = order.AveragePrice,
                             BalanceDifference = balanceDifference,
@@ -206,7 +207,7 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public IOrderDetails AddFakeOrder(string pair, decimal amount, bool includeFees)
+        public IOrderDetails AddBlankOrder(string pair, decimal amount, bool includeFees)
         {
             lock (SyncRoot)
             {

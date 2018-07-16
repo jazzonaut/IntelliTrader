@@ -11,9 +11,6 @@ namespace IntelliTrader.Core
         decimal? MaxPrice { get; }
         decimal? MinSpread { get; }
         decimal? MaxSpread { get; }
-        string ArbitrageMarket { get; }
-        decimal? MinArbitrage { get; }
-        decimal? MaxArbitrage { get; }
         long? MinVolume { get; }
         long? MaxVolume { get; }
         double? MinVolumeChange { get; }
@@ -29,8 +26,14 @@ namespace IntelliTrader.Core
         double? MinGlobalRating { get; }
         double? MaxGlobalRating { get; }
 
+        decimal? MinArbitrage { get; }
+        decimal? MaxArbitrage { get; }
+        ArbitrageMarket? ArbitrageMarket { get; }
+        ArbitrageType? ArbitrageType { get; }
+
         List<string> Pairs { get; }
         List<string> NotPairs { get; }
+
         double? MinAge { get; }
         double? MaxAge { get; }
         double? MinLastBuyAge { get; }

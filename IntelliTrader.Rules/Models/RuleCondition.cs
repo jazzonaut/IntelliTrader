@@ -10,9 +10,6 @@ namespace IntelliTrader.Rules
         public decimal? MaxPrice { get; set; }
         public decimal? MinSpread { get; set; }
         public decimal? MaxSpread { get; set; }
-        public string ArbitrageMarket { get; set; }
-        public decimal? MinArbitrage { get; set; }
-        public decimal? MaxArbitrage { get; set; }
         public long? MinVolume { get; set; }
         public long? MaxVolume { get; set; }
         public double? MinVolumeChange { get; set; }
@@ -27,6 +24,12 @@ namespace IntelliTrader.Rules
         public double? MaxVolatility { get; set; }
         public double? MinGlobalRating { get; set; }
         public double? MaxGlobalRating { get; set; }
+
+        public decimal? MinArbitrage { get; set; }
+        public decimal? MaxArbitrage { get; set; }
+        public ArbitrageMarket? ArbitrageMarket { get; set; }
+        public ArbitrageType? ArbitrageType { get; set; }
+
         public List<string> Pairs { get; set; }
         public List<string> NotPairs { get; set; }
 
