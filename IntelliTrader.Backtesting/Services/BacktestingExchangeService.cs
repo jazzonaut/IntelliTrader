@@ -118,7 +118,7 @@ namespace IntelliTrader.Backtesting
                             // Buy XVGBTC, Sell XVGETH, Sell ETHBTC
                             // decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice - 1) * 100;
                             // Buy ETHBTC, Buy XVGETH, Sell XVGBTC
-                            decimal flipArbitrage = (1 - 1 / pairTicker.BidPrice * crossTicker.AskPrice * marketTicker.AskPrice) * 100;
+                            decimal flipArbitrage = (1 / marketTicker.AskPrice / crossTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
                             return flipArbitrage;
                         }
                         else if (crossMarket == Constants.Markets.BNB)
@@ -126,7 +126,7 @@ namespace IntelliTrader.Backtesting
                             // Buy XVGBTC, Sell XVGBNB, Sell BNBBTC
                             // decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice * marketTicker.BidPrice - 1) * 100;
                             // Buy BNBBTC, Buy XVGBNB, Sell XVGBTC
-                            decimal flipArbitrage = (1 - 1 / pairTicker.BidPrice * crossTicker.AskPrice * marketTicker.AskPrice) * 100;
+                            decimal flipArbitrage = (1 / marketTicker.AskPrice / crossTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
                             return flipArbitrage;
                         }
                         else if (crossMarket == Constants.Markets.USDT)
@@ -134,7 +134,7 @@ namespace IntelliTrader.Backtesting
                             // Buy XVGBTC, Sell XVGUSDT, Buy BTCUSDT
                             //decimal directArbitrage = (1 / pairTicker.AskPrice * crossTicker.BidPrice / marketTicker.AskPrice - 1) * 100;
                             // Buy BTCUSDT, Buy XVGUSDT, Sell XVGBTC
-                            decimal flipArbitrage = (1 - 1 / pairTicker.BidPrice * crossTicker.AskPrice / marketTicker.BidPrice) * 100;
+                            decimal flipArbitrage = (marketTicker.BidPrice / crossTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
                             return flipArbitrage;
                         }
                     }

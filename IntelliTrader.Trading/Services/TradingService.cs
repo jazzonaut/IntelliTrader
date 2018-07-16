@@ -385,6 +385,7 @@ namespace IntelliTrader.Trading
 
                                 if (buyArbitrageMarketPairOrderDetails.Result == OrderResult.Filled)
                                 {
+                                    decimal buyArbitrageMarketPairFees = CalculateOrderFees(buyArbitrageMarketPairOrderDetails);
                                     string crossMarketPair = Exchange.ChangeMarket(options.Pair, options.Market);
                                     var buyCrossMarketPairOptions = new BuyOptions(crossMarketPair)
                                     {
@@ -398,8 +399,6 @@ namespace IntelliTrader.Trading
                                     if (buyCrossMarketPairOrderDetails.Result == OrderResult.Filled)
                                     {
                                         decimal buyCrossMarketPairFees = CalculateOrderFees(buyCrossMarketPairOrderDetails);
-                                        decimal combinedFees = buyCrossMarketPairFees * (useExistingArbitrageMarketPair ? 2 : 3);
-
                                         var sellCrossMarketPairOptions = new SellOptions(crossMarketPair)
                                         {
                                             Arbitrage = true,
@@ -409,8 +408,7 @@ namespace IntelliTrader.Trading
                                         };
 
                                         TradingPair finalPair = Account.GetTradingPair(crossMarketPair) as TradingPair;
-                                        finalPair.FeesMarketCurrency += buyCrossMarketPairFees;
-                                        finalPair.OverrideActualCost(buyCrossMarketPairOrderDetails.RawCost + combinedFees);
+                                        finalPair.OverrideActualCost(buyCrossMarketPairOrderDetails.RawCost + buyArbitrageMarketPairFees + buyCrossMarketPairFees * 2);
                                         IOrderDetails sellCrossMarketPairOrderDetails = orderingService.PlaceSellOrder(sellCrossMarketPairOptions);
                                         finalPair.OverrideActualCost(null);
 

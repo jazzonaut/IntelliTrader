@@ -77,7 +77,7 @@ namespace IntelliTrader.Trading
                                     tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
                                     if (normalizedMarketPair.Amount < 0)
                                     {
-                                        loggingService.Error($"Normalized pair {normalizedMarketPair} has negative amount: {normalizedMarketPair.Amount}");
+                                        loggingService.Error($"Normalized pair {normalizedMarket} has negative amount: {normalizedMarketPair.Amount}");
                                     }
                                 }
                             }

@@ -78,10 +78,11 @@ namespace IntelliTrader.Trading
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
+                        decimal fees = tradingService.CalculateOrderFees(orderDetails);
                         tradingPair = tradingService.Account.GetTradingPair(options.Pair);
                         loggingService.Info("{@Trade}", orderDetails);
-                        loggingService.Info($"Buy order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.RawCost:0.00000000}");
-                        notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {orderDetails.RawCost:0.00000000}");
+                        loggingService.Info($"Buy order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.RawCost:0.00000000}, Fees: {fees:0.00000000}");
+                        notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {(orderDetails.RawCost + fees):0.00000000}");
                     }
 
                     tradingService.ReapplyTradingRules();
@@ -163,12 +164,14 @@ namespace IntelliTrader.Trading
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
+                        decimal fees = tradingService.CalculateOrderFees(orderDetails);
                         decimal soldMargin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
                         string swapPair = options.Metadata.SwapPair != null ? $", Swap Pair: {options.Metadata.SwapPair}" : "";
+                        string arbitrage = options.Metadata.ArbitrageMarket != null ? $", Arbitrage: {options.Metadata.ArbitrageMarket}({options.Metadata.ArbitragePercentage:0.00})" : "";
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info("{@Trade}", tradeResult);
-                        loggingService.Info($"Sell order result for {normalizedPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}");
-                        notificationService.Notify($"Sold {normalizedPair ?? tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}");
+                        loggingService.Info($"Sell order result for {normalizedPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.RawCost:0.00000000}, Fees: {fees:0.00000000}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}{arbitrage}");
+                        notificationService.Notify($"Sold {normalizedPair ?? tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}{arbitrage}");
                     }
 
                     tradingService.ReapplyTradingRules();
