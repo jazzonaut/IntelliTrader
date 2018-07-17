@@ -34,13 +34,14 @@ namespace IntelliTrader.Trading
                     string signalRule = options.Metadata.SignalRule ?? "N/A";
                     options.Metadata.TradingRules = pairConfig.Rules.ToList();
                     options.Metadata.LastBuyMargin = options.Metadata.LastBuyMargin ?? tradingPair?.CurrentMargin ?? 0;
+                    decimal buyAmount = options.Amount ?? (options.MaxCost.Value / (options.Pair.EndsWith(Constants.Markets.USDT) ? 1 : buyPrice));
 
                     BuyOrder buyOrder = new BuyOrder
                     {
                         Type = pairConfig.BuyType,
                         Date = DateTimeOffset.Now,
                         Pair = options.Pair,
-                        Amount = options.Amount ?? (options.MaxCost.Value / buyPrice),
+                        Amount = buyAmount,
                         Price = buyPrice
                     };
                     buyOrder.Amount = tradingService.Exchange.ClampOrderAmount(buyOrder.Pair, buyOrder.Amount);
@@ -69,7 +70,7 @@ namespace IntelliTrader.Trading
                                 Price = buyOrder.Price,
                                 AveragePrice = buyOrder.Price,
                                 Fees = buyOrder.Amount * buyOrder.Price * tradingService.Config.VirtualTradingFees,
-                                FeesCurrency = pairMarket != Constants.Markets.USDT ? pairMarket : Constants.Markets.BTC
+                                FeesCurrency = pairMarket
                             };
                         }
 
@@ -200,7 +201,10 @@ namespace IntelliTrader.Trading
                     orderDetails.FeesCurrency = tradingService.Config.Market;
                 }
                 orderDetails.OriginalPair = orderDetails.Pair;
-                orderDetails.Pair = tradingService.Exchange.ChangeMarket(orderDetails.Pair, tradingService.Config.Market);
+                if (!orderDetails.Pair.StartsWith(tradingService.Config.Market))
+                {
+                    orderDetails.Pair = tradingService.Exchange.ChangeMarket(orderDetails.Pair, tradingService.Config.Market);
+                }
                 orderDetails.IsNormalized = true;
             }
         }

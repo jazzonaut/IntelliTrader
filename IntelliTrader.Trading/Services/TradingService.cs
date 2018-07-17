@@ -419,7 +419,7 @@ namespace IntelliTrader.Trading
                                     decimal buyMarketPairFees = CalculateOrderFees(buyMarketPairOrderDetails);
                                     string arbitragePair = Exchange.ChangeMarket(options.Pair, options.Arbitrage.Market.ToString());
                                     decimal buyArbitragePairAmount = options.Arbitrage.Market == ArbitrageMarket.USDT ?
-                                        buyMarketPairOrderDetails.AmountFilled * buyMarketPairOrderDetails.AveragePrice / GetPrice(arbitragePair, TradePriceType.Ask) :
+                                        buyMarketPairOrderDetails.AmountFilled * GetPrice(buyMarketPairOrderDetails.Pair, TradePriceType.Ask) / GetPrice(arbitragePair, TradePriceType.Ask) :
                                         buyMarketPairOrderDetails.AmountFilled / GetPrice(arbitragePair, TradePriceType.Ask);
 
                                     var buyArbitragePairOptions = new BuyOptions(arbitragePair)
@@ -676,8 +676,7 @@ namespace IntelliTrader.Trading
 
         public bool IsNormalizedPair(string pair)
         {
-            string pairMarket = Exchange.GetPairMarket(pair);
-            return pairMarket == Config.Market || pairMarket == Constants.Markets.USDT;
+            return Exchange.GetPairMarket(pair) == Config.Market;
         }
 
         public string NormalizePair(string pair)

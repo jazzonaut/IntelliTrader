@@ -227,7 +227,7 @@ namespace IntelliTrader.Exchange.Base
 
         public virtual string ChangeMarket(string pair, string market)
         {
-            if (!pair.EndsWith(market) && !pair.EndsWith(Constants.Markets.USDT))
+            if (!pair.EndsWith(market))
             {
                 string currentMarket = GetPairMarket(pair);
                 return pair.Substring(0, pair.Length - currentMarket.Length) + market;
@@ -241,14 +241,15 @@ namespace IntelliTrader.Exchange.Base
         public virtual decimal ConvertPrice(string pair, decimal price, string market, TradePriceType priceType)
         {
             string pairMarket = GetPairMarket(pair);
-            if (pairMarket != Constants.Markets.USDT)
+            if (pairMarket == Constants.Markets.USDT)
             {
-                string marketPair = pairMarket + market;
-                return GetPrice(marketPair, priceType) * price;
+                string marketPair = market + pairMarket;
+                return price / GetPrice(marketPair, priceType);
             }
             else
             {
-                return price;
+                string marketPair = pairMarket + market;
+                return GetPrice(marketPair, priceType) * price;
             }
         }
 

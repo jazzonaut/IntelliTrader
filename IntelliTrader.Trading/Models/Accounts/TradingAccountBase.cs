@@ -60,13 +60,17 @@ namespace IntelliTrader.Trading
                     decimal amountAfterFees = order.AmountFilled;
                     decimal balanceDifference = 0;
 
-                    if (!order.IsNormalized)
+                    if (!order.IsNormalized || order.Pair.EndsWith(Constants.Markets.USDT))
                     {
                         balanceDifference = -order.RawCost;
                     }
                     else
                     {
-                        string normalizedMarket = tradingService.Exchange.GetPairMarket(order.OriginalPair) + tradingService.Config.Market;
+                        string pairMarket = tradingService.Exchange.GetPairMarket(order.OriginalPair);
+                        string normalizedMarket = pairMarket == Constants.Markets.USDT ?
+                            tradingService.Config.Market + tradingService.Exchange.GetPairMarket(order.OriginalPair) :
+                            tradingService.Exchange.GetPairMarket(order.OriginalPair) + tradingService.Config.Market;
+
                         if (tradingPairs.TryGetValue(normalizedMarket, out TradingPair normalizedMarketPair))
                         {
                             if (normalizedMarketPair.RawCost > order.RawCost)
