@@ -220,7 +220,9 @@ Trading modifiers support any trading setting that begins with Buy, Sell plus DC
 |SwapSignalRules|Array|[ "Swap" ]|Rules used to buy the replacement pair with|
 |SwapTimeout|Number|10800|How long to wait before making a swap (in seconds)|
 |ArbitrageEnabled|Boolean|false|Enable arbitrage for that pair|
-|ArbitrageMarket|String|true|Market to use for the arbitrage value (e.g. ETH, BNB, USDT)|
+|ArbitrageMarkets|Array|[ "ETH" ]|Markets to use for the arbitrage. Available values: ETH, BNB, USDT. When omitted all markets will be used|
+|ArbitrageType|String|"Reverse"|Type of arbitrage to use. Available values: Direct, Reverse. When omitted both types will be used|
+|ArbitrageBuyMultiplier|Number|0.99|Percentage of the arbitrage pair to buy|
 |ArgbitrageSignalRules|Array|[ "Arbitrage" ]|Rules used to arbitrage pairs|
 
 ###### Rule Conditions
@@ -244,9 +246,6 @@ Is is not necessary to specify a Signal if none of the conditions are signal-spe
 |MaxPriceChange|Number|Yes|The maximal rate of change of price withing specified period frame (percentage)|
 |MinSpread|Number|No|Minimum difference between current bid and ask price (percentage)|
 |MaxSpread|Number|No|Maximum difference between current bid and ask price (percentage)|
-|ArbitrageMarket|String|No|Market to use for the arbitrage value (e.g. ETH, BNB, USDT)|
-|MinArbitrage|Number|No|Minimum triangular arbitrage value|
-|MaxArbitrage|Number|No|Maximum triangular arbitrage value|
 |MinVolume|Number|Yes|Minimum coin volume within the specified signal's period. Do not expect 24h volume in this category|
 |MaxVolume|Number|Yes|Maximum coin volume within the specified signal's period. Do not expect 24h volume in this category|
 |MinVolumeChange|Number|Yes|The minimal rate of change of volume withing specified period frame (percentage)|
@@ -267,6 +266,10 @@ Is is not necessary to specify a Signal if none of the conditions are signal-spe
 |MaxCost|Number|No|Maximum trading pair's total current cost|
 |MinDCALevel|Number|No|Minimum trading pair's DCA level|
 |MaxDCALevel|Number|No|Maximum trading pair's DCA level|
+|MinArbitrage|Number|No|Minimum triangular arbitrage value|
+|MaxArbitrage|Number|No|Maximum triangular arbitrage value|
+|ArbitrageMarket|String|No|Market to look for the arbitrage. Available values: ETH, BNB, USDT. When omitted all markets will be considered|
+|ArbitrageType|String|No|Type of arbitrage to look for. Available values: Direct, Reverse. When omitted both types will be considered|
 |Pairs|Array|No|List of pairs to directly apply the rule to|
 |NotPairs|Array|No|List of pairs to not apply the rule to|
 |SignalRules|Array|No|List of signal rules that were used to buy a pair|
@@ -392,6 +395,10 @@ Sell a pair at a specified negative margin to avoid it dipping even lower.
 
 Swap badly performing pairs for better performing ones.
 You would need at least one signal rule and one trading rule to enable this feature. The trading rule will enable swapping feature for the specific pairs (e.g. when the pair is old, has low margin, low rating, etc.) and the signal rule will determine the conditions for which pairs to buy instead of the swapped ones.
+
+#### Arbitrage
+
+*TODO: Add detailed explanation here*
 
 #### Backtesting
 

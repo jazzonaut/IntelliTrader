@@ -425,7 +425,7 @@ namespace IntelliTrader.Web.Controllers
                                       VolatilityList = signalGroup.Value.Select(s => new { s.Name, s.Volatility }),
                                       Spread = tradingService.Exchange.GetPriceSpread(pair).ToString("0.00"),
                                       ArbitrageList = from market in Enum.GetNames(typeof(ArbitrageMarket)).Where(m => m != tradingService.Config.Market)
-                                                      let arbitrage = tradingService.Exchange.GetArbitrage(pair, tradingService.Config.Market, Enum.Parse<ArbitrageMarket>(market))
+                                                      let arbitrage = tradingService.Exchange.GetArbitrage(pair, tradingService.Config.Market, new List<ArbitrageMarket> { Enum.Parse<ArbitrageMarket>(market) })
                                                       select new
                                                       {
                                                           Name = $"{arbitrage.Market}-{arbitrage.Type.ToString()[0]}",

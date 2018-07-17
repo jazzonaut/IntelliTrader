@@ -7,6 +7,7 @@ namespace IntelliTrader.Exchange.Base
 {
     public class OrderDetails : IOrderDetails
     {
+        public bool IsNormalized { get; set; }
         public OrderSide Side { get; set; }
         public OrderResult Result { get; set; }
         public DateTimeOffset Date { get; set; }

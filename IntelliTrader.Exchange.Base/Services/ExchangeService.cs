@@ -216,7 +216,7 @@ namespace IntelliTrader.Exchange.Base
             }
         }
 
-        public abstract Arbitrage GetArbitrage(string pair, string tradingMarket, ArbitrageMarket? arbitrageMarket = null, ArbitrageType? arbitrageType = null);
+        public abstract Arbitrage GetArbitrage(string pair, string tradingMarket, List<ArbitrageMarket> arbitrageMarkets = null, ArbitrageType? arbitrageType = null);
 
         public abstract string GetArbitrageMarketPair(ArbitrageMarket arbitrageMarket);
 
@@ -227,7 +227,7 @@ namespace IntelliTrader.Exchange.Base
 
         public virtual string ChangeMarket(string pair, string market)
         {
-            if (!pair.EndsWith(market))
+            if (!pair.EndsWith(market) && !pair.EndsWith(Constants.Markets.USDT))
             {
                 string currentMarket = GetPairMarket(pair);
                 return pair.Substring(0, pair.Length - currentMarket.Length) + market;
@@ -240,8 +240,16 @@ namespace IntelliTrader.Exchange.Base
 
         public virtual decimal ConvertPrice(string pair, decimal price, string market, TradePriceType priceType)
         {
-            string marketPair = GetPairMarket(pair) + market;
-            return GetPrice(marketPair, priceType) * price;
+            string pairMarket = GetPairMarket(pair);
+            if (pairMarket != Constants.Markets.USDT)
+            {
+                string marketPair = pairMarket + market;
+                return GetPrice(marketPair, priceType) * price;
+            }
+            else
+            {
+                return price;
+            }
         }
 
         public TimeSpan GetTimeElapsedSinceLastTickersUpdate()

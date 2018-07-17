@@ -91,7 +91,9 @@ namespace IntelliTrader.Core
                     {
                         blockingEvent.WaitOne();
                         long elapsedTime = Stopwatch.ElapsedMilliseconds;
-                        double waitTime = nextRunTime - (elapsedTime - startTime);
+                        long runningTime = elapsedTime - startTime;
+                        if (nextRunTime < runningTime) nextRunTime = runningTime;
+                        double waitTime = nextRunTime - runningTime;
                         if (waitTime > 0)
                         {
                             if (timingEvent.WaitOne((int)(waitTime)))

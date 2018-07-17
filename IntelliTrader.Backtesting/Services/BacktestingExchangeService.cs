@@ -92,11 +92,15 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-        public override Arbitrage GetArbitrage(string pair, string tradingMarket, ArbitrageMarket? arbitrageMarket = null, ArbitrageType? arbitrageType = null)
+        public override Arbitrage GetArbitrage(string pair, string tradingMarket, List<ArbitrageMarket> arbitrageMarkets = null, ArbitrageType? arbitrageType = null)
         {
+            if (arbitrageMarkets == null || !arbitrageMarkets.Any())
+            {
+                arbitrageMarkets = new List<ArbitrageMarket> { ArbitrageMarket.ETH, ArbitrageMarket.BNB, ArbitrageMarket.USDT };
+            }
             Arbitrage arbitrage = new Arbitrage
             {
-                Market = arbitrageMarket ?? ArbitrageMarket.ETH,
+                Market = arbitrageMarkets.First(),
                 Type = arbitrageType ?? ArbitrageType.Direct
             };
 
@@ -104,10 +108,6 @@ namespace IntelliTrader.Backtesting
             {
                 if (tradingMarket == Constants.Markets.BTC)
                 {
-                    List<ArbitrageMarket> arbitrageMarkets = arbitrageMarket != null ?
-                        new List<ArbitrageMarket> { arbitrageMarket.Value } :
-                        new List<ArbitrageMarket> { ArbitrageMarket.ETH, ArbitrageMarket.BNB, ArbitrageMarket.USDT };
-
                     foreach (var market in arbitrageMarkets)
                     {
                         string marketPair = ChangeMarket(pair, market.ToString());
@@ -153,7 +153,6 @@ namespace IntelliTrader.Backtesting
                             }
                         }
                     }
-                    return arbitrage;
                 }
             }
             catch { }

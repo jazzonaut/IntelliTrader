@@ -2,6 +2,7 @@
 using IntelliTrader.Core;
 using IntelliTrader.Exchange.Base;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace IntelliTrader.Exchange.Binance
@@ -79,11 +80,15 @@ namespace IntelliTrader.Exchange.Binance
             return myTrades;
         }
 
-        public override Arbitrage GetArbitrage(string pair, string tradingMarket, ArbitrageMarket? arbitrageMarket = null, ArbitrageType? arbitrageType = null)
+        public override Arbitrage GetArbitrage(string pair, string tradingMarket, List<ArbitrageMarket> arbitrageMarkets = null, ArbitrageType? arbitrageType = null)
         {
+            if (arbitrageMarkets == null || !arbitrageMarkets.Any())
+            {
+                arbitrageMarkets = new List<ArbitrageMarket> { ArbitrageMarket.ETH, ArbitrageMarket.BNB, ArbitrageMarket.USDT };
+            }
             Arbitrage arbitrage = new Arbitrage
             {
-                Market = arbitrageMarket ?? ArbitrageMarket.ETH,
+                Market = arbitrageMarkets.First(),
                 Type = arbitrageType ?? ArbitrageType.Direct
             };
 
@@ -91,10 +96,6 @@ namespace IntelliTrader.Exchange.Binance
             {
                 if (tradingMarket == Constants.Markets.BTC)
                 {
-                    List<ArbitrageMarket> arbitrageMarkets = arbitrageMarket != null ? 
-                        new List<ArbitrageMarket> { arbitrageMarket.Value } : 
-                        new List<ArbitrageMarket> { ArbitrageMarket.ETH, ArbitrageMarket.BNB, ArbitrageMarket.USDT };
-
                     foreach (var market in arbitrageMarkets)
                     {
                         string marketPair = ChangeMarket(pair, market.ToString());

@@ -6,6 +6,7 @@ namespace IntelliTrader.Core
 {
     public interface IOrderDetails
     {
+        bool IsNormalized { get; }
         OrderSide Side { get; }
         OrderResult Result { get; }
         DateTimeOffset Date { get; }

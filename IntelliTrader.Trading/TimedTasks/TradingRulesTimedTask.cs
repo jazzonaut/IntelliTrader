@@ -115,7 +115,7 @@ namespace IntelliTrader.Trading
                                 modifiedPairConfig.SwapTimeout = modifiers.SwapTimeout ?? modifiedPairConfig.SwapTimeout;
 
                                 modifiedPairConfig.ArbitrageEnabled = modifiers.ArbitrageEnabled ?? modifiedPairConfig.ArbitrageEnabled;
-                                modifiedPairConfig.ArbitrageMarket = modifiers.ArbitrageMarket ?? modifiedPairConfig.ArbitrageMarket;
+                                modifiedPairConfig.ArbitrageMarkets = modifiers.ArbitrageMarkets ?? modifiedPairConfig.ArbitrageMarkets;
                                 modifiedPairConfig.ArbitrageType = modifiers.ArbitrageType ?? modifiedPairConfig.ArbitrageType;
                                 modifiedPairConfig.ArbitrageBuyMultiplier = modifiers.ArbitrageBuyMultiplier ?? modifiedPairConfig.ArbitrageBuyMultiplier;
                                 modifiedPairConfig.ArbitrageSignalRules = modifiers.ArbitrageSignalRules ?? modifiedPairConfig.ArbitrageSignalRules;
@@ -180,7 +180,7 @@ namespace IntelliTrader.Trading
                 SwapTimeout = (int)Math.Round(modifiedPairConfig.SwapTimeout / Application.Speed),
 
                 ArbitrageEnabled = modifiedPairConfig.ArbitrageEnabled,
-                ArbitrageMarket = modifiedPairConfig.ArbitrageMarket,
+                ArbitrageMarkets = modifiedPairConfig.ArbitrageMarkets,
                 ArbitrageType = modifiedPairConfig.ArbitrageType,
                 ArbitrageBuyMultiplier = modifiedPairConfig.ArbitrageBuyMultiplier,
                 ArbitrageSignalRules = modifiedPairConfig.ArbitrageSignalRules,

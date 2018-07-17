@@ -19,7 +19,7 @@ namespace IntelliTrader.Core
         IEnumerable<IOrderDetails> GetTrades(string pair);
         decimal GetPrice(string pair, TradePriceType priceType);
         decimal GetPriceSpread(string pair);
-        Arbitrage GetArbitrage(string pair, string tradingMarket, ArbitrageMarket? arbitrageMarket = null, ArbitrageType? arbitrageType = null);
+        Arbitrage GetArbitrage(string pair, string tradingMarket, List<ArbitrageMarket> arbitrageMarkets = null, ArbitrageType? arbitrageType = null);
         string GetArbitrageMarketPair(ArbitrageMarket arbitrageMarket);
         string GetPairMarket(string pair);
         string ChangeMarket(string pair, string market);

@@ -15,7 +15,7 @@ namespace IntelliTrader.Core
         int SwapTimeout { get; }
 
         bool ArbitrageEnabled { get; }
-        ArbitrageMarket? ArbitrageMarket { get; }
+        List<ArbitrageMarket> ArbitrageMarkets { get; }
         ArbitrageType? ArbitrageType { get; }
         decimal? ArbitrageBuyMultiplier { get; }
         List<string> ArbitrageSignalRules { get; }

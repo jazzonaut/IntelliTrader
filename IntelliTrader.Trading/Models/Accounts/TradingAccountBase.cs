@@ -60,18 +60,18 @@ namespace IntelliTrader.Trading
                     decimal amountAfterFees = order.AmountFilled;
                     decimal balanceDifference = 0;
 
-                    if (tradingService.IsNormalizedPair(order.Pair))
+                    if (!order.IsNormalized)
                     {
                         balanceDifference = -order.RawCost;
                     }
                     else
                     {
-                        string normalizedMarket = tradingService.Exchange.GetPairMarket(order.Pair) + tradingService.Config.Market;
+                        string normalizedMarket = tradingService.Exchange.GetPairMarket(order.OriginalPair) + tradingService.Config.Market;
                         if (tradingPairs.TryGetValue(normalizedMarket, out TradingPair normalizedMarketPair))
                         {
                             if (normalizedMarketPair.RawCost > order.RawCost)
                             {
-                                normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
+                                normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Ask);
                                 if (normalizedMarketPair.Amount <= 0)
                                 {
                                     tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
@@ -146,7 +146,7 @@ namespace IntelliTrader.Trading
         {
             lock (SyncRoot)
             {
-                if (tradingPairs.TryGetValue(order.OriginalPair ?? order.Pair, out TradingPair tradingPair))
+                if (tradingPairs.TryGetValue(order.Pair, out TradingPair tradingPair))
                 {
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
@@ -185,12 +185,12 @@ namespace IntelliTrader.Trading
                             tradingPair.Amount -= order.AmountFilled;
                             if (!isInitialRefresh && tradingPair.ActualCost <= tradingService.Config.MinCost)
                             {
-                                tradingPairs.TryRemove(order.OriginalPair ?? order.Pair, out tradingPair);
+                                tradingPairs.TryRemove(order.Pair, out tradingPair);
                             }
                         }
                         else
                         {
-                            tradingPairs.TryRemove(order.OriginalPair ?? order.Pair, out tradingPair);
+                            tradingPairs.TryRemove(order.Pair, out tradingPair);
                         }
 
                         return tradeResult;
