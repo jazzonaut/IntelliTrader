@@ -50,6 +50,8 @@ namespace IntelliTrader.Trading
 
         public bool? ArbitrageEnabled { get; set; }
         public ArbitrageMarket? ArbitrageMarket { get; set; }
+        public ArbitrageType? ArbitrageType { get; set; }
+        public decimal? ArbitrageBuyMultiplier { get; set; }
         public List<String> ArbitrageSignalRules { get; set; }
     }
 }

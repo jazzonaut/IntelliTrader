@@ -166,7 +166,7 @@ namespace IntelliTrader.Exchange.Base
 
         public virtual IEnumerable<string> GetMarkets()
         {
-            return markets.OrderBy(m => m).AsEnumerable();
+            return markets.AsEnumerable();
         }
 
         public virtual IEnumerable<string> GetMarketPairs(string market)
@@ -216,7 +216,7 @@ namespace IntelliTrader.Exchange.Base
             }
         }
 
-        public abstract decimal GetPriceArbitrage(string pair, string tradingMarket, ArbitrageMarket arbitrageMarket, ArbitrageType? arbitrageType = null);
+        public abstract Arbitrage GetArbitrage(string pair, string tradingMarket, ArbitrageMarket? arbitrageMarket = null, ArbitrageType? arbitrageType = null);
 
         public abstract string GetArbitrageMarketPair(ArbitrageMarket arbitrageMarket);
 

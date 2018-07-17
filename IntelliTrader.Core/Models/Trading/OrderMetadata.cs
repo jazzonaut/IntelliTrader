@@ -20,7 +20,7 @@ namespace IntelliTrader.Core
         public int? AdditionalDCALevels { get; set; }
         public decimal? AdditionalCosts { get; set; }
         public string SwapPair { get; set; }
-        public string ArbitrageMarket { get; set; }
+        public string Arbitrage { get; set; }
         public decimal? ArbitragePercentage { get; set; }
 
         public void MergeWith(OrderMetadata metadata)
@@ -36,7 +36,7 @@ namespace IntelliTrader.Core
             AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels;
             AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts;
             SwapPair = metadata.SwapPair ?? SwapPair;
-            ArbitrageMarket = metadata.ArbitrageMarket ?? ArbitrageMarket;
+            Arbitrage = metadata.Arbitrage ?? Arbitrage;
             ArbitragePercentage = metadata.ArbitragePercentage ?? ArbitragePercentage;
         }
     }

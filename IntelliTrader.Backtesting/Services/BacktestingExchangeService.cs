@@ -49,15 +49,7 @@ namespace IntelliTrader.Backtesting
                 this.markets = new ConcurrentBag<string>(backtestingService.GetCurrentTickers().Keys
                     .Select(pair => GetPairMarket(pair)).Distinct().ToList());
             }
-
-            if (markets != null)
-            {
-                return markets.OrderBy(m => m);
-            }
-            else
-            {
-                return new List<string>();
-            }
+            return markets.AsEnumerable() ?? new List<string>();
         }
 
         public override IEnumerable<string> GetMarketPairs(string market)
@@ -100,55 +92,72 @@ namespace IntelliTrader.Backtesting
             }
         }
 
-        public override decimal GetPriceArbitrage(string pair, string tradingMarket, ArbitrageMarket arbitrageMarket, ArbitrageType? arbitrageType = null)
+        public override Arbitrage GetArbitrage(string pair, string tradingMarket, ArbitrageMarket? arbitrageMarket = null, ArbitrageType? arbitrageType = null)
         {
+            Arbitrage arbitrage = new Arbitrage
+            {
+                Market = arbitrageMarket ?? ArbitrageMarket.ETH,
+                Type = arbitrageType ?? ArbitrageType.Direct
+            };
+
             try
             {
                 if (tradingMarket == Constants.Markets.BTC)
                 {
-                    string marketPair = ChangeMarket(pair, arbitrageMarket.ToString());
-                    string arbitragePair = GetArbitrageMarketPair(arbitrageMarket);
+                    List<ArbitrageMarket> arbitrageMarkets = arbitrageMarket != null ?
+                        new List<ArbitrageMarket> { arbitrageMarket.Value } :
+                        new List<ArbitrageMarket> { ArbitrageMarket.ETH, ArbitrageMarket.BNB, ArbitrageMarket.USDT };
 
-                    if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker pairTicker) &&
-                        backtestingService.GetCurrentTickers().TryGetValue(marketPair, out ITicker marketTicker) &&
-                        backtestingService.GetCurrentTickers().TryGetValue(arbitragePair, out ITicker arbitrageTicker))
+                    foreach (var market in arbitrageMarkets)
                     {
-                        decimal directArbitrage = 0;
-                        decimal reverseArbitrage = 0;
+                        string marketPair = ChangeMarket(pair, market.ToString());
+                        string arbitragePair = GetArbitrageMarketPair(market);
 
-                        if (arbitrageMarket == ArbitrageMarket.ETH)
+                        if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker pairTicker) &&
+                            backtestingService.GetCurrentTickers().TryGetValue(marketPair, out ITicker marketTicker) &&
+                            backtestingService.GetCurrentTickers().TryGetValue(arbitragePair, out ITicker arbitrageTicker))
                         {
-                            directArbitrage = (1 / pairTicker.AskPrice * marketTicker.BidPrice * arbitrageTicker.BidPrice - 1) * 100;
-                            reverseArbitrage = (1 / arbitrageTicker.AskPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
-                        }
-                        else if (arbitrageMarket == ArbitrageMarket.BNB)
-                        {
-                            directArbitrage = (1 / pairTicker.AskPrice * marketTicker.BidPrice * arbitrageTicker.BidPrice - 1) * 100;
-                            reverseArbitrage = (1 / arbitrageTicker.AskPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
-                        }
-                        else if (arbitrageMarket == ArbitrageMarket.USDT)
-                        {
-                            directArbitrage = (1 / pairTicker.AskPrice * marketTicker.BidPrice / arbitrageTicker.AskPrice - 1) * 100;
-                            reverseArbitrage = (arbitrageTicker.BidPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
-                        }
+                            decimal directArbitragePercentage = 0;
+                            decimal reverseArbitragePercentage = 0;
 
-                        if (arbitrageType == ArbitrageType.Direct)
-                        {
-                            return directArbitrage;
-                        }
-                        else if (arbitrageType == ArbitrageType.Reverse)
-                        {
-                            return reverseArbitrage;
-                        }
-                        else
-                        {
-                            return Math.Max(directArbitrage, reverseArbitrage);
+                            if (market == ArbitrageMarket.ETH)
+                            {
+                                directArbitragePercentage = (1 / pairTicker.AskPrice * marketTicker.BidPrice * arbitrageTicker.BidPrice - 1) * 100;
+                                reverseArbitragePercentage = (1 / arbitrageTicker.AskPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
+                            }
+                            else if (market == ArbitrageMarket.BNB)
+                            {
+                                directArbitragePercentage = (1 / pairTicker.AskPrice * marketTicker.BidPrice * arbitrageTicker.BidPrice - 1) * 100;
+                                reverseArbitragePercentage = (1 / arbitrageTicker.AskPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
+                            }
+                            else if (market == ArbitrageMarket.USDT)
+                            {
+                                directArbitragePercentage = (1 / pairTicker.AskPrice * marketTicker.BidPrice / arbitrageTicker.AskPrice - 1) * 100;
+                                reverseArbitragePercentage = (arbitrageTicker.BidPrice / marketTicker.AskPrice * pairTicker.BidPrice - 1) * 100;
+                            }
+
+                            if ((directArbitragePercentage > arbitrage.Percentage || !arbitrage.IsAssigned) && (arbitrageType == null || arbitrageType == ArbitrageType.Direct))
+                            {
+                                arbitrage.IsAssigned = true;
+                                arbitrage.Market = market;
+                                arbitrage.Type = ArbitrageType.Direct;
+                                arbitrage.Percentage = directArbitragePercentage;
+                            }
+
+                            if ((reverseArbitragePercentage > arbitrage.Percentage || !arbitrage.IsAssigned) && (arbitrageType == null || arbitrageType == ArbitrageType.Reverse))
+                            {
+                                arbitrage.IsAssigned = true;
+                                arbitrage.Market = market;
+                                arbitrage.Type = ArbitrageType.Reverse;
+                                arbitrage.Percentage = reverseArbitragePercentage;
+                            }
                         }
                     }
+                    return arbitrage;
                 }
             }
             catch { }
-            return 0;
+            return arbitrage;
         }
 
         public override string GetArbitrageMarketPair(ArbitrageMarket arbitrageMarket)

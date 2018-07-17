@@ -424,8 +424,13 @@ namespace IntelliTrader.Web.Controllers
                                       RatingChangeList = signalGroup.Value.Select(s => new { s.Name, s.RatingChange }),
                                       VolatilityList = signalGroup.Value.Select(s => new { s.Name, s.Volatility }),
                                       Spread = tradingService.Exchange.GetPriceSpread(pair).ToString("0.00"),
-                                      ArbitrageList = tradingService.Exchange.GetMarkets().Where(m => m != tradingService.Config.Market)
-                                        .Select(market => new { Name = market, Arbitrage = tradingService.Exchange.GetPriceArbitrage(pair, tradingService.Config.Market, Enum.Parse<ArbitrageMarket>(market)).ToString("0.00") }),
+                                      ArbitrageList = from market in Enum.GetNames(typeof(ArbitrageMarket)).Where(m => m != tradingService.Config.Market)
+                                                      let arbitrage = tradingService.Exchange.GetArbitrage(pair, tradingService.Config.Market, Enum.Parse<ArbitrageMarket>(market))
+                                                      select new
+                                                      {
+                                                          Name = $"{arbitrage.Market}-{arbitrage.Type.ToString()[0]}",
+                                                          Arbitrage = arbitrage.IsAssigned ? arbitrage.Percentage.ToString("0.00") : "N/A"
+                                                      },
                                       SignalRules = signalsService.GetTrailingInfo(pair)?.Select(ti => ti.Rule.Name) ?? new string[0],
                                       HasTradingPair = tradingService.Account.HasTradingPair(pair),
                                       Config = pairConfig

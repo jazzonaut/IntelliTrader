@@ -37,9 +37,9 @@ namespace IntelliTrader.Trading
         public int SwapTimeout { get; set; }
 
         public bool ArbitrageEnabled { get; set; }
-        public ArbitrageMarket ArbitrageMarket { get; set; }
-        public ArbitrageType ArbitrageType { get; set; } = ArbitrageType.Reverse;
-        public decimal ArbitrageBuyMultiplier { get; set; } = 0.99M;
+        public ArbitrageMarket? ArbitrageMarket { get; set; }
+        public ArbitrageType? ArbitrageType { get; set; }
+        public decimal? ArbitrageBuyMultiplier { get; set; }
         public List<string> ArbitrageSignalRules { get; set; }
 
         public decimal? CurrentDCAMargin { get; set; }

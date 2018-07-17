@@ -167,7 +167,7 @@ namespace IntelliTrader.Trading
                         decimal fees = tradingService.CalculateOrderFees(orderDetails);
                         decimal soldMargin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
                         string swapPair = options.Metadata.SwapPair != null ? $", Swap Pair: {options.Metadata.SwapPair}" : "";
-                        string arbitrage = options.Metadata.ArbitrageMarket != null ? $", Arbitrage: {options.Metadata.ArbitrageMarket}({options.Metadata.ArbitragePercentage:0.00})" : "";
+                        string arbitrage = options.Metadata.Arbitrage != null ? $", Arbitrage: {options.Metadata.Arbitrage} ({options.Metadata.ArbitragePercentage:0.00})" : "";
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info("{@Trade}", tradeResult);
                         loggingService.Info($"Sell order result for {normalizedPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.RawCost:0.00000000}, Fees: {fees:0.00000000}, Margin: {soldMargin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}{arbitrage}");

@@ -116,6 +116,8 @@ namespace IntelliTrader.Trading
 
                                 modifiedPairConfig.ArbitrageEnabled = modifiers.ArbitrageEnabled ?? modifiedPairConfig.ArbitrageEnabled;
                                 modifiedPairConfig.ArbitrageMarket = modifiers.ArbitrageMarket ?? modifiedPairConfig.ArbitrageMarket;
+                                modifiedPairConfig.ArbitrageType = modifiers.ArbitrageType ?? modifiedPairConfig.ArbitrageType;
+                                modifiedPairConfig.ArbitrageBuyMultiplier = modifiers.ArbitrageBuyMultiplier ?? modifiedPairConfig.ArbitrageBuyMultiplier;
                                 modifiedPairConfig.ArbitrageSignalRules = modifiers.ArbitrageSignalRules ?? modifiedPairConfig.ArbitrageSignalRules;
 
                                 if (oldPairConfig != null && !oldPairConfig.ArbitrageEnabled && modifiedPairConfig.ArbitrageEnabled)

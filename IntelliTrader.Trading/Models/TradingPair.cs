@@ -48,7 +48,7 @@ namespace IntelliTrader.Trading
 
         public decimal GetActualCost(decimal partialAmount)
         {
-            if (ActualCostOverride.HasValue)
+            if (ActualCostOverride != null)
             {
                 return ActualCostOverride.Value * (partialAmount / Amount);
             }

@@ -206,7 +206,7 @@ namespace IntelliTrader.Signals.Base
                 {
                     SignalRule = rule.Name,
                     Signals = ruleSignals.Select(s => s.Name).ToList(),
-                    BoughtRating = ruleSignals.Any(s => s.Rating.HasValue) ? ruleSignals.Where(s => s.Rating.HasValue).Average(s => s.Rating) : null,
+                    BoughtRating = ruleSignals.Any(s => s.Rating != null) ? ruleSignals.Where(s => s.Rating != null).Average(s => s.Rating) : null,
                     BoughtGlobalRating = signalsService.GetGlobalRating()
                 }
             };

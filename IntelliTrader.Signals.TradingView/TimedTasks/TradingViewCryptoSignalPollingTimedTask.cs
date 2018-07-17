@@ -100,7 +100,7 @@ namespace IntelliTrader.Signals.TradingView
                                 lastSnapshotDate = DateTimeOffset.Now;
                                 CleanUpSignalsHistory();
                             }
-                            averageRating = signals.Any(s => s.Rating.HasValue) ? signals.Where(s => s.Rating.HasValue).Average(s => s.Rating) : null;
+                            averageRating = signals.Any(s => s.Rating != null) ? signals.Where(s => s.Rating != null).Average(s => s.Rating) : null;
                             healthCheckService.UpdateHealthCheck($"{Constants.HealthChecks.TradingViewCryptoSignalsReceived} [{signalReceiver.SignalName}]", $"Total: {signals.Count()}");
                         }
                     }

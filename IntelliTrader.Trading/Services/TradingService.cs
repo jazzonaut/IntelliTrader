@@ -12,6 +12,7 @@ namespace IntelliTrader.Trading
     internal class TradingService : ConfigrableServiceBase<TradingConfig>, ITradingService
     {
         private const int MIN_INTERVAL_BETWEEN_BUY_AND_SELL = 10000;
+        private const decimal DEFAULT_ARBITRAGE_BUY_MULTIPLIER = 0.99M;
 
         public override string ServiceName => Constants.ServiceNames.TradingService;
 
@@ -194,12 +195,21 @@ namespace IntelliTrader.Trading
                     RuleAction ruleAction = rule?.Action ?? RuleAction.Default;
                     IPairConfig pairConfig = GetPairConfig(options.Pair);
 
-                    bool isArbitragePair = pairConfig.ArbitrageEnabled && pairConfig.ArbitrageSignalRules.Contains(options.Metadata.SignalRule);
-                    if (isArbitragePair)
+                    bool arbitragePair = pairConfig.ArbitrageEnabled && pairConfig.ArbitrageSignalRules.Contains(options.Metadata.SignalRule);
+                    if (arbitragePair)
                     {
-                        options.Metadata.ArbitrageMarket = pairConfig.ArbitrageMarket.ToString();
-                        options.Metadata.ArbitragePercentage = Exchange.GetPriceArbitrage(options.Pair, Config.Market, pairConfig.ArbitrageMarket, pairConfig.ArbitrageType);
-                        Arbitrage(new ArbitrageOptions(options.Pair, pairConfig.ArbitrageMarket, options.Metadata));
+                        Arbitrage arbitrage = Exchange.GetArbitrage(options.Pair, Config.Market, pairConfig.ArbitrageMarket, pairConfig.ArbitrageType);
+                        if (arbitrage.IsAssigned)
+                        {
+                            if (arbitrage.Type == ArbitrageType.Direct)
+                            {
+                                ArbitrageDirect(new ArbitrageOptions(options.Pair, arbitrage, options.Metadata));
+                            }
+                            else if (arbitrage.Type == ArbitrageType.Reverse)
+                            {
+                                ArbitrageReverse(new ArbitrageOptions(options.Pair, arbitrage, options.Metadata));
+                            }
+                        }
                     }
                     else
                     {
@@ -332,7 +342,7 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public void Arbitrage(ArbitrageOptions options)
+        public void ArbitrageDirect(ArbitrageOptions options)
         {
             lock (syncRoot)
             {
@@ -341,16 +351,41 @@ namespace IntelliTrader.Trading
                 {
                     if (CanArbitrage(options, out string message))
                     {
-                        if (CanBuy(new BuyOptions(Exchange.ChangeMarket(options.Pair, options.Market.ToString())) { Amount = 1 }, out message))
+                        throw new NotSupportedException();
+                    }
+                    else
+                    {
+                        loggingService.Info(message);
+                    }
+                }
+                finally
+                {
+                    ContinueTasks();
+                }
+            }
+        }
+
+        public void ArbitrageReverse(ArbitrageOptions options)
+        {
+            lock (syncRoot)
+            {
+                PauseTasks();
+                try
+                {
+                    if (CanArbitrage(options, out string message))
+                    {
+                        if (CanBuy(new BuyOptions(Exchange.ChangeMarket(options.Pair, options.Arbitrage.Market.ToString())) { Amount = 1 }, out message))
                         {
                             IPairConfig pairConfig = GetPairConfig(options.Pair);
-                            loggingService.Info($"Arbitrage {options.Pair} on {options.Market}. Percentage: {options.Metadata.ArbitragePercentage:0.00}");
+                            options.Metadata.Arbitrage = $"{options.Arbitrage.Market}-" + options.Arbitrage.Type ?? "All";
+                            options.Metadata.ArbitragePercentage = options.Arbitrage.Percentage;
+                            loggingService.Info($"{options.Arbitrage.Type} arbitrage {options.Pair} on {options.Arbitrage.Market}. Percentage: {options.Arbitrage.Percentage:0.00}");
 
                             bool useExistingMarketPair = false;
-                            string marketPair = Exchange.GetArbitrageMarketPair(options.Market);
+                            string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
                             ITradingPair existingMarketPair = Account.GetTradingPair(marketPair);
-                            if (existingMarketPair != null && 
-                                existingMarketPair.CurrentCost > pairConfig.BuyMaxCost && 
+                            if (existingMarketPair != null &&
+                                existingMarketPair.CurrentCost > pairConfig.BuyMaxCost &&
                                 existingMarketPair.AveragePrice <= existingMarketPair.CurrentPrice)
                             {
                                 useExistingMarketPair = true;
@@ -382,12 +417,12 @@ namespace IntelliTrader.Trading
                                 if (buyMarketPairOrderDetails.Result == OrderResult.Filled)
                                 {
                                     decimal buyMarketPairFees = CalculateOrderFees(buyMarketPairOrderDetails);
-                                    string arbitragePair = Exchange.ChangeMarket(options.Pair, options.Market.ToString());
+                                    string arbitragePair = Exchange.ChangeMarket(options.Pair, options.Arbitrage.Market.ToString());
                                     var buyArbitragePairOptions = new BuyOptions(arbitragePair)
                                     {
                                         Arbitrage = true,
                                         ManualOrder = options.ManualOrder,
-                                        Amount = buyMarketPairOrderDetails.AmountFilled / GetPrice(arbitragePair, TradePriceType.Ask) * pairConfig.ArbitrageBuyMultiplier,
+                                        Amount = buyMarketPairOrderDetails.AmountFilled / GetPrice(arbitragePair, TradePriceType.Ask) * (pairConfig.ArbitrageBuyMultiplier ?? DEFAULT_ARBITRAGE_BUY_MULTIPLIER),
                                         Metadata = options.Metadata
                                     };
 
@@ -411,7 +446,7 @@ namespace IntelliTrader.Trading
 
                                         if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
                                         {
-                                            loggingService.Info($"Arbitrage successful: {marketPair} -> {arbitragePair} -> {NormalizePair(arbitragePair)}");
+                                            loggingService.Info($"{pairConfig.ArbitrageType} arbitrage successful: {marketPair} -> {arbitragePair} -> {NormalizePair(arbitragePair)}");
                                         }
                                         else
                                         {
