@@ -20,7 +20,7 @@ namespace IntelliTrader.Trading
         private readonly ConcurrentDictionary<string, BuyTrailingInfo> trailingBuys = new ConcurrentDictionary<string, BuyTrailingInfo>();
         private readonly ConcurrentDictionary<string, SellTrailingInfo> trailingSells = new ConcurrentDictionary<string, SellTrailingInfo>();
 
-        public TradingTimedTask(ILoggingService loggingService, INotificationService notificationService, 
+        public TradingTimedTask(ILoggingService loggingService, INotificationService notificationService,
             IHealthCheckService healthCheckService, ISignalsService signalsService, IOrderingService orderingService, ITradingService tradingService)
         {
             this.loggingService = loggingService;
@@ -77,40 +77,47 @@ namespace IntelliTrader.Trading
 
         public void InitiateSell(SellOptions options)
         {
-            IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-            if (!options.ManualOrder && pairConfig.SellTrailing != 0)
+            if (tradingService.Account.HasTradingPair(options.Pair))
             {
-                if (!trailingSells.ContainsKey(options.Pair))
+                IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
+                if (!options.ManualOrder && pairConfig.SellTrailing != 0)
                 {
-                    StopTrailingBuy(options.Pair);
-                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                    tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(options.Pair)), tradingService.Exchange.GetPriceSpread(options.Pair));
-
-                    var trailingInfo = new SellTrailingInfo
+                    if (!trailingSells.ContainsKey(options.Pair))
                     {
-                        SellOptions = options,
-                        SellMargin = pairConfig.SellMargin,
-                        Trailing = pairConfig.SellTrailing,
-                        TrailingStopMargin = pairConfig.SellTrailingStopMargin,
-                        TrailingStopAction = pairConfig.SellTrailingStopAction,
-                        InitialPrice = tradingPair.CurrentPrice,
-                        LastTrailingMargin = tradingPair.CurrentMargin,
-                        BestTrailingMargin = tradingPair.CurrentMargin
-                    };
+                        StopTrailingBuy(options.Pair);
+                        ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
+                        tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(options.Pair)), tradingService.Exchange.GetPriceSpread(options.Pair));
 
-                    if (trailingSells.TryAdd(options.Pair, trailingInfo))
-                    {
-                        if (LoggingEnabled)
+                        var trailingInfo = new SellTrailingInfo
                         {
-                            loggingService.Info($"Start trailing sell {tradingPair.FormattedName}. " +
-                                $"Price: {tradingPair.CurrentPrice:0.00000000}, Margin: {tradingPair.CurrentMargin:0.00}");
+                            SellOptions = options,
+                            SellMargin = pairConfig.SellMargin,
+                            Trailing = pairConfig.SellTrailing,
+                            TrailingStopMargin = pairConfig.SellTrailingStopMargin,
+                            TrailingStopAction = pairConfig.SellTrailingStopAction,
+                            InitialPrice = tradingPair.CurrentPrice,
+                            LastTrailingMargin = tradingPair.CurrentMargin,
+                            BestTrailingMargin = tradingPair.CurrentMargin
+                        };
+
+                        if (trailingSells.TryAdd(options.Pair, trailingInfo))
+                        {
+                            if (LoggingEnabled)
+                            {
+                                loggingService.Info($"Start trailing sell {tradingPair.FormattedName}. " +
+                                    $"Price: {tradingPair.CurrentPrice:0.00000000}, Margin: {tradingPair.CurrentMargin:0.00}");
+                            }
                         }
                     }
+                }
+                else
+                {
+                    orderingService.PlaceSellOrder(options);
                 }
             }
             else
             {
-                orderingService.PlaceSellOrder(options);
+                loggingService.Info($"Cancel initiate sell for {options.Pair}. Reason: pair does not exist");
             }
         }
 
@@ -139,7 +146,7 @@ namespace IntelliTrader.Trading
                             }
                         }
 
-                        if (tradingPair.CurrentMargin <= sellTrailingInfo.TrailingStopMargin || tradingPair.CurrentMargin < 
+                        if (tradingPair.CurrentMargin <= sellTrailingInfo.TrailingStopMargin || tradingPair.CurrentMargin <
                             (sellTrailingInfo.BestTrailingMargin - sellTrailingInfo.Trailing))
                         {
                             StopTrailingSell(tradingPair.Pair);
@@ -186,8 +193,8 @@ namespace IntelliTrader.Trading
                     {
                         InitiateSell(new SellOptions(tradingPair.Pair));
                     }
-                    else if (pairConfig.SellEnabled && pairConfig.SellStopLossEnabled && 
-                        tradingPair.CurrentMargin <= pairConfig.SellStopLossMargin && 
+                    else if (pairConfig.SellEnabled && pairConfig.SellStopLossEnabled &&
+                        tradingPair.CurrentMargin <= pairConfig.SellStopLossMargin &&
                         tradingPair.CurrentAge >= pairConfig.SellStopLossMinAge &&
                         (pairConfig.NextDCAMargin == null || !pairConfig.SellStopLossAfterDCA))
                     {
@@ -274,7 +281,7 @@ namespace IntelliTrader.Trading
                 }
             }
 
-            healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TradingPairsProcessed, 
+            healthCheckService.UpdateHealthCheck(Constants.HealthChecks.TradingPairsProcessed,
                 $"Pairs: {traidingPairsCount}, Trailing buys: {trailingBuys.Count}, Trailing sells: {trailingSells.Count}");
         }
 

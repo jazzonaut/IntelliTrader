@@ -29,7 +29,7 @@ namespace IntelliTrader.Core
         bool CanSell(SellOptions options, out string message);
         bool CanSwap(SwapOptions options, out string message);
         bool CanArbitrage(ArbitrageOptions options, out string message);
-        decimal GetPrice(string pair, TradePriceType? priceType = null);
+        decimal GetPrice(string pair, TradePriceType? priceType = null, bool normalize = true);
         decimal CalculateOrderFees(IOrderDetails order);
         bool IsNormalizedPair(string pair);
         string NormalizePair(string pair);

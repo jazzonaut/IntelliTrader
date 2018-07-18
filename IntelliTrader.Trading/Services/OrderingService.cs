@@ -30,11 +30,11 @@ namespace IntelliTrader.Trading
                 {
                     IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
                     ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                    decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask);
+                    decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask, normalize: false);
+                    decimal buyAmount = options.Amount ?? (options.MaxCost.Value / (options.Pair.EndsWith(Constants.Markets.USDT) ? 1 : buyPrice));
                     string signalRule = options.Metadata.SignalRule ?? "N/A";
                     options.Metadata.TradingRules = pairConfig.Rules.ToList();
                     options.Metadata.LastBuyMargin = options.Metadata.LastBuyMargin ?? tradingPair?.CurrentMargin ?? 0;
-                    decimal buyAmount = options.Amount ?? (options.MaxCost.Value / (options.Pair.EndsWith(Constants.Markets.USDT) ? 1 : buyPrice));
 
                     BuyOrder buyOrder = new BuyOrder
                     {
