@@ -22,6 +22,5 @@ namespace IntelliTrader.Core
         string FeesCurrency { get; }
         decimal RawCost { get; }
         OrderMetadata Metadata { get; }
-        void SetMetadata(OrderMetadata metadata);
     }
 }

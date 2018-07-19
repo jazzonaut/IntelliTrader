@@ -15,17 +15,13 @@ namespace IntelliTrader.Core
         decimal AveragePrice { get; }
         decimal FeesPairCurrency { get; }
         decimal FeesMarketCurrency { get; }
-        decimal FeesNonDeductible { get; }
         decimal FeesTotal { get; }
         decimal ActualCost { get; }
         DateTimeOffset SellDate { get; }
         decimal SellPrice { get; }
         decimal SellCost { get; }
-        decimal BalanceDifference { get; }
+        decimal BalanceOffset { get; }
         decimal Profit { get; }
         OrderMetadata Metadata { get; }
-
-        void SetSwap(bool isSwap);
-        void SetArbitrage(bool isArbitrage);
     }
 }

@@ -19,6 +19,7 @@ namespace IntelliTrader.Core
         public decimal? LastBuyMargin { get; set; }
         public int? AdditionalDCALevels { get; set; }
         public decimal? AdditionalCosts { get; set; }
+        public decimal? FeesNonDeductible { get; set; }
         public string SwapPair { get; set; }
         public string Arbitrage { get; set; }
         public decimal? ArbitragePercentage { get; set; }
@@ -35,6 +36,7 @@ namespace IntelliTrader.Core
             LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin;
             AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels;
             AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts;
+            FeesNonDeductible = metadata.FeesNonDeductible ?? FeesNonDeductible;
             SwapPair = metadata.SwapPair ?? SwapPair;
             Arbitrage = metadata.Arbitrage ?? Arbitrage;
             ArbitragePercentage = metadata.ArbitragePercentage ?? ArbitragePercentage;

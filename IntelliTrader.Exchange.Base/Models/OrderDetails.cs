@@ -23,10 +23,5 @@ namespace IntelliTrader.Exchange.Base
         public string FeesCurrency { get; set; }
         public decimal RawCost => AveragePrice * AmountFilled;
         public OrderMetadata Metadata { get; set; } = new OrderMetadata();
-
-        public void SetMetadata(OrderMetadata metadata)
-        {
-            this.Metadata = metadata;
-        }
     }
 }

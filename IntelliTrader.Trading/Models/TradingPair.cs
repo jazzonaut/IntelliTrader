@@ -23,9 +23,7 @@ namespace IntelliTrader.Trading
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal FeesMarketCurrency { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal FeesNonDeductible { get; set; }
-        [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal FeesTotal => AveragePrice * FeesPairCurrency + FeesMarketCurrency + FeesNonDeductible;
+        public decimal FeesTotal => AveragePrice * FeesPairCurrency + FeesMarketCurrency;
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal RawCost => AveragePrice * Amount;
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]

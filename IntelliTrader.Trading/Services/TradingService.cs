@@ -381,15 +381,10 @@ namespace IntelliTrader.Trading
                             options.Metadata.ArbitragePercentage = options.Arbitrage.Percentage;
                             loggingService.Info($"{options.Arbitrage.Type} arbitrage {options.Pair} on {options.Arbitrage.Market}. Percentage: {options.Arbitrage.Percentage:0.00}");
 
-                            bool useExistingMarketPair = false;
                             string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
                             ITradingPair existingMarketPair = Account.GetTradingPair(marketPair);
-                            if (existingMarketPair != null &&
-                                existingMarketPair.CurrentCost > pairConfig.BuyMaxCost &&
-                                existingMarketPair.AveragePrice <= existingMarketPair.CurrentPrice)
-                            {
-                                useExistingMarketPair = true;
-                            }
+                            bool useExistingMarketPair = (existingMarketPair != null && existingMarketPair.CurrentCost > pairConfig.BuyMaxCost && 
+                                                         existingMarketPair.AveragePrice <= existingMarketPair.CurrentPrice);
 
                             var buyMarketPairOptions = new BuyOptions(marketPair)
                             {
@@ -436,6 +431,7 @@ namespace IntelliTrader.Trading
                                     if (buyArbitragePairOrderDetails.Result == OrderResult.Filled)
                                     {
                                         decimal buyArbitragePairFees = CalculateOrderFees(buyArbitragePairOrderDetails);
+                                        options.Metadata.FeesNonDeductible = buyMarketPairFees + buyArbitragePairFees;
                                         var sellArbitragePairOptions = new SellOptions(buyArbitragePairOrderDetails.Pair)
                                         {
                                             Arbitrage = true,
@@ -445,10 +441,8 @@ namespace IntelliTrader.Trading
                                         };
 
                                         TradingPair existingArbitragePair = Account.GetTradingPair(buyArbitragePairOrderDetails.Pair) as TradingPair;
-                                        existingArbitragePair.FeesNonDeductible = buyMarketPairFees + buyArbitragePairFees;
                                         existingArbitragePair.OverrideActualCost(buyArbitragePairOrderDetails.RawCost + buyMarketPairFees + buyArbitragePairFees * 2);
                                         IOrderDetails sellArbitragePairOrderDetails = orderingService.PlaceSellOrder(sellArbitragePairOptions);
-                                        existingArbitragePair.FeesNonDeductible = 0;
                                         existingArbitragePair.OverrideActualCost(null);
 
                                         if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
