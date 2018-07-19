@@ -11,7 +11,7 @@ namespace IntelliTrader.Trading
 {
     internal class TradingService : ConfigrableServiceBase<TradingConfig>, ITradingService
     {
-        private const int MIN_INTERVAL_BETWEEN_BUY_AND_SELL = 10000;
+        private const int MIN_INTERVAL_BETWEEN_BUY_AND_SELL = 7000;
         private const decimal DEFAULT_ARBITRAGE_BUY_MULTIPLIER = 0.99M;
 
         public override string ServiceName => Constants.ServiceNames.TradingService;
@@ -201,14 +201,7 @@ namespace IntelliTrader.Trading
                         Arbitrage arbitrage = Exchange.GetArbitrage(options.Pair, Config.Market, pairConfig.ArbitrageMarkets, pairConfig.ArbitrageType);
                         if (arbitrage.IsAssigned)
                         {
-                            if (arbitrage.Type == ArbitrageType.Direct)
-                            {
-                                ArbitrageDirect(new ArbitrageOptions(options.Pair, arbitrage, options.Metadata));
-                            }
-                            else if (arbitrage.Type == ArbitrageType.Reverse)
-                            {
-                                ArbitrageReverse(new ArbitrageOptions(options.Pair, arbitrage, options.Metadata));
-                            }
+                            Arbitrage(new ArbitrageOptions(options.Pair, arbitrage, options.Metadata));
                         }
                     }
                     else
@@ -342,30 +335,7 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public void ArbitrageDirect(ArbitrageOptions options)
-        {
-            lock (syncRoot)
-            {
-                PauseTasks();
-                try
-                {
-                    if (CanArbitrage(options, out string message))
-                    {
-                        throw new NotSupportedException();
-                    }
-                    else
-                    {
-                        loggingService.Info(message);
-                    }
-                }
-                finally
-                {
-                    ContinueTasks();
-                }
-            }
-        }
-
-        public void ArbitrageReverse(ArbitrageOptions options)
+        public void Arbitrage(ArbitrageOptions options)
         {
             lock (syncRoot)
             {
@@ -376,99 +346,17 @@ namespace IntelliTrader.Trading
                     {
                         if (CanBuy(new BuyOptions(options.Pair) { Amount = 1 }, out message))
                         {
-                            IPairConfig pairConfig = GetPairConfig(options.Pair);
                             options.Metadata.Arbitrage = $"{options.Arbitrage.Market}-" + options.Arbitrage.Type ?? "All";
                             options.Metadata.ArbitragePercentage = options.Arbitrage.Percentage;
                             loggingService.Info($"{options.Arbitrage.Type} arbitrage {options.Pair} on {options.Arbitrage.Market}. Percentage: {options.Arbitrage.Percentage:0.00}");
 
-                            string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
-                            ITradingPair existingMarketPair = Account.GetTradingPair(marketPair);
-                            bool useExistingMarketPair = (existingMarketPair != null && existingMarketPair.CurrentCost > pairConfig.BuyMaxCost && 
-                                                         existingMarketPair.AveragePrice <= existingMarketPair.CurrentPrice);
-
-                            var buyMarketPairOptions = new BuyOptions(marketPair)
+                            if (options.Arbitrage.Type == ArbitrageType.Direct)
                             {
-                                Arbitrage = true,
-                                MaxCost = pairConfig.BuyMaxCost,
-                                ManualOrder = options.ManualOrder,
-                                IgnoreBalance = useExistingMarketPair,
-                                Metadata = options.Metadata
-                            };
-
-                            if (CanBuy(buyMarketPairOptions, out message))
-                            {
-                                IOrderDetails buyMarketPairOrderDetails = null;
-                                if (useExistingMarketPair)
-                                {
-                                    buyMarketPairOrderDetails = Account.AddBlankOrder(buyMarketPairOptions.Pair,
-                                        buyMarketPairOptions.MaxCost.Value / GetPrice(buyMarketPairOptions.Pair, TradePriceType.Ask),
-                                        includeFees: false);
-                                    loggingService.Info($"Use existing market pair for arbitrage: {marketPair}. Average price: {existingMarketPair.AveragePrice}, Current price: {existingMarketPair.CurrentPrice}");
-                                }
-                                else
-                                {
-                                    buyMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyMarketPairOptions);
-                                }
-
-                                if (buyMarketPairOrderDetails.Result == OrderResult.Filled)
-                                {
-                                    decimal buyArbitragePairMultiplier = pairConfig.ArbitrageBuyMultiplier ?? DEFAULT_ARBITRAGE_BUY_MULTIPLIER;
-                                    decimal buyMarketPairFees = CalculateOrderFees(buyMarketPairOrderDetails);
-                                    string arbitragePair = Exchange.ChangeMarket(options.Pair, options.Arbitrage.Market.ToString());
-                                    decimal buyArbitragePairAmount = options.Arbitrage.Market == ArbitrageMarket.USDT ?
-                                        buyMarketPairOrderDetails.AmountFilled * GetPrice(buyMarketPairOrderDetails.Pair, TradePriceType.Ask, normalize: false) / GetPrice(arbitragePair, TradePriceType.Ask) :
-                                        buyMarketPairOrderDetails.AmountFilled / GetPrice(arbitragePair, TradePriceType.Ask);
-
-                                    var buyArbitragePairOptions = new BuyOptions(arbitragePair)
-                                    {
-                                        Arbitrage = true,
-                                        ManualOrder = options.ManualOrder,
-                                        Amount = buyArbitragePairAmount * buyArbitragePairMultiplier,
-                                        Metadata = options.Metadata
-                                    };
-
-                                    IOrderDetails buyArbitragePairOrderDetails = orderingService.PlaceBuyOrder(buyArbitragePairOptions);
-                                    if (buyArbitragePairOrderDetails.Result == OrderResult.Filled)
-                                    {
-                                        decimal buyArbitragePairFees = CalculateOrderFees(buyArbitragePairOrderDetails);
-                                        options.Metadata.FeesNonDeductible = buyMarketPairFees + buyArbitragePairFees;
-                                        var sellArbitragePairOptions = new SellOptions(buyArbitragePairOrderDetails.Pair)
-                                        {
-                                            Arbitrage = true,
-                                            Amount = buyArbitragePairOptions.Amount,
-                                            ManualOrder = options.ManualOrder,
-                                            Metadata = options.Metadata
-                                        };
-
-                                        TradingPair existingArbitragePair = Account.GetTradingPair(buyArbitragePairOrderDetails.Pair) as TradingPair;
-                                        existingArbitragePair.OverrideActualCost(buyArbitragePairOrderDetails.RawCost + buyMarketPairFees + buyArbitragePairFees * 2);
-                                        IOrderDetails sellArbitragePairOrderDetails = orderingService.PlaceSellOrder(sellArbitragePairOptions);
-                                        existingArbitragePair.OverrideActualCost(null);
-
-                                        if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
-                                        {
-                                            loggingService.Info($"{pairConfig.ArbitrageType} arbitrage successful: {marketPair} -> {arbitragePair} -> {existingArbitragePair.Pair}");
-                                        }
-                                        else
-                                        {
-                                            loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to sell arbitrage pair {arbitragePair}");
-                                            notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to sell arbitrage pair {arbitragePair}");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy arbitrage pair {arbitragePair}");
-                                        notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to buy arbitrage pair {arbitragePair}");
-                                    }
-                                }
-                                else
-                                {
-                                    loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy market pair {marketPair}");
-                                }
+                                ArbitrageDirect(options);
                             }
-                            else
+                            else if (options.Arbitrage.Type == ArbitrageType.Reverse)
                             {
-                                loggingService.Info($"Unable to arbitrage {options.Pair}: {message}");
+                                ArbitrageReverse(options);
                             }
                         }
                         else
@@ -485,6 +373,190 @@ namespace IntelliTrader.Trading
                 {
                     ContinueTasks();
                 }
+            }
+        }
+
+        private void ArbitrageDirect(ArbitrageOptions options)
+        {
+            string arbitragePair = options.Pair;
+            ITradingPair existingArbitragePair = Account.GetTradingPair(arbitragePair);
+            IPairConfig pairConfig = GetPairConfig(options.Pair);
+            bool useExistingArbitragePair = (existingArbitragePair != null && existingArbitragePair.CurrentCost > pairConfig.BuyMaxCost &&
+                                            existingArbitragePair.AveragePrice <= existingArbitragePair.CurrentPrice);
+
+            var buyArbitragePairOptions = new BuyOptions(arbitragePair)
+            {
+                Arbitrage = true,
+                MaxCost = pairConfig.BuyMaxCost,
+                ManualOrder = options.ManualOrder,
+                IgnoreBalance = useExistingArbitragePair,
+                Metadata = options.Metadata
+            };
+
+            if (CanBuy(buyArbitragePairOptions, out string message))
+            {
+                IOrderDetails buyArbitragePairOrderDetails = null;
+                if (useExistingArbitragePair)
+                {
+                    buyArbitragePairOrderDetails = Account.AddBlankOrder(buyArbitragePairOptions.Pair,
+                        buyArbitragePairOptions.MaxCost.Value / GetPrice(buyArbitragePairOptions.Pair, TradePriceType.Ask),
+                        includeFees: false);
+                    loggingService.Info($"Use existing arbitrage pair for arbitrage: {arbitragePair}. Average price: {existingArbitragePair.AveragePrice}, Current price: {existingArbitragePair.CurrentPrice}");
+                }
+                else
+                {
+                    buyArbitragePairOrderDetails = orderingService.PlaceBuyOrder(buyArbitragePairOptions);
+                }
+
+                if (buyArbitragePairOrderDetails.Result == OrderResult.Filled)
+                {
+                    decimal buyArbitragePairFees = CalculateOrderFees(buyArbitragePairOrderDetails);
+                    string flippedArbitragePair = Exchange.ChangeMarket(arbitragePair, options.Arbitrage.Market.ToString());
+                    var sellArbitragePairOptions = new SellOptions(flippedArbitragePair)
+                    {
+                        Arbitrage = true,
+                        Amount = buyArbitragePairOrderDetails.AmountFilled,
+                        ManualOrder = options.ManualOrder,
+                        Metadata = options.Metadata
+                    };
+
+                    IOrderDetails sellArbitragePairOrderDetails = orderingService.PlaceSellOrder(sellArbitragePairOptions);
+                    if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
+                    {
+                        decimal sellArbitragePairFees = CalculateOrderFees(sellArbitragePairOrderDetails);
+                        options.Metadata.FeesNonDeductible =  buyArbitragePairFees + sellArbitragePairFees;
+                        string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
+                        var sellMarketPairOptions = new SellOptions(marketPair)
+                        {
+                            Arbitrage = true,
+                            Amount = sellArbitragePairOrderDetails.AmountFilled,
+                            ManualOrder = options.ManualOrder,
+                            Metadata = options.Metadata
+                        };
+
+                        existingArbitragePair = Account.GetTradingPair(arbitragePair);
+                        existingArbitragePair.OverrideActualCost(buyArbitragePairOrderDetails.RawCost + buyArbitragePairFees + sellArbitragePairFees * 2);
+                        IOrderDetails sellMarketPairOrderDetails = orderingService.PlaceSellOrder(sellMarketPairOptions);
+                        existingArbitragePair.OverrideActualCost(null);
+
+                        if (sellMarketPairOrderDetails.Result == OrderResult.Filled)
+                        {
+                            loggingService.Info($"{pairConfig.ArbitrageType} arbitrage successful: {arbitragePair} -> {flippedArbitragePair} -> {marketPair}");
+                        }
+                        else
+                        {
+                            loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to sell market pair {arbitragePair}");
+                            notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to sell market pair {arbitragePair}");
+                        }
+                    }
+                    else
+                    {
+                        loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to sell arbitrage pair {flippedArbitragePair}");
+                        notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to sell arbitrage pair {flippedArbitragePair}");
+                    }
+                }
+                else
+                {
+                    loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy arbitrage pair {arbitragePair}");
+                }
+            }
+            else
+            {
+                loggingService.Info($"Unable to arbitrage {options.Pair}: {message}");
+            }
+        }
+
+        private void ArbitrageReverse(ArbitrageOptions options)
+        {
+            string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
+            ITradingPair existingMarketPair = Account.GetTradingPair(marketPair);
+            IPairConfig pairConfig = GetPairConfig(options.Pair);
+            bool useExistingMarketPair = (existingMarketPair != null && existingMarketPair.CurrentCost > pairConfig.BuyMaxCost &&
+                                         existingMarketPair.AveragePrice <= existingMarketPair.CurrentPrice);
+
+            var buyMarketPairOptions = new BuyOptions(marketPair)
+            {
+                Arbitrage = true,
+                MaxCost = pairConfig.BuyMaxCost,
+                ManualOrder = options.ManualOrder,
+                IgnoreBalance = useExistingMarketPair,
+                Metadata = options.Metadata
+            };
+
+            if (CanBuy(buyMarketPairOptions, out string message))
+            {
+                IOrderDetails buyMarketPairOrderDetails = null;
+                if (useExistingMarketPair)
+                {
+                    buyMarketPairOrderDetails = Account.AddBlankOrder(buyMarketPairOptions.Pair,
+                        buyMarketPairOptions.MaxCost.Value / GetPrice(buyMarketPairOptions.Pair, TradePriceType.Ask),
+                        includeFees: false);
+                    loggingService.Info($"Use existing market pair for arbitrage: {marketPair}. Average price: {existingMarketPair.AveragePrice}, Current price: {existingMarketPair.CurrentPrice}");
+                }
+                else
+                {
+                    buyMarketPairOrderDetails = orderingService.PlaceBuyOrder(buyMarketPairOptions);
+                }
+
+                if (buyMarketPairOrderDetails.Result == OrderResult.Filled)
+                {
+                    decimal buyArbitragePairMultiplier = pairConfig.ArbitrageBuyMultiplier ?? DEFAULT_ARBITRAGE_BUY_MULTIPLIER;
+                    decimal buyMarketPairFees = CalculateOrderFees(buyMarketPairOrderDetails);
+                    string arbitragePair = Exchange.ChangeMarket(options.Pair, options.Arbitrage.Market.ToString());
+                    decimal buyArbitragePairAmount = options.Arbitrage.Market == ArbitrageMarket.USDT ?
+                        buyMarketPairOrderDetails.AmountFilled * GetPrice(buyMarketPairOrderDetails.Pair, TradePriceType.Ask, normalize: false) / GetPrice(arbitragePair, TradePriceType.Ask) :
+                        buyMarketPairOrderDetails.AmountFilled / GetPrice(arbitragePair, TradePriceType.Ask);
+
+                    var buyArbitragePairOptions = new BuyOptions(arbitragePair)
+                    {
+                        Arbitrage = true,
+                        ManualOrder = options.ManualOrder,
+                        Amount = buyArbitragePairAmount * buyArbitragePairMultiplier,
+                        Metadata = options.Metadata
+                    };
+
+                    IOrderDetails buyArbitragePairOrderDetails = orderingService.PlaceBuyOrder(buyArbitragePairOptions);
+                    if (buyArbitragePairOrderDetails.Result == OrderResult.Filled)
+                    {
+                        decimal buyArbitragePairFees = CalculateOrderFees(buyArbitragePairOrderDetails);
+                        options.Metadata.FeesNonDeductible = buyMarketPairFees + buyArbitragePairFees;
+                        var sellArbitragePairOptions = new SellOptions(buyArbitragePairOrderDetails.Pair)
+                        {
+                            Arbitrage = true,
+                            Amount = buyArbitragePairOrderDetails.AmountFilled,
+                            ManualOrder = options.ManualOrder,
+                            Metadata = options.Metadata
+                        };
+
+                        TradingPair existingArbitragePair = Account.GetTradingPair(buyArbitragePairOrderDetails.Pair) as TradingPair;
+                        existingArbitragePair.OverrideActualCost(buyArbitragePairOrderDetails.RawCost + buyMarketPairFees + buyArbitragePairFees * 2);
+                        IOrderDetails sellArbitragePairOrderDetails = orderingService.PlaceSellOrder(sellArbitragePairOptions);
+                        existingArbitragePair.OverrideActualCost(null);
+
+                        if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
+                        {
+                            loggingService.Info($"{pairConfig.ArbitrageType} arbitrage successful: {marketPair} -> {arbitragePair} -> {existingArbitragePair.Pair}");
+                        }
+                        else
+                        {
+                            loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to sell arbitrage pair {arbitragePair}");
+                            notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to sell arbitrage pair {arbitragePair}");
+                        }
+                    }
+                    else
+                    {
+                        loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy arbitrage pair {arbitragePair}");
+                        notificationService.Notify($"Unable to arbitrage {options.Pair}: Failed to buy arbitrage pair {arbitragePair}");
+                    }
+                }
+                else
+                {
+                    loggingService.Info($"Unable to arbitrage {options.Pair}. Reason: failed to buy market pair {marketPair}");
+                }
+            }
+            else
+            {
+                loggingService.Info($"Unable to arbitrage {options.Pair}: {message}");
             }
         }
 
@@ -522,9 +594,14 @@ namespace IntelliTrader.Trading
                 message = $"Cancel buy request for {options.Pair}. Reason: minimum balance reached";
                 return false;
             }
-            else if (GetPrice(options.Pair) <= 0)
+            else if (options.Price != null && options.Price <= 0)
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: invalid price";
+                return false;
+            }
+            else if (options.Amount != null && options.Amount <= 0)
+            {
+                message = $"Cancel buy request for {options.Pair}. Reason: invalid amount";
                 return false;
             }
             else if (!options.IgnoreBalance && Account.GetBalance() < options.MaxCost && Exchange.GetPairMarket(options.Pair) == Config.Market)
@@ -536,7 +613,7 @@ namespace IntelliTrader.Trading
             {
                 message = $"Cancel buy request for {options.Pair}. Reason: either max cost or amount needs to be specified (not both)";
             }
-            else if (!options.ManualOrder && !options.Swap && !options.Arbitrage && pairConfig.BuySamePairTimeout > 0 && 
+            else if (!options.ManualOrder && !options.Swap && !options.Arbitrage && pairConfig.BuySamePairTimeout > 0 &&
                 OrderHistory.Any(h => h.Side == OrderSide.Buy && (h.Pair == options.Pair || h.Pair == h.OriginalPair)) &&
                 (DateTimeOffset.Now - OrderHistory.Where(h => (h.Pair == options.Pair || h.Pair == h.OriginalPair)).Max(h => h.Date)).TotalSeconds < pairConfig.BuySamePairTimeout)
             {
@@ -568,22 +645,28 @@ namespace IntelliTrader.Trading
                 message = $"Cancel sell request for {options.Pair}. Reason: excluded pair";
                 return false;
             }
-            else if (!Account.HasTradingPair(options.Pair, includeDust: true))
+            else if (!Account.HasTradingPair(options.Pair, includeDust: true) && !Account.HasTradingPair(NormalizePair(options.Pair), includeDust: true))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: pair does not exist";
                 return false;
             }
-            else if (GetPrice(options.Pair) <= 0)
+            else if (options.Price != null && options.Price <= 0)
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: invalid price";
                 return false;
             }
-            else if (Account.GetTradingPair(options.Pair, includeDust: true).CurrentCost < Config.MinCost)
+            else if (options.Amount != null && options.Amount <= 0)
+            {
+                message = $"Cancel sell request for {options.Pair}. Reason: invalid amount";
+                return false;
+            }
+            else if (options.Amount != null && options.Price != null && (options.Amount * options.Price) < Config.MinCost)
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: dust";
                 return false;
             }
-            else if (!options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair, includeDust: true).OrderDates.Max()).TotalMilliseconds < (MIN_INTERVAL_BETWEEN_BUY_AND_SELL / Application.Speed))
+            else if (!options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair, includeDust: true).OrderDates.Max()).
+                TotalMilliseconds < (MIN_INTERVAL_BETWEEN_BUY_AND_SELL / Application.Speed))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: pair just bought";
                 return false;

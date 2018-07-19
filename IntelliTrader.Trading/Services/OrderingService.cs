@@ -24,22 +24,24 @@ namespace IntelliTrader.Trading
             tradingService.StopTrailingBuy(options.Pair);
             tradingService.StopTrailingSell(options.Pair);
 
-            if (tradingService.CanBuy(options, out string message))
+            try
             {
-                try
+                ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair, includeDust: true);
+                options.Price = tradingService.GetPrice(options.Pair, TradePriceType.Ask, normalize: false);
+                options.Amount = options.Amount ?? (options.MaxCost.Value / (options.Pair.EndsWith(Constants.Markets.USDT) ? 1 : options.Price));
+                options.Price = tradingService.Exchange.ClampOrderPrice(options.Pair, options.Price.Value);
+                options.Amount = tradingService.Exchange.ClampOrderAmount(options.Pair, options.Amount.Value);
+
+                if (tradingService.CanBuy(options, out string message))
                 {
                     IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair, includeDust: true);
-                    decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask, normalize: false);
-                    decimal buyAmount = options.Amount ?? (options.MaxCost.Value / (options.Pair.EndsWith(Constants.Markets.USDT) ? 1 : buyPrice));
-
                     BuyOrder buyOrder = new BuyOrder
                     {
                         Type = pairConfig.BuyType,
                         Date = DateTimeOffset.Now,
                         Pair = options.Pair,
-                        Amount = tradingService.Exchange.ClampOrderAmount(options.Pair, buyAmount),
-                        Price = tradingService.Exchange.ClampOrderPrice(options.Pair, buyPrice)
+                        Price = options.Price.Value,
+                        Amount = options.Amount.Value
                     };
 
                     lock (tradingService.Account.SyncRoot)
@@ -72,7 +74,7 @@ namespace IntelliTrader.Trading
 
                         NormalizeOrder(orderDetails as OrderDetails, TradePriceType.Ask);
                         options.Metadata.TradingRules = pairConfig.Rules.ToList();
-                        options.Metadata.LastBuyMargin = options.Metadata.LastBuyMargin ?? tradingPair?.CurrentMargin ?? 0;
+                        options.Metadata.LastBuyMargin = options.Metadata.LastBuyMargin ?? tradingPair?.CurrentMargin ?? null;
                         orderDetails.Metadata = options.Metadata;
                         tradingService.Account.AddBuyOrder(orderDetails);
                         tradingService.Account.Save();
@@ -90,15 +92,15 @@ namespace IntelliTrader.Trading
 
                     tradingService.ReapplyTradingRules();
                 }
-                catch (Exception ex)
+                else
                 {
-                    loggingService.Error($"Unable to place buy order for {options.Pair}", ex);
-                    notificationService.Notify($"Unable to buy {options.Pair}: {ex.Message}");
+                    loggingService.Info(message);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                loggingService.Info(message);
+                loggingService.Error($"Unable to place buy order for {options.Pair}", ex);
+                notificationService.Notify($"Unable to buy {options.Pair}: {ex.Message}");
             }
             return orderDetails;
         }
@@ -109,33 +111,36 @@ namespace IntelliTrader.Trading
             tradingService.StopTrailingSell(options.Pair);
             tradingService.StopTrailingBuy(options.Pair);
 
-            if (tradingService.CanSell(options, out string message))
+            try
             {
-                try
-                {
-                    IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair, includeDust: true);
-                    decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
-                    decimal sellAmount = options.Amount ?? tradingPair.Amount;
+                string normalizedPair = tradingService.NormalizePair(options.Pair);
+                ITradingPair tradingPair = tradingService.Account.GetTradingPair(normalizedPair, includeDust: true);
+                options.Price = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
+                options.Amount = options.Amount ?? tradingPair?.Amount ?? 0;
+                options.Price = options.Price != 1 ? tradingService.Exchange.ClampOrderPrice(options.Pair, options.Price.Value) : 1; // 1 = USDT price
+                options.Amount = tradingService.Exchange.ClampOrderAmount(options.Pair, options.Amount.Value);
 
+                if (tradingService.CanSell(options, out string message))
+                {
+                    IPairConfig pairConfig = tradingService.GetPairConfig(normalizedPair);
                     SellOrder sellOrder = new SellOrder
                     {
                         Type = pairConfig.SellType,
                         Date = DateTimeOffset.Now,
                         Pair = options.Pair,
-                        Amount = tradingService.Exchange.ClampOrderAmount(options.Pair, sellAmount),
-                        Price = sellPrice != 1 ? tradingService.Exchange.ClampOrderPrice(options.Pair, sellPrice) : 1 // 1 = USDT price
+                        Price = options.Price.Value,
+                        Amount = options.Amount.Value
                     };
 
                     lock (tradingService.Account.SyncRoot)
                     {
-                        tradingPair.SetCurrentValues(tradingService.GetPrice(options.Pair), tradingService.Exchange.GetPriceSpread(options.Pair));
+                        tradingPair.SetCurrentValues(tradingService.GetPrice(normalizedPair), tradingService.Exchange.GetPriceSpread(normalizedPair));
                         loggingService.Info($"Place sell order for {tradingPair.FormattedName}. " +
                             $"Price: {sellOrder.Price:0.00000000}, Amount: {sellOrder.Amount:0.########}, Margin: {tradingPair.CurrentMargin:0.00}");
 
                         if (!tradingService.Config.VirtualTrading)
                         {
-                            orderDetails = tradingService.Exchange.PlaceOrder(sellOrder, options.Pair) as OrderDetails;
+                            orderDetails = tradingService.Exchange.PlaceOrder(sellOrder) as OrderDetails;
                         }
                         else
                         {
@@ -156,6 +161,7 @@ namespace IntelliTrader.Trading
                             };
                         }
 
+                        NormalizeOrder(orderDetails, TradePriceType.Bid);
                         tradingPair.Metadata.MergeWith(options.Metadata);
                         orderDetails.Metadata = tradingPair.Metadata;
                         var tradeResult = tradingService.Account.AddSellOrder(orderDetails) as TradeResult;
@@ -179,15 +185,15 @@ namespace IntelliTrader.Trading
 
                     tradingService.ReapplyTradingRules();
                 }
-                catch (Exception ex)
+                else
                 {
-                    loggingService.Error($"Unable to place sell order for {options.Pair}", ex);
-                    notificationService.Notify($"Unable to sell {options.Pair}: {ex.Message}");
+                    loggingService.Info(message);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                loggingService.Info(message);
+                loggingService.Error($"Unable to place sell order for {options.Pair}", ex);
+                notificationService.Notify($"Unable to sell {options.Pair}: {ex.Message}");
             }
             return orderDetails;
         }

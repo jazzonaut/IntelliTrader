@@ -24,7 +24,7 @@ namespace IntelliTrader.Exchange.Binance
             return binanceApi;
         }
 
-        public override IOrderDetails PlaceOrder(IOrder order, string originalPair = null)
+        public override IOrderDetails PlaceOrder(IOrder order)
         {
             var result = Api.PlaceOrderAsync(new ExchangeOrderRequest
             {
@@ -42,7 +42,6 @@ namespace IntelliTrader.Exchange.Binance
                 Date = result.OrderDate,
                 OrderId = result.OrderId,
                 Pair = result.Symbol,
-                OriginalPair = originalPair,
                 Message = result.Message,
                 Amount = result.Amount,
                 AmountFilled = result.AmountFilled,

@@ -86,7 +86,7 @@ namespace IntelliTrader.Trading
                     {
                         StopTrailingBuy(options.Pair);
                         ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
-                        tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(options.Pair)), tradingService.Exchange.GetPriceSpread(options.Pair));
+                        tradingPair.SetCurrentValues(tradingService.GetPrice(options.Pair), tradingService.Exchange.GetPriceSpread(options.Pair));
 
                         var trailingInfo = new SellTrailingInfo
                         {
@@ -128,7 +128,7 @@ namespace IntelliTrader.Trading
             foreach (var tradingPair in tradingService.Account.GetTradingPairs())
             {
                 IPairConfig pairConfig = tradingService.GetPairConfig(tradingPair.Pair);
-                tradingPair.SetCurrentValues(tradingService.GetPrice(tradingService.NormalizePair(tradingPair.Pair)), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
+                tradingPair.SetCurrentValues(tradingService.GetPrice(tradingPair.Pair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
                 tradingPair.Metadata.TradingRules = pairConfig.Rules.ToList();
                 tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
                 tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();

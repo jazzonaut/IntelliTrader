@@ -23,8 +23,7 @@ namespace IntelliTrader.Core
         void Buy(BuyOptions options);
         void Sell(SellOptions options);
         void Swap(SwapOptions options);
-        void ArbitrageDirect(ArbitrageOptions options);
-        void ArbitrageReverse(ArbitrageOptions options);
+        void Arbitrage(ArbitrageOptions options);
         bool CanBuy(BuyOptions options, out string message);
         bool CanSell(SellOptions options, out string message);
         bool CanSwap(SwapOptions options, out string message);

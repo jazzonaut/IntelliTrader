@@ -7,7 +7,7 @@ namespace IntelliTrader.Core
     {
         void Start(bool virtualTrading);
         void Stop();
-        IOrderDetails PlaceOrder(IOrder order, string originalPair = null);
+        IOrderDetails PlaceOrder(IOrder order);
         decimal ClampOrderAmount(string pair, decimal amount);
         decimal ClampOrderPrice(string pair, decimal price);
         void ConnectTickersWebsocket();

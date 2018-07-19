@@ -185,7 +185,7 @@ namespace IntelliTrader.Backtesting
 
         #region Not Needed For Backtesting
 
-        public override IOrderDetails PlaceOrder(IOrder order, string originalPair = null)
+        public override IOrderDetails PlaceOrder(IOrder order)
         {
             throw new NotImplementedException();
         }
