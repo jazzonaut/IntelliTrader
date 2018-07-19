@@ -12,10 +12,11 @@ namespace IntelliTrader.Core
         void AddOrder(IOrderDetails order);
         void AddBuyOrder(IOrderDetails order);
         ITradeResult AddSellOrder(IOrderDetails order);
-        IOrderDetails AddBlankOrder(string pair, decimal amount, bool includeFees);
+        IOrderDetails AddBlankOrder(string pair, decimal amount, bool includeFees = true);
         decimal GetBalance();
-        bool HasTradingPair(string pair);
-        ITradingPair GetTradingPair(string pair);
-        IEnumerable<ITradingPair> GetTradingPairs();
+        decimal GetTotalBalance();
+        bool HasTradingPair(string pair, bool includeDust = false);
+        ITradingPair GetTradingPair(string pair, bool includeDust = false);
+        IEnumerable<ITradingPair> GetTradingPairs(bool includeDust = false);
     }
 }

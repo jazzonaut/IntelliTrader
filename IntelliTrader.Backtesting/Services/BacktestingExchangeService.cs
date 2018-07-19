@@ -113,7 +113,8 @@ namespace IntelliTrader.Backtesting
                         string marketPair = ChangeMarket(pair, market.ToString());
                         string arbitragePair = GetArbitrageMarketPair(market);
 
-                        if (backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker pairTicker) &&
+                        if (marketPair != pair && 
+                            backtestingService.GetCurrentTickers().TryGetValue(pair, out ITicker pairTicker) &&
                             backtestingService.GetCurrentTickers().TryGetValue(marketPair, out ITicker marketTicker) &&
                             backtestingService.GetCurrentTickers().TryGetValue(arbitragePair, out ITicker arbitrageTicker))
                         {

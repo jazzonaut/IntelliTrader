@@ -153,12 +153,6 @@ namespace IntelliTrader.Web.Controllers
             var accountInitialBalance = tradingService.Config.VirtualTrading ? tradingService.Config.VirtualAccountInitialBalance : tradingService.Config.AccountInitialBalance;
             var accountInitialBalanceDate = tradingService.Config.VirtualTrading ? DateTimeOffset.Now.AddDays(-30) : tradingService.Config.AccountInitialBalanceDate;
 
-            decimal accountBalance = tradingService.Account.GetBalance();
-            foreach (var tradingPair in tradingService.Account.GetTradingPairs())
-            {
-                accountBalance += tradingService.GetPrice(tradingPair.Pair, TradePriceType.Bid) * tradingPair.Amount;
-            }
-
             var model = new StatsViewModel
             {
                 InstanceName = coreService.Config.InstanceName,
@@ -166,7 +160,7 @@ namespace IntelliTrader.Web.Controllers
                 ReadOnlyMode = webService.Config.ReadOnlyMode,
                 TimezoneOffset = coreService.Config.TimezoneOffset,
                 AccountInitialBalance = accountInitialBalance,
-                AccountBalance = accountBalance,
+                AccountBalance = tradingService.Account.GetTotalBalance(),
                 Market = tradingService.Config.Market,
                 Balances = new Dictionary<DateTimeOffset, decimal>(),
                 Trades = GetTrades()

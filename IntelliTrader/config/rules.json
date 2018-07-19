@@ -41,25 +41,7 @@
               "ArbitrageType": "Reverse",
               "ArbitrageBuyMultiplier": 0.99,
               "ArbitrageSignalRules": [ "Buy-Arbitrage" ]
-            },
-            "Conditions": [
-              {
-                "NotPairs": [ "ETHBTC", "BNBBTC", "BTCUSDT" ]
-              }
-            ]
-          },
-          {
-            "Enabled": true,
-            "Name": "Sell-Disabled",
-            "Modifiers": {
-              "SellEnabled": false,
-              "SellDCAEnabled": false
-            },
-            "Conditions": [
-              {
-                "Pairs": [ "ETHBTC", "BNBBTC", "BTCUSDT" ]
-              }
-            ]
+            }
           }
         ]
       }

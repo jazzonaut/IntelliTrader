@@ -131,7 +131,7 @@ namespace IntelliTrader.Trading
                             Pair = order.Pair,
                             OrderIds = new List<string> { order.OrderId },
                             OrderDates = new List<DateTimeOffset> { order.Date },
-                            AveragePrice = order.AveragePrice,
+                            AveragePrice = order.AveragePrice + (feesMarketCurrency / order.AmountFilled),
                             FeesPairCurrency = feesPairCurrency,
                             FeesMarketCurrency = feesMarketCurrency,
                             Amount = amountAfterFees,
@@ -154,18 +154,22 @@ namespace IntelliTrader.Trading
                 {
                     if (order.Side == OrderSide.Sell && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                     {
+                        string feesPair = order.FeesCurrency + tradingService.Config.Market;
+                        decimal feesPairCurrency = (feesPair == order.Pair) ? order.Fees : 0;
                         decimal feesMarketCurrency = tradingService.CalculateOrderFees(order);
+                        decimal amountDifference = order.AmountFilled / tradingPair.Amount;
                         decimal balanceDifference = order.RawCost;
 
                         if (order.FeesCurrency == tradingService.Config.Market)
                         {
                             balanceDifference -= order.Fees;
                         }
-                        tradingPair.FeesMarketCurrency += feesMarketCurrency;
                         balance += balanceDifference;
 
-                        decimal costDifference = order.RawCost - tradingPair.GetActualCost(order.AmountFilled);
-                        decimal profit = (costDifference - (tradingPair.Metadata.AdditionalCosts ?? 0)) * (order.AmountFilled / tradingPair.Amount);
+                        tradingPair.FeesMarketCurrency += feesMarketCurrency;
+                        tradingPair.FeesMarketCurrency -= tradingPair.FeesMarketCurrency * amountDifference;
+                        decimal costDifference = order.RawCost - tradingPair.GetActualCost(order.AmountFilled) - (tradingPair.Metadata.AdditionalCosts ?? 0);
+                        decimal profit = costDifference * amountDifference;
 
                         var tradeResult = new TradeResult
                         {
@@ -174,8 +178,8 @@ namespace IntelliTrader.Trading
                             Amount = order.AmountFilled,
                             OrderDates = tradingPair.OrderDates,
                             AveragePrice = tradingPair.AveragePrice,
-                            FeesPairCurrency = tradingPair.FeesPairCurrency,
-                            FeesMarketCurrency = tradingPair.FeesMarketCurrency,
+                            FeesPairCurrency = feesPairCurrency,
+                            FeesMarketCurrency = feesMarketCurrency,
                             FeesNonDeductible = tradingPair.FeesNonDeductible,
                             SellDate = order.Date,
                             SellPrice = order.AveragePrice,
@@ -187,10 +191,6 @@ namespace IntelliTrader.Trading
                         if (tradingPair.Amount > order.AmountFilled)
                         {
                             tradingPair.Amount -= order.AmountFilled;
-                            if (!isInitialRefresh && tradingPair.ActualCost <= tradingService.Config.MinCost)
-                            {
-                                tradingPairs.TryRemove(order.Pair, out tradingPair);
-                            }
                         }
                         else
                         {
@@ -211,7 +211,7 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public IOrderDetails AddBlankOrder(string pair, decimal amount, bool includeFees)
+        public IOrderDetails AddBlankOrder(string pair, decimal amount, bool includeFees = true)
         {
             lock (SyncRoot)
             {
@@ -231,7 +231,7 @@ namespace IntelliTrader.Trading
                             Price = tradingPair.AveragePrice,
                             AveragePrice = tradingPair.AveragePrice,
                             Fees = includeFees ? tradingPair.FeesTotal * (amount / tradingPair.Amount) : 0,
-                            FeesCurrency = includeFees ? tradingPair.FeesMarketCurrency > 0 ? tradingService.Config.Market : tradingService.Exchange.GetPairMarket(pair) : null,
+                            FeesCurrency = includeFees ? tradingService.Config.Market : null,
                             Metadata = tradingPair.Metadata
                         };
                     }
@@ -255,19 +255,36 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public bool HasTradingPair(string pair)
+        public decimal GetTotalBalance()
+        {
+            decimal totalBalance = balance;
+            foreach (var tradingPair in tradingPairs.Values)
+            {
+                totalBalance += tradingService.GetPrice(tradingPair.Pair, TradePriceType.Bid) * tradingPair.Amount;
+            }
+            return totalBalance;
+        }
+
+        public bool HasTradingPair(string pair, bool includeDust = false)
         {
             lock (SyncRoot)
             {
-                return tradingPairs.ContainsKey(pair);
+                if (includeDust)
+                {
+                    return tradingPairs.ContainsKey(pair);
+                }
+                else
+                {
+                    return tradingPairs.TryGetValue(pair, out TradingPair tradingPair) && (tradingPair.CurrentCost > tradingService.Config.MinCost || tradingPair.CurrentPrice == 0);
+                }
             }
         }
 
-        public ITradingPair GetTradingPair(string pair)
+        public ITradingPair GetTradingPair(string pair, bool includeDust = false)
         {
             lock (SyncRoot)
             {
-                if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair))
+                if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair) && (includeDust || tradingPair.CurrentCost > tradingService.Config.MinCost || tradingPair.CurrentPrice == 0))
                 {
                     return tradingPair;
                 }
@@ -278,11 +295,18 @@ namespace IntelliTrader.Trading
             }
         }
 
-        public IEnumerable<ITradingPair> GetTradingPairs()
+        public IEnumerable<ITradingPair> GetTradingPairs(bool includeDust = false)
         {
             lock (SyncRoot)
             {
-                return tradingPairs.Values;
+                if (includeDust)
+                {
+                    return tradingPairs.Values;
+                }
+                else
+                {
+                    return tradingPairs.Values.Where(t => t.CurrentCost > tradingService.Config.MinCost || t.CurrentPrice == 0);
+                }
             }
         }
 

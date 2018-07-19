@@ -227,7 +227,7 @@ namespace IntelliTrader.Exchange.Base
 
         public virtual string ChangeMarket(string pair, string market)
         {
-            if (!pair.EndsWith(market) && !pair.StartsWith(market))
+            if (!pair.StartsWith(market) && !pair.EndsWith(market))
             {
                 string currentMarket = GetPairMarket(pair);
                 return pair.Substring(0, pair.Length - currentMarket.Length) + market;

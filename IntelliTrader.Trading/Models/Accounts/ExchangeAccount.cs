@@ -39,13 +39,12 @@ namespace IntelliTrader.Trading
                     string currency = kvp.Key;
                     decimal amount = kvp.Value;
                     string pair = currency + tradingService.Config.Market;
-                    decimal cost = amount * tradingService.GetPrice(pair, TradePriceType.Bid);
 
                     if (currency == tradingService.Config.Market)
                     {
                         newBalance = amount;
                     }
-                    else if (cost > tradingService.Config.MinCost && !tradingService.Config.ExcludedPairs.Contains(pair))
+                    else if (!tradingService.Config.ExcludedPairs.Contains(pair))
                     {
                         try
                         {
@@ -115,24 +114,16 @@ namespace IntelliTrader.Trading
 
                         if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair) && tradingPair.Amount != amount)
                         {
-                            loggingService.Info($"Fix amount for {pair}: {tradingPair.Amount:0.########} => {amount:0.########}");
+                            loggingService.Info($"Adjust amount for {pair}: {tradingPair.Amount:0.########} => {amount:0.########}");
                             tradingPair.Amount = amount;
                         }
                     }
 
                     foreach (var pair in tradingPairs.Keys.ToList())
                     {
-                        if (tradingPairs[pair].ActualCost <= tradingService.Config.MinCost)
+                        if (tradingPairsSaved.TryGetValue(pair, out TradingPair saved))
                         {
-                            loggingService.Info($"Skip low value pair: {pair}");
-                            tradingPairs.TryRemove(pair, out TradingPair p);
-                        }
-                        else
-                        {
-                            if (tradingPairsSaved.TryGetValue(pair, out TradingPair saved))
-                            {
-                                tradingPairs[pair].Metadata = saved.Metadata ?? new OrderMetadata();
-                            }
+                            tradingPairs[pair].Metadata = saved.Metadata ?? new OrderMetadata();
                         }
                     }
 

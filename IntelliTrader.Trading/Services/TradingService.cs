@@ -408,6 +408,7 @@ namespace IntelliTrader.Trading
                                     buyMarketPairOrderDetails = Account.AddBlankOrder(buyMarketPairOptions.Pair,
                                         buyMarketPairOptions.MaxCost.Value / GetPrice(buyMarketPairOptions.Pair, TradePriceType.Ask),
                                         includeFees: false);
+                                    loggingService.Info($"Use existing market pair for arbitrage: {marketPair}. Average price: {existingMarketPair.AveragePrice}, Current price: {existingMarketPair.CurrentPrice}");
                                 }
                                 else
                                 {
@@ -416,6 +417,7 @@ namespace IntelliTrader.Trading
 
                                 if (buyMarketPairOrderDetails.Result == OrderResult.Filled)
                                 {
+                                    decimal buyArbitragePairMultiplier = pairConfig.ArbitrageBuyMultiplier ?? DEFAULT_ARBITRAGE_BUY_MULTIPLIER;
                                     decimal buyMarketPairFees = CalculateOrderFees(buyMarketPairOrderDetails);
                                     string arbitragePair = Exchange.ChangeMarket(options.Pair, options.Arbitrage.Market.ToString());
                                     decimal buyArbitragePairAmount = options.Arbitrage.Market == ArbitrageMarket.USDT ?
@@ -426,7 +428,7 @@ namespace IntelliTrader.Trading
                                     {
                                         Arbitrage = true,
                                         ManualOrder = options.ManualOrder,
-                                        Amount = buyArbitragePairAmount * (pairConfig.ArbitrageBuyMultiplier ?? DEFAULT_ARBITRAGE_BUY_MULTIPLIER),
+                                        Amount = buyArbitragePairAmount * buyArbitragePairMultiplier,
                                         Metadata = options.Metadata
                                     };
 
@@ -443,9 +445,10 @@ namespace IntelliTrader.Trading
                                         };
 
                                         TradingPair existingArbitragePair = Account.GetTradingPair(buyArbitragePairOrderDetails.Pair) as TradingPair;
-                                        existingArbitragePair.FeesNonDeductible = buyArbitragePairFees;
+                                        existingArbitragePair.FeesNonDeductible = buyMarketPairFees + buyArbitragePairFees;
                                         existingArbitragePair.OverrideActualCost(buyArbitragePairOrderDetails.RawCost + buyMarketPairFees + buyArbitragePairFees * 2);
                                         IOrderDetails sellArbitragePairOrderDetails = orderingService.PlaceSellOrder(sellArbitragePairOptions);
+                                        existingArbitragePair.FeesNonDeductible = 0;
                                         existingArbitragePair.OverrideActualCost(null);
 
                                         if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
@@ -571,7 +574,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel sell request for {options.Pair}. Reason: excluded pair";
                 return false;
             }
-            else if (!Account.HasTradingPair(options.Pair))
+            else if (!Account.HasTradingPair(options.Pair, includeDust: true))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: pair does not exist";
                 return false;
@@ -581,7 +584,12 @@ namespace IntelliTrader.Trading
                 message = $"Cancel sell request for {options.Pair}. Reason: invalid price";
                 return false;
             }
-            else if (!options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair).OrderDates.Max()).TotalMilliseconds < (MIN_INTERVAL_BETWEEN_BUY_AND_SELL / Application.Speed))
+            else if (Account.GetTradingPair(options.Pair, includeDust: true).CurrentCost < Config.MinCost)
+            {
+                message = $"Cancel sell request for {options.Pair}. Reason: dust";
+                return false;
+            }
+            else if (!options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair, includeDust: true).OrderDates.Max()).TotalMilliseconds < (MIN_INTERVAL_BETWEEN_BUY_AND_SELL / Application.Speed))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: pair just bought";
                 return false;
@@ -663,22 +671,20 @@ namespace IntelliTrader.Trading
 
         public decimal CalculateOrderFees(IOrderDetails order)
         {
+            decimal orderFees = 0;
             if (order.Fees != 0 && order.FeesCurrency != null)
             {
                 if (order.FeesCurrency == Config.Market)
                 {
-                    return order.Fees;
+                    orderFees = order.Fees;
                 }
                 else
                 {
                     string feesPair = order.FeesCurrency + Config.Market;
-                    return GetPrice(feesPair, TradePriceType.Ask) * order.Fees;
+                    orderFees = GetPrice(feesPair, TradePriceType.Ask) * order.Fees;
                 }
             }
-            else
-            {
-                return 0;
-            }
+            return orderFees;
         }
 
         public bool IsNormalizedPair(string pair)

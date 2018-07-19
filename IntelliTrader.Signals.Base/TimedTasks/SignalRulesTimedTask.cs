@@ -142,7 +142,7 @@ namespace IntelliTrader.Signals.Base
         public void ProcessRule(IRule rule, Dictionary<string, ISignal> signals, string pair, List<string> excludedPairs, double? globalRating)
         {
             IEnumerable<IRuleCondition> conditions = rule.Trailing != null && rule.Trailing.Enabled ? rule.Trailing.StartConditions : rule.Conditions;
-            ITradingPair tradingPair = tradingService.Account.GetTradingPair(pair);
+            ITradingPair tradingPair = tradingService.Account.GetTradingPair(pair, includeDust: true);
             List<SignalTrailingInfo> trailingInfoList;
 
             if (!excludedPairs.Contains(pair) && (!trailingSignals.TryGetValue(pair, out trailingInfoList) || !trailingInfoList.Any(t => t.Rule == rule)) &&

@@ -101,7 +101,8 @@ namespace IntelliTrader.Exchange.Binance
                         string marketPair = ChangeMarket(pair, market.ToString());
                         string arbitragePair = GetArbitrageMarketPair(market);
 
-                        if (Tickers.TryGetValue(pair, out Ticker pairTicker) &&
+                        if (marketPair != pair &&
+                            Tickers.TryGetValue(pair, out Ticker pairTicker) &&
                             Tickers.TryGetValue(marketPair, out Ticker marketTicker) &&
                             Tickers.TryGetValue(arbitragePair, out Ticker arbitrageTicker))
                         {

@@ -29,7 +29,7 @@ namespace IntelliTrader.Trading
                 try
                 {
                     IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
+                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair, includeDust: true);
                     decimal buyPrice = tradingService.GetPrice(options.Pair, TradePriceType.Ask, normalize: false);
                     decimal buyAmount = options.Amount ?? (options.MaxCost.Value / (options.Pair.EndsWith(Constants.Markets.USDT) ? 1 : buyPrice));
                     string signalRule = options.Metadata.SignalRule ?? "N/A";
@@ -81,7 +81,7 @@ namespace IntelliTrader.Trading
                         tradingService.LogOrder(orderDetails);
 
                         decimal fees = tradingService.CalculateOrderFees(orderDetails);
-                        tradingPair = tradingService.Account.GetTradingPair(orderDetails.Pair);
+                        tradingPair = tradingService.Account.GetTradingPair(orderDetails.Pair, includeDust: true);
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info($"Buy order result for {orderDetails.OriginalPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, Cost: {orderDetails.RawCost:0.00000000}, Fees: {fees:0.00000000}");
                         notificationService.Notify($"Bought {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, Price: {orderDetails.AveragePrice:0.00000000}, Cost: {(orderDetails.RawCost + fees):0.00000000}");
@@ -113,7 +113,7 @@ namespace IntelliTrader.Trading
                 try
                 {
                     IPairConfig pairConfig = tradingService.GetPairConfig(options.Pair);
-                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair);
+                    ITradingPair tradingPair = tradingService.Account.GetTradingPair(options.Pair, includeDust: true);
                     tradingPair.SetCurrentValues(tradingService.GetPrice(options.Pair), tradingService.Exchange.GetPriceSpread(options.Pair));
                     decimal sellPrice = tradingService.GetPrice(options.Pair, TradePriceType.Bid);
 
