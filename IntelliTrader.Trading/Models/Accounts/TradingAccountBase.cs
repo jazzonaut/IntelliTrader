@@ -109,42 +109,7 @@ namespace IntelliTrader.Trading
                         }
                     }
                     AddBalance(balanceOffset);
-
-                    if (tradingPairs.TryGetValue(order.Pair, out TradingPair tradingPair))
-                    {
-                        if (!tradingPair.OrderIds.Contains(order.OrderId))
-                        {
-                            tradingPair.OrderIds.Add(order.OrderId);
-                            tradingPair.OrderDates.Add(order.Date);
-                        }
-                        tradingPair.AveragePrice = (tradingPair.ActualCost + order.RawCost) / (tradingPair.Amount + order.AmountFilled);
-                        tradingPair.FeesPairCurrency += feesPairCurrency;
-                        tradingPair.FeesMarketCurrency += feesMarketCurrency;
-                        tradingPair.Amount += amountAfterFees;
-                        tradingPair.Metadata.MergeWith(order.Metadata);
-                    }
-                    else
-                    {
-                        tradingPair = new TradingPair
-                        {
-                            Pair = order.Pair,
-                            OrderIds = new List<string> { order.OrderId },
-                            OrderDates = new List<DateTimeOffset> { order.Date },
-                            AveragePrice = order.AveragePrice + (feesMarketCurrency / order.AmountFilled),
-                            FeesPairCurrency = feesPairCurrency,
-                            FeesMarketCurrency = feesMarketCurrency,
-                            Amount = amountAfterFees,
-                            Metadata = order.Metadata
-                        };
-                        tradingPairs.TryAdd(order.Pair, tradingPair);
-                        tradingPair.SetCurrentValues(tradingService.GetPrice(tradingPair.Pair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
-                        tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
-                        tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
-                        if (tradingPair.Metadata.LastBuyMargin == null)
-                        {
-                            tradingPair.Metadata.LastBuyMargin = tradingPair.CurrentMargin;
-                        }
-                    }
+                    AddOrUpdatePair(order, order.Pair, amountAfterFees, feesMarketCurrency, feesPairCurrency);
                 }
             }
         }
@@ -162,7 +127,17 @@ namespace IntelliTrader.Trading
                         decimal feesPairCurrency = (feesPair == order.Pair) ? order.Fees : 0;
                         decimal feesMarketCurrency = tradingService.CalculateOrderFees(order);
                         decimal amountDifference = order.AmountFilled / tradingPair.Amount;
-                        decimal balanceOffset = order.RawCost;
+                        decimal balanceOffset = 0;
+
+                        if (!order.IsNormalized || order.Pair.EndsWith(Constants.Markets.USDT))
+                        {
+                            balanceOffset = order.RawCost;
+                        }
+                        else
+                        {
+                            string normalizedMarket = tradingService.Exchange.GetPairMarket(order.OriginalPair) + tradingService.Config.Market;
+                            AddOrUpdatePair(order, normalizedMarket, order.RawCost, feesMarketCurrency, feesPairCurrency);
+                        }
 
                         if (order.FeesCurrency == tradingService.Config.Market)
                         {
@@ -204,6 +179,46 @@ namespace IntelliTrader.Trading
                 }
             }
             return tradeResult;
+        }
+
+        public ITradingPair AddOrUpdatePair(IOrderDetails order, string pair, decimal amountAfterFees, decimal feesMarketCurrency, decimal feesPairCurrency)
+        {
+            if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair))
+            {
+                if (!tradingPair.OrderIds.Contains(order.OrderId))
+                {
+                    tradingPair.OrderIds.Add(order.OrderId);
+                    tradingPair.OrderDates.Add(order.Date);
+                }
+                tradingPair.AveragePrice = (tradingPair.ActualCost + order.RawCost) / (tradingPair.Amount + order.AmountFilled);
+                tradingPair.FeesPairCurrency += feesPairCurrency;
+                tradingPair.FeesMarketCurrency += feesMarketCurrency;
+                tradingPair.Amount += amountAfterFees;
+                tradingPair.Metadata.MergeWith(order.Metadata);
+            }
+            else
+            {
+                tradingPair = new TradingPair
+                {
+                    Pair = pair,
+                    OrderIds = new List<string> { order.OrderId },
+                    OrderDates = new List<DateTimeOffset> { order.Date },
+                    AveragePrice = order.AveragePrice + (feesMarketCurrency / order.AmountFilled),
+                    FeesPairCurrency = feesPairCurrency,
+                    FeesMarketCurrency = feesMarketCurrency,
+                    Amount = amountAfterFees,
+                    Metadata = order.Metadata
+                };
+                tradingPairs.TryAdd(pair, tradingPair);
+                tradingPair.SetCurrentValues(tradingService.GetPrice(tradingPair.Pair), tradingService.Exchange.GetPriceSpread(tradingPair.Pair));
+                tradingPair.Metadata.CurrentRating = tradingPair.Metadata.Signals != null ? signalsService.GetRating(tradingPair.Pair, tradingPair.Metadata.Signals) : null;
+                tradingPair.Metadata.CurrentGlobalRating = signalsService.GetGlobalRating();
+                if (tradingPair.Metadata.LastBuyMargin == null)
+                {
+                    tradingPair.Metadata.LastBuyMargin = tradingPair.CurrentMargin;
+                }
+            }
+            return tradingPair;
         }
 
         public IOrderDetails AddBlankOrder(string pair, decimal amount, bool includeFees = true)

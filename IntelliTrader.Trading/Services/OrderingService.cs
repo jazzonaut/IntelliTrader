@@ -176,7 +176,7 @@ namespace IntelliTrader.Trading
                         string arbitrage = options.Metadata.Arbitrage != null ? $", Arbitrage: {options.Metadata.Arbitrage} ({options.Metadata.ArbitragePercentage:0.00})" : "";
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info("{@Trade}", tradeResult);
-                        loggingService.Info($"Sell order result for {tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). " +
+                        loggingService.Info($"Sell order result for {orderDetails.OriginalPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). " +
                             $"Price: {orderDetails.AveragePrice:0.00000000}, Amount: {orderDetails.Amount:0.########}, Filled: {orderDetails.AmountFilled:0.########}, " +
                             $"Cost: {orderDetails.RawCost:0.00000000}, Fees: {fees:0.00000000}, Margin: {margin:0.00}, Profit: {tradeResult.Profit:0.00000000}{swapPair}{arbitrage}");
                         notificationService.Notify($"Sold {tradingPair.FormattedName}. Amount: {orderDetails.AmountFilled:0.########}, " +

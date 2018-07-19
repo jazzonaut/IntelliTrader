@@ -429,12 +429,12 @@ namespace IntelliTrader.Trading
                         var sellMarketPairOptions = new SellOptions(marketPair)
                         {
                             Arbitrage = true,
-                            Amount = sellArbitragePairOrderDetails.AmountFilled,
+                            Amount = sellArbitragePairOrderDetails.RawCost,
                             ManualOrder = options.ManualOrder,
                             Metadata = options.Metadata
                         };
 
-                        existingArbitragePair = Account.GetTradingPair(arbitragePair);
+                        existingArbitragePair = Account.GetTradingPair(marketPair);
                         existingArbitragePair.OverrideActualCost(buyArbitragePairOrderDetails.RawCost + buyArbitragePairFees + sellArbitragePairFees * 2);
                         IOrderDetails sellMarketPairOrderDetails = orderingService.PlaceSellOrder(sellMarketPairOptions);
                         existingArbitragePair.OverrideActualCost(null);
