@@ -621,7 +621,7 @@ namespace IntelliTrader.Web.Controllers
                                 .Replace("AveragePricePaid", nameof(ITradeResult.AveragePrice)); // Old property migration
 
                             TradeResult tradeResult = JsonConvert.DeserializeObject<TradeResult>(json);
-                            if (tradeResult.IsSuccessful)
+                            if (tradeResult.IsSuccessful && tradeResult.Metadata?.IsTransitional != true)
                             {
                                 DateTimeOffset tradeDate = tradeResult.SellDate.ToOffset(TimeSpan.FromHours(coreService.Config.TimezoneOffset)).Date;
                                 if (date == null || date == tradeDate)

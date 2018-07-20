@@ -17,9 +17,7 @@
             },
             "Conditions": [
               {
-                //"ArbitrageMarket": "ETH",
-                //"ArbitrageType": "Direct",
-                "MinArbitrage": 0.5
+                "MinArbitrage": 4
               }
             ]
           },
@@ -951,14 +949,18 @@
             "Enabled": false,
             "Name": "Arbitrage",
             "Modifiers": {
+              "BuyEnabled": true,
               "ArbitrageEnabled": true,
-              //"ArbitrageMarkets": [ "ETH" ],
-              //"ArbitrageType": "Direct",
-              "ArbitrageBuyMultiplier": 0.99,
-              "ArbitrageSellMultiplier": 0.99,
+              "ArbitrageMarkets": [ "ETH", "BNB" ],
+              "ArbitrageBuyMultiplier": 0.985,
+              "ArbitrageSellMultiplier": 0.985,
               "ArbitrageSignalRules": [ "Buy-Arbitrage" ]
             },
-            "Conditions": []
+            "Conditions": [
+              {
+                "MinArbitrage": 3
+              }
+            ]
           }
         ]
       }

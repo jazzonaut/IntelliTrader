@@ -7,6 +7,7 @@ namespace IntelliTrader.Core
 {
     public class OrderMetadata
     {
+        public bool? IsTransitional { get; set; }
         public List<string> TradingRules { get; set; }
         public string SignalRule { get; set; }
         public List<string> Signals { get; set; }
@@ -28,6 +29,7 @@ namespace IntelliTrader.Core
         {
             return new OrderMetadata
             {
+                IsTransitional = metadata.IsTransitional ?? IsTransitional,
                 TradingRules = metadata.TradingRules ?? TradingRules,
                 SignalRule = metadata.SignalRule ?? SignalRule,
                 Signals = metadata.Signals ?? Signals,

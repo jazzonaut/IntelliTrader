@@ -402,7 +402,8 @@ namespace IntelliTrader.Trading
                     buyArbitragePairOrderDetails = Account.AddBlankOrder(buyArbitragePairOptions.Pair,
                         buyArbitragePairOptions.MaxCost.Value / GetPrice(buyArbitragePairOptions.Pair, TradePriceType.Ask),
                         includeFees: false);
-                    loggingService.Info($"Use existing arbitrage pair for arbitrage: {arbitragePair}. Average price: {existingArbitragePair.AveragePrice}, Current price: {existingArbitragePair.CurrentPrice}");
+                    loggingService.Info($"Use existing arbitrage pair for arbitrage: {arbitragePair}. " +
+                        $"Average price: {existingArbitragePair.AveragePrice}, Current price: {existingArbitragePair.CurrentPrice}");
                 }
                 else
                 {
@@ -420,8 +421,7 @@ namespace IntelliTrader.Trading
                         ManualOrder = options.ManualOrder,
                         Metadata = options.Metadata.MergeWith(new OrderMetadata
                         {
-                            Arbitrage = $"{options.Metadata.Arbitrage} (1)",
-                            ArbitragePercentage = 0
+                            IsTransitional = true
                         })
                     };
 
@@ -441,7 +441,7 @@ namespace IntelliTrader.Trading
                             ManualOrder = options.ManualOrder,
                             Metadata = options.Metadata.MergeWith(new OrderMetadata
                             {
-                                Arbitrage = $"{options.Metadata.Arbitrage} (2)",
+                                IsTransitional = false
                             })
                         };
 
@@ -502,7 +502,8 @@ namespace IntelliTrader.Trading
                     buyMarketPairOrderDetails = Account.AddBlankOrder(buyMarketPairOptions.Pair,
                         buyMarketPairOptions.MaxCost.Value / GetPrice(buyMarketPairOptions.Pair, TradePriceType.Ask),
                         includeFees: false);
-                    loggingService.Info($"Use existing market pair for arbitrage: {marketPair}. Average price: {existingMarketPair.AveragePrice}, Current price: {existingMarketPair.CurrentPrice}");
+                    loggingService.Info($"Use existing market pair for arbitrage: {marketPair}. " +
+                        $"Average price: {existingMarketPair.AveragePrice}, Current price: {existingMarketPair.CurrentPrice}");
                 }
                 else
                 {
