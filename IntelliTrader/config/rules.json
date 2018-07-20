@@ -18,7 +18,7 @@
             "Conditions": [
               {
                 //"ArbitrageMarket": "ETH",
-                //"ArbitrageType": "Reverse",
+                //"ArbitrageType": "Direct",
                 "MinArbitrage": 0.3
               }
             ]
@@ -38,8 +38,9 @@
             "Modifiers": {
               "ArbitrageEnabled": true,
               //"ArbitrageMarkets": [ "ETH" ],
-              //"ArbitrageType": "Reverse",
+              //"ArbitrageType": "Direct",
               "ArbitrageBuyMultiplier": 0.99,
+              "ArbitrageSellMultiplier": 0.99,
               "ArbitrageSignalRules": [ "Buy-Arbitrage" ]
             }
           }

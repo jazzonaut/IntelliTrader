@@ -223,6 +223,7 @@ Trading modifiers support any trading setting that begins with Buy, Sell plus DC
 |ArbitrageMarkets|Array|[ "ETH" ]|Markets to use for the arbitrage. Available values: ETH, BNB, USDT. When omitted all markets will be used|
 |ArbitrageType|String|"Reverse"|Type of arbitrage to use. Available values: Direct, Reverse. When omitted both types will be used|
 |ArbitrageBuyMultiplier|Number|0.99|Percentage of the arbitrage pair to buy|
+|ArbitrageSellMultiplier|Number|0.99|Percentage of the arbitrage pair to sell|
 |ArgbitrageSignalRules|Array|[ "Arbitrage" ]|Rules used to arbitrage pairs|
 
 ###### Rule Conditions

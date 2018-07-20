@@ -72,7 +72,7 @@ namespace IntelliTrader.Trading
                             };
                         }
 
-                        NormalizeOrder(orderDetails as OrderDetails, TradePriceType.Ask);
+                        NormalizeOrder(orderDetails, TradePriceType.Ask);
                         options.Metadata.TradingRules = pairConfig.Rules.ToList();
                         options.Metadata.LastBuyMargin = options.Metadata.LastBuyMargin ?? tradingPair?.CurrentMargin ?? null;
                         orderDetails.Metadata = options.Metadata;
@@ -80,7 +80,7 @@ namespace IntelliTrader.Trading
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
-                        decimal fees = tradingService.CalculateOrderFees(orderDetails);
+                        decimal fees = tradingService.CalculateOrderMarketFees(orderDetails);
                         tradingPair = tradingService.Account.GetTradingPair(orderDetails.Pair, includeDust: true);
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info($"Buy order result for {orderDetails.OriginalPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). " +
@@ -135,7 +135,8 @@ namespace IntelliTrader.Trading
                     lock (tradingService.Account.SyncRoot)
                     {
                         tradingPair.SetCurrentValues(tradingService.GetPrice(normalizedPair), tradingService.Exchange.GetPriceSpread(normalizedPair));
-                        loggingService.Info($"Place sell order for {tradingPair.FormattedName}. " +
+                        string sellPairName = normalizedPair != options.Pair ? options.Pair : tradingPair.FormattedName;
+                        loggingService.Info($"Place sell order for {sellPairName}. " +
                             $"Price: {sellOrder.Price:0.00000000}, Amount: {sellOrder.Amount:0.########}, Margin: {tradingPair.CurrentMargin:0.00}");
 
                         if (!tradingService.Config.VirtualTrading)
@@ -157,7 +158,7 @@ namespace IntelliTrader.Trading
                                 Price = sellOrder.Price,
                                 AveragePrice = sellOrder.Price,
                                 Fees = sellOrder.Amount * sellOrder.Price * tradingService.Config.VirtualTradingFees,
-                                FeesCurrency = pairMarket != Constants.Markets.USDT ? pairMarket : Constants.Markets.BTC
+                                FeesCurrency = pairMarket
                             };
                         }
 
@@ -170,7 +171,7 @@ namespace IntelliTrader.Trading
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
-                        decimal fees = tradingService.CalculateOrderFees(orderDetails);
+                        decimal fees = tradingService.CalculateOrderMarketFees(orderDetails);
                         decimal margin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
                         string swapPair = options.Metadata.SwapPair != null ? $", Swap Pair: {options.Metadata.SwapPair}" : "";
                         string arbitrage = options.Metadata.Arbitrage != null ? $", Arbitrage: {options.Metadata.Arbitrage} ({options.Metadata.ArbitragePercentage:0.00})" : "";
@@ -202,9 +203,19 @@ namespace IntelliTrader.Trading
         {
             if (!tradingService.IsNormalizedPair(orderDetails.Pair))
             {
-                orderDetails.IsNormalized = true;
-                orderDetails.Price = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.Price, tradingService.Config.Market, priceType);
-                orderDetails.AveragePrice = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.AveragePrice, tradingService.Config.Market, priceType);
+                string pairMarket = tradingService.Exchange.GetPairMarket(orderDetails.Pair);
+
+                if (pairMarket != Constants.Markets.USDT || orderDetails.Price != 1)
+                {
+                    orderDetails.Price = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.Price, tradingService.Config.Market, priceType);
+                    orderDetails.AveragePrice = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.AveragePrice, tradingService.Config.Market, priceType);
+                }
+                else if (pairMarket == Constants.Markets.USDT && orderDetails.Pair.StartsWith(tradingService.Config.Market))
+                {
+                    orderDetails.Amount = orderDetails.Amount / tradingService.GetPrice(orderDetails.Pair, priceType, normalize: false);
+                    orderDetails.AmountFilled = orderDetails.AmountFilled / tradingService.GetPrice(orderDetails.Pair, priceType, normalize: false);
+                }
+
                 if (orderDetails.FeesCurrency == tradingService.Exchange.GetPairMarket(orderDetails.Pair))
                 {
                     orderDetails.Fees = tradingService.Exchange.ConvertPrice(orderDetails.Pair, orderDetails.Fees, tradingService.Config.Market, priceType);
@@ -215,6 +226,8 @@ namespace IntelliTrader.Trading
                 {
                     orderDetails.Pair = tradingService.Exchange.ChangeMarket(orderDetails.Pair, tradingService.Config.Market);
                 }
+
+                orderDetails.IsNormalized = true;
             }
         }
     }

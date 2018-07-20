@@ -48,7 +48,7 @@ namespace IntelliTrader.Trading
         {
             if (ActualCostOverride != null)
             {
-                return ActualCostOverride.Value * (partialAmount / Amount);
+                return ActualCostOverride.Value;
             }
             else
             {

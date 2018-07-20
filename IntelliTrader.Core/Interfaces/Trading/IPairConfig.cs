@@ -18,6 +18,7 @@ namespace IntelliTrader.Core
         List<ArbitrageMarket> ArbitrageMarkets { get; }
         ArbitrageType? ArbitrageType { get; }
         decimal? ArbitrageBuyMultiplier { get; }
+        decimal? ArbitrageSellMultiplier { get; }
         List<string> ArbitrageSignalRules { get; }
 
         decimal? CurrentDCAMargin { get; }

@@ -56,14 +56,14 @@ namespace IntelliTrader.Trading
                 if (order.Side == OrderSide.Buy && (order.Result == OrderResult.Filled || order.Result == OrderResult.FilledPartially))
                 {
                     string feesPair = order.FeesCurrency + tradingService.Config.Market;
-                    decimal feesPairCurrency = 0;
-                    decimal feesMarketCurrency = tradingService.CalculateOrderFees(order);
-                    decimal amountAfterFees = order.AmountFilled;
-                    decimal balanceOffset = 0;
+                    decimal feesPairCurrency = (feesPair == order.Pair) ? order.Fees : 0;
+                    decimal feesMarketCurrency = (order.FeesCurrency == tradingService.Config.Market) ? order.Fees : 0;
+                    decimal balanceOffset = -feesMarketCurrency;
 
                     if (!order.IsNormalized || order.Pair.EndsWith(Constants.Markets.USDT))
                     {
                         balanceOffset = -order.RawCost;
+                        AddBalance(balanceOffset);
                     }
                     else
                     {
@@ -75,7 +75,8 @@ namespace IntelliTrader.Trading
                         {
                             if (normalizedMarketPair.RawCost > order.RawCost)
                             {
-                                normalizedMarketPair.Amount -= order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Ask);
+                                decimal amount = order.RawCost / tradingService.GetPrice(normalizedMarket, TradePriceType.Ask);
+                                normalizedMarketPair.Amount -= amount;
                                 if (normalizedMarketPair.Amount <= 0)
                                 {
                                     tradingPairs.TryRemove(normalizedMarket, out normalizedMarketPair);
@@ -96,20 +97,7 @@ namespace IntelliTrader.Trading
                         }
                     }
 
-                    if (order.FeesCurrency == tradingService.Config.Market)
-                    {
-                        balanceOffset -= feesMarketCurrency;
-                    }
-                    else
-                    {
-                        if (feesPair == order.Pair)
-                        {
-                            feesPairCurrency = order.Fees;
-                            amountAfterFees -= order.Fees;
-                        }
-                    }
-                    AddBalance(balanceOffset);
-                    AddOrUpdatePair(order, order.Pair, amountAfterFees, feesMarketCurrency, feesPairCurrency);
+                    AddOrUpdatePair(order, order.Pair, feesMarketCurrency, feesPairCurrency);
                 }
             }
         }
@@ -125,26 +113,28 @@ namespace IntelliTrader.Trading
                     {
                         string feesPair = order.FeesCurrency + tradingService.Config.Market;
                         decimal feesPairCurrency = (feesPair == order.Pair) ? order.Fees : 0;
-                        decimal feesMarketCurrency = tradingService.CalculateOrderFees(order);
+                        decimal feesMarketCurrency = (order.FeesCurrency == tradingService.Config.Market) ? order.Fees : 0;
                         decimal amountDifference = order.AmountFilled / tradingPair.Amount;
-                        decimal balanceOffset = 0;
+                        decimal balanceOffset = -feesMarketCurrency;
 
                         if (!order.IsNormalized || order.Pair.EndsWith(Constants.Markets.USDT))
                         {
                             balanceOffset = order.RawCost;
+                            AddBalance(balanceOffset);
                         }
                         else
                         {
-                            string normalizedMarket = tradingService.Exchange.GetPairMarket(order.OriginalPair) + tradingService.Config.Market;
-                            AddOrUpdatePair(order, normalizedMarket, order.RawCost, feesMarketCurrency, feesPairCurrency);
+                            string normalizedMarket = tradingService.Exchange.GetPairMarket(order.OriginalPair) == Constants.Markets.USDT ?
+                                tradingService.Config.Market + tradingService.Exchange.GetPairMarket(order.OriginalPair) :
+                                tradingService.Exchange.GetPairMarket(order.OriginalPair) + tradingService.Config.Market;
+
+                            decimal price = tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
+                            decimal amount = order.RawCost / price;
+                            AddOrUpdatePair(order, normalizedMarket, feesMarketCurrency, feesPairCurrency, amount, price);
                         }
 
-                        if (order.FeesCurrency == tradingService.Config.Market)
-                        {
-                            balanceOffset -= order.Fees;
-                        }
-                        AddBalance(balanceOffset);
-
+                        tradingPair.FeesPairCurrency += feesPairCurrency;
+                        tradingPair.FeesPairCurrency -= tradingPair.FeesPairCurrency * amountDifference;
                         tradingPair.FeesMarketCurrency += feesMarketCurrency;
                         tradingPair.FeesMarketCurrency -= tradingPair.FeesMarketCurrency * amountDifference;
 
@@ -181,8 +171,12 @@ namespace IntelliTrader.Trading
             return tradeResult;
         }
 
-        public ITradingPair AddOrUpdatePair(IOrderDetails order, string pair, decimal amountAfterFees, decimal feesMarketCurrency, decimal feesPairCurrency)
+        public ITradingPair AddOrUpdatePair(IOrderDetails order, string pair, decimal feesMarketCurrency, decimal feesPairCurrency, decimal? amountOverride = null, decimal? averagePriceOverride = null)
         {
+            decimal amount = amountOverride ?? order.AmountFilled;
+            decimal amountAfterFees = amount - feesPairCurrency;
+            decimal averagePrice = averagePriceOverride ?? order.AveragePrice;
+
             if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair))
             {
                 if (!tradingPair.OrderIds.Contains(order.OrderId))
@@ -190,7 +184,7 @@ namespace IntelliTrader.Trading
                     tradingPair.OrderIds.Add(order.OrderId);
                     tradingPair.OrderDates.Add(order.Date);
                 }
-                tradingPair.AveragePrice = (tradingPair.ActualCost + order.RawCost) / (tradingPair.Amount + order.AmountFilled);
+                tradingPair.AveragePrice = (tradingPair.ActualCost + order.RawCost) / (tradingPair.Amount + amount);
                 tradingPair.FeesPairCurrency += feesPairCurrency;
                 tradingPair.FeesMarketCurrency += feesMarketCurrency;
                 tradingPair.Amount += amountAfterFees;
@@ -198,12 +192,22 @@ namespace IntelliTrader.Trading
             }
             else
             {
+                decimal averagePriceWithFees = averagePrice;
+                if (feesPairCurrency > 0)
+                {
+                    averagePriceWithFees = averagePrice * (amount / amountAfterFees);
+                }
+                else if (feesMarketCurrency > 0)
+                {
+                    averagePriceWithFees = averagePrice + (feesMarketCurrency / amount);
+                }
+
                 tradingPair = new TradingPair
                 {
                     Pair = pair,
                     OrderIds = new List<string> { order.OrderId },
                     OrderDates = new List<DateTimeOffset> { order.Date },
-                    AveragePrice = order.AveragePrice + (feesMarketCurrency / order.AmountFilled),
+                    AveragePrice = averagePriceWithFees,
                     FeesPairCurrency = feesPairCurrency,
                     FeesMarketCurrency = feesMarketCurrency,
                     Amount = amountAfterFees,

@@ -118,6 +118,7 @@ namespace IntelliTrader.Trading
                                 modifiedPairConfig.ArbitrageMarkets = modifiers.ArbitrageMarkets ?? modifiedPairConfig.ArbitrageMarkets;
                                 modifiedPairConfig.ArbitrageType = modifiers.ArbitrageType ?? modifiedPairConfig.ArbitrageType;
                                 modifiedPairConfig.ArbitrageBuyMultiplier = modifiers.ArbitrageBuyMultiplier ?? modifiedPairConfig.ArbitrageBuyMultiplier;
+                                modifiedPairConfig.ArbitrageSellMultiplier = modifiers.ArbitrageSellMultiplier ?? modifiedPairConfig.ArbitrageSellMultiplier;
                                 modifiedPairConfig.ArbitrageSignalRules = modifiers.ArbitrageSignalRules ?? modifiedPairConfig.ArbitrageSignalRules;
 
                                 if (oldPairConfig != null && !oldPairConfig.ArbitrageEnabled && modifiedPairConfig.ArbitrageEnabled)
@@ -183,6 +184,7 @@ namespace IntelliTrader.Trading
                 ArbitrageMarkets = modifiedPairConfig.ArbitrageMarkets,
                 ArbitrageType = modifiedPairConfig.ArbitrageType,
                 ArbitrageBuyMultiplier = modifiedPairConfig.ArbitrageBuyMultiplier,
+                ArbitrageSellMultiplier = modifiedPairConfig.ArbitrageSellMultiplier,
                 ArbitrageSignalRules = modifiedPairConfig.ArbitrageSignalRules,
 
                 CurrentDCAMargin = currentDCALevel?.Margin,

@@ -12,7 +12,7 @@ namespace IntelliTrader.Core
         void AddOrder(IOrderDetails order);
         void AddBuyOrder(IOrderDetails order);
         ITradeResult AddSellOrder(IOrderDetails order);
-        ITradingPair AddOrUpdatePair(IOrderDetails order, string pair, decimal amount, decimal feesMarketCurrency, decimal feesPairCurrency);
+        ITradingPair AddOrUpdatePair(IOrderDetails order, string pair, decimal feesMarketCurrency, decimal feesPairCurrency, decimal? amountOverride = null, decimal? averagePriceOverride = null);
         IOrderDetails AddBlankOrder(string pair, decimal amount, bool includeFees = true);
         void AddBalance(decimal balanceOffset);
         decimal GetBalance();
