@@ -938,7 +938,10 @@
                   "CHATBTC",
                   "REQBTC",
                   "CVCBTC",
-                  "DNTBTC"
+                  "DNTBTC",
+                  "IOTXBTC",
+                  "RPXBTC",
+                  "VIBBTC"
                 ],
                 "MaxGlobalRating": 0.3
               }

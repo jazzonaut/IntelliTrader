@@ -641,17 +641,17 @@ namespace IntelliTrader.Trading
         {
             IPairConfig pairConfig = GetPairConfig(options.Pair);
 
-            if (!options.ManualOrder && IsTradingSuspended)
+            if (!options.ManualOrder && !options.Arbitrage && IsTradingSuspended)
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: trading suspended";
                 return false;
             }
-            else if (!options.ManualOrder && !pairConfig.SellEnabled)
+            else if (!options.ManualOrder && !options.Arbitrage && !pairConfig.SellEnabled)
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: selling not enabled";
                 return false;
             }
-            else if (!options.ManualOrder && Config.ExcludedPairs.Contains(options.Pair))
+            else if (!options.ManualOrder && !options.Arbitrage && Config.ExcludedPairs.Contains(options.Pair))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: excluded pair";
                 return false;
@@ -676,7 +676,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel sell request for {options.Pair}. Reason: dust";
                 return false;
             }
-            else if (!options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair, includeDust: true).OrderDates.Max()).
+            else if (!options.ManualOrder && !options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair, includeDust: true).OrderDates.Max()).
                 TotalMilliseconds < (MIN_INTERVAL_BETWEEN_BUY_AND_SELL / Application.Speed))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: pair just bought";
