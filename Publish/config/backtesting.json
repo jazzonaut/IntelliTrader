@@ -3,7 +3,7 @@
     "Enabled": false,
     "Replay": false,
     "ReplayOutput": true,
-    "ReplaySpeed": 100,
+    "ReplaySpeed": 50,
     "ReplayStartIndex": null,
     "ReplayEndIndex": null,
     "DeleteLogs": true,

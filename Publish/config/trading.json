@@ -12,7 +12,7 @@
     "BuyMaxCost": 0.03,
     "BuyMultiplier": 1,
     "BuyMinBalance": 0,
-    "BuySamePairTimeout": 0,
+    "BuySamePairTimeout": 15,
     "BuyTrailing": -0.25,
     "BuyTrailingStopMargin": 1.35,
     "BuyTrailingStopAction": "Buy",

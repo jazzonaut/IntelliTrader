@@ -430,9 +430,9 @@ namespace IntelliTrader.Trading
                     {
                         decimal sellArbitragePairMultiplier = pairConfig.ArbitrageSellMultiplier ?? DEFAULT_ARBITRAGE_SELL_MULTIPLIER;
                         decimal sellArbitragePairFees = CalculateOrderMarketFees(sellArbitragePairOrderDetails);
-                        options.Metadata.FeesNonDeductible = buyArbitragePairFees * sellArbitragePairMultiplier;
-                        string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
+                        options.Metadata.FeesNonDeductible = (buyArbitragePairFees + sellArbitragePairFees) * sellArbitragePairMultiplier;
                         decimal sellMarketPairAmount = sellArbitragePairOrderDetails.AmountFilled * GetPrice(flippedArbitragePair, TradePriceType.Bid, normalize: false) * sellArbitragePairMultiplier;
+                        string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
 
                         var sellMarketPairOptions = new SellOptions(marketPair)
                         {
@@ -441,7 +441,8 @@ namespace IntelliTrader.Trading
                             ManualOrder = options.ManualOrder,
                             Metadata = options.Metadata.MergeWith(new OrderMetadata
                             {
-                                IsTransitional = false
+                                IsTransitional = false,
+                                OriginalPair = arbitragePair
                             })
                         };
 
@@ -531,7 +532,7 @@ namespace IntelliTrader.Trading
                     if (buyArbitragePairOrderDetails.Result == OrderResult.Filled)
                     {
                         decimal buyArbitragePairFees = CalculateOrderMarketFees(buyArbitragePairOrderDetails);
-                        options.Metadata.FeesNonDeductible = buyMarketPairFees + buyArbitragePairFees;
+                        options.Metadata.FeesNonDeductible = buyMarketPairFees * buyArbitragePairMultiplier + buyArbitragePairFees;
                         var sellArbitragePairOptions = new SellOptions(buyArbitragePairOrderDetails.Pair)
                         {
                             Arbitrage = true,

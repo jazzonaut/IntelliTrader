@@ -57,7 +57,7 @@ namespace IntelliTrader.Trading
                 {
                     string feesPair = order.FeesCurrency + tradingService.Config.Market;
                     decimal feesPairCurrency = (feesPair == order.Pair) ? order.Fees : 0;
-                    decimal feesMarketCurrency = (order.FeesCurrency == tradingService.Config.Market) ? order.Fees : 0;
+                    decimal feesMarketCurrency = (feesPair != order.Pair) ? tradingService.CalculateOrderMarketFees(order) : 0;
                     decimal balanceOffset = -feesMarketCurrency;
 
                     if (!order.IsNormalized || order.Pair.EndsWith(Constants.Markets.USDT))
@@ -113,7 +113,7 @@ namespace IntelliTrader.Trading
                     {
                         string feesPair = order.FeesCurrency + tradingService.Config.Market;
                         decimal feesPairCurrency = (feesPair == order.Pair) ? order.Fees : 0;
-                        decimal feesMarketCurrency = (order.FeesCurrency == tradingService.Config.Market) ? order.Fees : 0;
+                        decimal feesMarketCurrency = (feesPair != order.Pair) ? tradingService.CalculateOrderMarketFees(order) : 0;
                         decimal amountDifference = order.AmountFilled / tradingPair.Amount;
                         decimal balanceOffset = -feesMarketCurrency;
 

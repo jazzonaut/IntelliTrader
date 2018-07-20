@@ -36,8 +36,8 @@
             {
             <tr>
                 <td>@trade.SellDate.ToOffset(TimeSpan.FromHours(Model.TimezoneOffset)).ToString("yyyy-MM-dd HH:mm:ss")</td>
-                <td>@trade.Pair</td>
-                <td>@Html.Raw((trade.OrderDates.Count - 1) + (trade.Metadata?.AdditionalDCALevels ?? 0))</td>
+                <td>@if (trade.Metadata?.OriginalPair != null) { @Html.Raw(trade.Metadata.OriginalPair); } else { @Html.Raw(trade.Pair); }</td>
+                <td>@if (trade.Metadata?.OriginalPair == null) { @Html.Raw((trade.OrderDates.Count - 1) + (trade.Metadata?.AdditionalDCALevels ?? 0)) } else { <text>0</text> }</td>
                 <td>@Html.Raw((trade.Profit / (trade.ActualCost + (trade.Metadata?.AdditionalCosts ?? 0)) * 100).ToString("0.00"))</td>
                 <td>@trade.Profit.ToString("0.00000000")</td>
                 <td>@trade.FeesTotal.ToString("0.00000000")</td>
