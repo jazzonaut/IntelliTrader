@@ -66,5 +66,10 @@ namespace IntelliTrader.Trading
             CurrentPrice = currentPrice;
             CurrentSpread = currentSpread;
         }
+
+        public void SetMetadata(OrderMetadata metadata)
+        {
+            this.Metadata = metadata;
+        }
     }
 }

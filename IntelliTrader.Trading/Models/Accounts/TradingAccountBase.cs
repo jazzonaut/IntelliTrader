@@ -188,7 +188,7 @@ namespace IntelliTrader.Trading
                 tradingPair.FeesPairCurrency += feesPairCurrency;
                 tradingPair.FeesMarketCurrency += feesMarketCurrency;
                 tradingPair.Amount += amountAfterFees;
-                tradingPair.Metadata.MergeWith(order.Metadata);
+                tradingPair.SetMetadata(tradingPair.Metadata.MergeWith(order.Metadata));
             }
             else
             {

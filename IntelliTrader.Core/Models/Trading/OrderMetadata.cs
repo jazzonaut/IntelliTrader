@@ -24,22 +24,25 @@ namespace IntelliTrader.Core
         public string Arbitrage { get; set; }
         public decimal? ArbitragePercentage { get; set; }
 
-        public void MergeWith(OrderMetadata metadata)
+        public OrderMetadata MergeWith(OrderMetadata metadata)
         {
-            TradingRules = metadata.TradingRules ?? TradingRules;
-            SignalRule = metadata.SignalRule ?? SignalRule;
-            Signals = metadata.Signals ?? Signals;
-            BoughtRating = metadata.BoughtRating ?? BoughtRating;
-            CurrentRating = metadata.CurrentRating ?? CurrentRating;
-            BoughtGlobalRating = metadata.BoughtGlobalRating ?? BoughtGlobalRating;
-            CurrentGlobalRating = metadata.CurrentGlobalRating ?? CurrentGlobalRating;
-            LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin;
-            AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels;
-            AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts;
-            FeesNonDeductible = metadata.FeesNonDeductible ?? FeesNonDeductible;
-            SwapPair = metadata.SwapPair ?? SwapPair;
-            Arbitrage = metadata.Arbitrage ?? Arbitrage;
-            ArbitragePercentage = metadata.ArbitragePercentage ?? ArbitragePercentage;
+            return new OrderMetadata
+            {
+                TradingRules = metadata.TradingRules ?? TradingRules,
+                SignalRule = metadata.SignalRule ?? SignalRule,
+                Signals = metadata.Signals ?? Signals,
+                BoughtRating = metadata.BoughtRating ?? BoughtRating,
+                CurrentRating = metadata.CurrentRating ?? CurrentRating,
+                BoughtGlobalRating = metadata.BoughtGlobalRating ?? BoughtGlobalRating,
+                CurrentGlobalRating = metadata.CurrentGlobalRating ?? CurrentGlobalRating,
+                LastBuyMargin = metadata.LastBuyMargin ?? LastBuyMargin,
+                AdditionalDCALevels = metadata.AdditionalDCALevels ?? AdditionalDCALevels,
+                AdditionalCosts = metadata.AdditionalCosts ?? AdditionalCosts,
+                FeesNonDeductible = metadata.FeesNonDeductible ?? FeesNonDeductible,
+                SwapPair = metadata.SwapPair ?? SwapPair,
+                Arbitrage = metadata.Arbitrage ?? Arbitrage,
+                ArbitragePercentage = metadata.ArbitragePercentage ?? ArbitragePercentage
+            };
         }
     }
 }

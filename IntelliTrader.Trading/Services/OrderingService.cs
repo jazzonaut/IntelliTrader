@@ -163,7 +163,7 @@ namespace IntelliTrader.Trading
                         }
 
                         NormalizeOrder(orderDetails, TradePriceType.Bid);
-                        tradingPair.Metadata.MergeWith(options.Metadata);
+                        tradingPair.SetMetadata(tradingPair.Metadata.MergeWith(options.Metadata));
                         orderDetails.Metadata = tradingPair.Metadata;
                         var tradeResult = tradingService.Account.AddSellOrder(orderDetails) as TradeResult;
                         tradeResult.IsSwap = options.Swap;

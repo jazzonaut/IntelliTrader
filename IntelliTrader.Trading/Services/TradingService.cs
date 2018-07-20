@@ -418,7 +418,11 @@ namespace IntelliTrader.Trading
                         Arbitrage = true,
                         Amount = buyArbitragePairOrderDetails.AmountFilled,
                         ManualOrder = options.ManualOrder,
-                        Metadata = options.Metadata
+                        Metadata = options.Metadata.MergeWith(new OrderMetadata
+                        {
+                            Arbitrage = $"{options.Metadata.Arbitrage} (1)",
+                            ArbitragePercentage = 0
+                        })
                     };
 
                     IOrderDetails sellArbitragePairOrderDetails = orderingService.PlaceSellOrder(sellArbitragePairOptions);
@@ -435,7 +439,10 @@ namespace IntelliTrader.Trading
                             Arbitrage = true,
                             Amount = sellMarketPairAmount,
                             ManualOrder = options.ManualOrder,
-                            Metadata = options.Metadata
+                            Metadata = options.Metadata.MergeWith(new OrderMetadata
+                            {
+                                Arbitrage = $"{options.Metadata.Arbitrage} (2)",
+                            })
                         };
 
                         existingArbitragePair = Account.GetTradingPair(marketPair);

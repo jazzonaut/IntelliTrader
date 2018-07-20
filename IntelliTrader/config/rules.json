@@ -5,11 +5,11 @@
         "Module": "Signals",
         "Configuration": {
           "ProcessingMode": "AllMatches",
-          "CheckInterval": 0.5
+          "CheckInterval": 0.1
         },
         "Entries": [
           {
-            "Enabled": true,
+            "Enabled": false,
             "Name": "Buy-Arbitrage",
             "Action": "Arbitrage",
             "Modifiers": {
@@ -19,7 +19,276 @@
               {
                 //"ArbitrageMarket": "ETH",
                 //"ArbitrageType": "Direct",
-                "MinArbitrage": 0.3
+                "MinArbitrage": 0.5
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Buy-Safe",
+            "Modifiers": {
+              "CostMultiplier": 1
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-1m",
+                "MinVolatility": 2.5,
+                "MaxVolatility": 10,
+                "MaxPriceChange": 5
+              },
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.30,
+                "MaxPriceChange": 5
+              },
+              {
+                "Signal": "TV-1h",
+                "MinRating": 0.25,
+                "MinVolume": 100000,
+                "MaxPriceChange": 6
+              },
+              {
+                "Signal": "TV-4h",
+                "MinRating": 0.1,
+                "MinPriceChange": 1.5,
+                "MaxPriceChange": 12
+              },
+              {
+                "Signal": "TV-1d",
+                "MinPriceChange": 5,
+                "MaxPriceChange": 20
+              },
+              {
+                "MinGlobalRating": -0.35,
+                "MaxGlobalRating": 1.0,
+                "MaxSpread": 0.25,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Buy-Bull",
+            "Modifiers": {
+              "CostMultiplier": 1
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-1m",
+                "MinVolatility": 3,
+                "MaxVolatility": 12,
+                "MaxPriceChange": 5
+              },
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.30,
+                "MaxPriceChange": 5
+              },
+              {
+                "Signal": "TV-1h",
+                "MinRating": 0.25,
+                "MinVolume": 100000,
+                "MaxPriceChange": 8
+              },
+              {
+                "Signal": "TV-4h",
+                "MinRating": 0.1,
+                "MinPriceChange": 2,
+                "MaxPriceChange": 12
+              },
+              {
+                "Signal": "TV-1d",
+                "MinPriceChange": 4,
+                "MaxPriceChange": 20
+              },
+              {
+                "MinGlobalRating": 0.25,
+                "MaxSpread": 0.35,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Buy-TUSDT",
+            "Modifiers": {
+              "CostMultiplier": 1
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-1m",
+                "MinRating": 0.30
+              },
+              {
+                "Signal": "TV-5m",
+                "MinRating": 0.30
+              },
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.30
+              },
+              {
+                "MinGlobalRating": -0.28,
+                "MaxGlobalRating": -0.15,
+                "MaxSpread": 0.35,
+                "Pairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Buy-Volume-Spike",
+            "Modifiers": {
+              "CostMultiplier": 1
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MinRating": 0.4,
+                "MinPriceChange": 1,
+                "MaxPriceChange": 8,
+                "MinVolumeChange": 500,
+                "MaxVolatility": 12
+              },
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.4,
+                "MinPriceChange": 1.5,
+                "MaxPriceChange": 9,
+                "MinVolumeChange": 200
+              },
+              {
+                "Signal": "TV-1h",
+                "MinRating": 0.25,
+                "MinVolume": 200000,
+                "MaxPriceChange": 8
+              },
+              {
+                "Signal": "TV-4h",
+                "MinPriceChange": 1,
+                "MaxPriceChange": 10
+              },
+              {
+                "Signal": "TV-1d",
+                "MinPriceChange": 2,
+                "MaxPriceChange": 20
+              },
+              {
+                "MinGlobalRating": -0.10,
+                "MaxGlobalRating": 1.0,
+                "MaxSpread": 1,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Buy-Pump",
+            "Modifiers": {
+              "CostMultiplier": 1
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-1m",
+                "MinVolumeChange": 20,
+                "MaxVolumeChange": 200,
+                "MinRating": 0.30
+              },
+              {
+                "Signal": "TV-5m",
+                "MinRating": 0.30,
+                "MinPriceChange": 3,
+                "MinVolumeChange": 0,
+                "MaxPriceChange": 10
+              },
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.30
+              },
+              {
+                "Signal": "TV-1h",
+                "MinRating": 0.0,
+                "MinVolume": 100000,
+                "MaxPriceChange": 8
+              },
+              {
+                "Signal": "TV-4h",
+                "MinPriceChange": 3,
+                "MaxPriceChange": 10
+              },
+              {
+                "Signal": "TV-1d",
+                "MinPriceChange": 4,
+                "MaxPriceChange": 20
+              },
+              {
+                "MinGlobalRating": -0.30,
+                "MaxGlobalRating": 1.0,
+                "MaxSpread": 0.6
+              }
+            ],
+            "Trailing": {
+              "Enabled": true,
+              "MinDuration": 10,
+              "MaxDuration": 60,
+              "StartConditions": [
+                {
+                  "Signal": "TV-5m",
+                  "MinVolumeChange": 200
+                }
+              ]
+            }
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-Safe",
+            "Action": "Swap",
+            "Modifiers": {
+              "CostMultiplier": 1
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-15m",
+                "MinRating": 0.20,
+                "MaxRating": 0.35,
+                "MaxPriceChange": 5
+              },
+              {
+                "Signal": "TV-1h",
+                "MinRating": 0.10,
+                "MaxRating": 0.25,
+                "MinVolume": 400000,
+                "MinRatingChange": 0,
+                "MaxPriceChange": 6
+              },
+              {
+                "Signal": "TV-4h",
+                "MinRating": 0.10,
+                "MaxRating": 0.25,
+                "MinPriceChange": 1,
+                "MaxPriceChange": 8
+              },
+              {
+                "Signal": "TV-1d",
+                "MinRatingChange": 0,
+                "MinPriceChange": 2,
+                "MaxPriceChange": 12
+              },
+              {
+                "MinGlobalRating": -0.20,
+                "MaxGlobalRating": 1,
+                "MaxSpread": 0.35,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
               }
             ]
           }
@@ -29,11 +298,654 @@
         "Module": "Trading",
         "Configuration": {
           "ProcessingMode": "AllMatches",
-          "CheckInterval": 0.5
+          "CheckInterval": 0.1
         },
         "Entries": [
           {
             "Enabled": true,
+            "Name": "TUSD-DCA",
+            "Modifiers": {
+              "BuyEnabled": true,
+              "BuyDCAEnabled": true,
+              "SellMargin": 0.20,
+              "SellTrailing": 0.15,
+              "DCALevels": [
+                {
+                  "Margin": -0.40,
+                  "BuySamePairTimeout": 0,
+                  "BuyTrailing": -0.20,
+                  "BuyTrailingStopMargin": 1.00,
+                  "BuyTrailingStopAction": "Cancel",
+                  "SellMargin": 0.20,
+                  "SellTrailing": 0.15
+                },
+                {
+                  "Margin": -1.25,
+                  "BuySamePairTimeout": 180,
+                  "BuyTrailing": -0.20,
+                  "BuyTrailingStopMargin": 1.50,
+                  "BuyTrailingStopAction": "Cancel",
+                  "SellMargin": 0.15,
+                  "SellTrailing": 0.15
+                },
+                {
+                  "Margin": -2.50,
+                  "BuySamePairTimeout": 300,
+                  "BuyTrailing": -0.25,
+                  "BuyTrailingStopMargin": 2.00,
+                  "BuyTrailingStopAction": "Cancel",
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.10
+                },
+                {
+                  "Margin": -5.50,
+                  "BuySamePairTimeout": 1800,
+                  "BuyTrailing": -0.25,
+                  "BuyTrailingStopMargin": 2.00,
+                  "BuyTrailingStopAction": "Cancel",
+                  "SellMargin": 0.05,
+                  "SellTrailing": 0.10
+                }
+              ]
+            },
+            "Conditions": [
+              {
+                "MinGlobalRating": -1.00,
+                "MaxGlobalRating": -0.10,
+                "Pairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Apocalypse",
+            "Modifiers": {
+              "BuyEnabled": false,
+              "BuyDCAEnabled": false,
+              "SellMargin": -0.50,
+              "SellTrailing": 0,
+              "SellDCAMargin": -0.50,
+              "SellDCATrailing": 0
+            },
+            "Conditions": [
+              {
+                "MinGlobalRating": -1,
+                "MaxGlobalRating": -0.40
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Bear",
+            "Modifiers": {
+              "BuyDCAEnabled": false,
+              "BuyTrailing": -0.45,
+              "SellMargin": 0.40,
+              "SellTrailing": 0.25,
+              "SellTrailingStopMargin": 0.30,
+              "MaxPairs": 4,
+              "DCALevels": [
+                {
+                  "Margin": -4,
+                  "SellMargin": 0.20,
+                  "SellTrailing": 0.25,
+                  "SellTrailingStopMargin": 0.20,
+                  "BuyTrailing": -0.35,
+                  "BuySamePairTimeout": 0
+                },
+                {
+                  "Margin": -8,
+                  "SellMargin": 0.15,
+                  "SellTrailing": 0.20,
+                  "SellTrailingStopMargin": 0.10,
+                  "BuyTrailing": -0.55,
+                  "BuySamePairTimeout": 600
+                },
+                {
+                  "Margin": -15,
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.25,
+                  "SellTrailingStopMargin": 0.10,
+                  "BuyTrailing": -1,
+                  "BuySamePairTimeout": 1200
+                },
+                {
+                  "Margin": -20,
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.05,
+                  "SellTrailingStopMargin": 0.05,
+                  "BuyTrailing": -1.5,
+                  "BuySamePairTimeout": 2880
+                }
+              ]
+            },
+            "Conditions": [
+              {
+                "MinGlobalRating": -0.40,
+                "MaxGlobalRating": -0.15,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "BuyDCAEnabled": false,
+            "Name": "Boring",
+            "Modifiers": {
+              "BuyTrailing": -0.35,
+              "SellMargin": 0.50,
+              "SellTrailing": 0.35,
+              "SellTrailingStopMargin": 0.40,
+              "MaxPairs": 5,
+              "DCALevels": [
+                {
+                  "Margin": -2.5,
+                  "SellMargin": 0.30,
+                  "SellTrailing": 0.25,
+                  "SellTrailingStopMargin": 0.30,
+                  "BuyTrailing": -0.25,
+                  "BuySamePairTimeout": 0
+                },
+                {
+                  "Margin": -5,
+                  "SellMargin": 0.20,
+                  "SellTrailing": 0.20,
+                  "SellTrailingStopMargin": 0.20,
+                  "BuyTrailing": -0.45,
+                  "BuySamePairTimeout": 300
+                },
+                {
+                  "Margin": -8,
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.10,
+                  "SellTrailingStopMargin": 0.10,
+                  "BuyTrailing": -0.75,
+                  "BuySamePairTimeout": 900
+                },
+                {
+                  "Margin": -12,
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.05,
+                  "SellTrailingStopMargin": 0.05,
+                  "BuyTrailing": -1.5,
+                  "BuySamePairTimeout": 1800
+                }
+              ]
+            },
+            "Conditions": [
+              {
+                "MinGlobalRating": -0.15,
+                "MaxGlobalRating": 0.15,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Bull",
+            "Modifiers": {
+              "BuyTrailing": -0.25,
+              "SellMargin": 0.60,
+              "SellTrailing": 0.45,
+              "SellTrailingStopMargin": 0.50,
+              "MaxPairs": 6,
+              "DCALevels": [
+                {
+                  "Margin": -0.35,
+                  "SellMargin": 0.40,
+                  "SellTrailing": 0.35,
+                  "SellTrailingStopMargin": 0.35,
+                  "BuyTrailing": -0.25,
+                  "BuySamePairTimeout": 0
+                },
+                {
+                  "Margin": -2,
+                  "SellMargin": 0.35,
+                  "SellTrailing": 0.30,
+                  "SellTrailingStopMargin": 0.30,
+                  "BuyTrailing": -0.35,
+                  "BuySamePairTimeout": 180
+                },
+                {
+                  "Margin": -7,
+                  "SellMargin": 0.15,
+                  "SellTrailing": 0.15,
+                  "SellTrailingStopMargin": 0.15,
+                  "BuyTrailing": -0.55,
+                  "BuySamePairTimeout": 600
+                },
+                {
+                  "Margin": -12,
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.05,
+                  "SellTrailingStopMargin": 0.05,
+                  "BuyTrailing": -1.5,
+                  "BuySamePairTimeout": 1400
+                }
+              ]
+            },
+            "Conditions": [
+              {
+                "MinGlobalRating": 0.15,
+                "MaxGlobalRating": 1.00
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "DCA",
+            "Modifiers": {
+              "BuyDCAEnabled": false
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0.30
+              },
+              {
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "SuperBull-HP-DCA",
+            "Modifiers": {
+              "DCALevels": [
+                {
+                  "Margin": -0.25,
+                  "SellMargin": 0.25,
+                  "SellTrailing": 0.25,
+                  "SellTrailingStopMargin": 0.25,
+                  "BuyTrailing": -0.25,
+                  "BuySamePairTimeout": 0
+                },
+                {
+                  "Margin": -0.75,
+                  "SellMargin": 0.20,
+                  "SellTrailing": 0.20,
+                  "SellTrailingStopMargin": 0.20,
+                  "BuyTrailing": -0.45,
+                  "BuySamePairTimeout": 300
+                },
+                {
+                  "Margin": -1.50,
+                  "SellMargin": 0.15,
+                  "SellTrailing": 0.15,
+                  "SellTrailingStopMargin": 0.15,
+                  "BuyTrailing": -0.65,
+                  "BuySamePairTimeout": 600
+                },
+                {
+                  "Margin": -4.0,
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.05,
+                  "SellTrailingStopMargin": 0.05,
+                  "BuyTrailing": 2.0,
+                  "BuySamePairTimeout": 1200
+                }
+              ]
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MaxRating": 0.40
+              },
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0.40
+              },
+              {
+                "Signal": "TV-1h",
+                "MaxRating": 0.40
+              },
+              {
+                "MinGlobalRating": 0.30
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Bull-HP-DCA",
+            "Modifiers": {
+              "DCALevels": [
+                {
+                  "Margin": -0.35,
+                  "SellMargin": 0.25,
+                  "SellTrailing": 0.25,
+                  "SellTrailingStopMargin": 0.25,
+                  "BuyTrailing": -0.25,
+                  "BuySamePairTimeout": 0
+                },
+                {
+                  "Margin": -1.5,
+                  "SellMargin": 0.20,
+                  "SellTrailing": 0.20,
+                  "SellTrailingStopMargin": 0.20,
+                  "BuyTrailing": -0.35,
+                  "BuySamePairTimeout": 180
+                },
+                {
+                  "Margin": -5.5,
+                  "SellMargin": 0.15,
+                  "SellTrailing": 0.15,
+                  "SellTrailingStopMargin": 0.15,
+                  "BuyTrailing": -0.55,
+                  "BuySamePairTimeout": 300
+                },
+                {
+                  "Margin": -10,
+                  "SellMargin": 0.10,
+                  "SellTrailing": 0.05,
+                  "SellTrailingStopMargin": 0.05,
+                  "BuyTrailing": 2.0,
+                  "BuySamePairTimeout": 1200
+                }
+              ]
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MaxRating": 0.40
+              },
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0.40
+              },
+              {
+                "Signal": "TV-1h",
+                "MaxRating": 0.30
+              },
+              {
+                "MinGlobalRating": 0.20,
+                "MaxGlobalRating": 0.30
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-Only-Bull",
+            "Modifiers": {
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Buy-Safe" ],
+              "SwapTimeout": 1800
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MaxRating": 0
+              },
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0
+              },
+              {
+                "MaxDCALevel": 2,
+                "MinGlobalRating": 0.30,
+                "MaxGlobalRating": 1.00
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-Money-Pump",
+            "Modifiers": {
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Buy-Pump" ],
+              "SwapTimeout": 300
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-15m",
+                "MaxRating": 0
+              },
+              {
+                "MaxDCALevel": 0,
+                "MinGlobalRating": -0.20,
+                "MaxGlobalRating": 1.00,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-Small-Bag",
+            "Modifiers": {
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Buy-Volume-Spike", "Buy-Safe" ],
+              "SwapTimeout": 900
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MaxRating": -0.30
+              },
+              {
+                "Signal": "TV-15m",
+                "MaxRating": -0.30
+              },
+              {
+                "Signal": "TV-1h",
+                "MaxRating": 0
+              },
+              {
+                "MaxDCALevel": 1,
+                "MinGlobalRating": -0.20,
+                "MaxGlobalRating": 1.00,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-Medium-Bag",
+            "Modifiers": {
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Buy-Safe" ],
+              "SwapTimeout": 3600
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MaxRating": -0.2
+              },
+              {
+                "Signal": "TV-15m",
+                "MaxRating": -0.2
+              },
+              {
+                "Signal": "TV-1h",
+                "MaxRating": 0
+              },
+              {
+                "Signal": "TV-4h",
+                "MaxRating": 0
+              },
+              {
+                "MaxDCALevel": 2,
+                "MinGlobalRating": -0.20,
+                "MaxGlobalRating": 1.00,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-Big-Bag",
+            "Modifiers": {
+              "BuyDCAEnabled": false,
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Swap-Safe" ],
+              "SwapTimeout": 7200
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-15m",
+                "MaxRating": -0.2
+              },
+              {
+                "Signal": "TV-1h",
+                "MaxRating": 0
+              },
+              {
+                "Signal": "TV-4h",
+                "MaxRating": 0
+              },
+              {
+                "Signal": "TV-1d",
+                "MaxRating": 0
+              },
+              {
+                "MinDCALevel": 3
+              },
+              {
+                "MinGlobalRating": -0.20,
+                "MaxGlobalRating": 1.00,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-Run-Forest-Run",
+            "Modifiers": {
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Buy-Safe", "Swap-Safe" ],
+              "SwapTimeout": 300
+            },
+            "Conditions": [
+              {
+                "Signal": "TV-5m",
+                "MaxRating": 0
+              },
+              {
+                "MinGlobalRating": -0.20,
+                "MaxGlobalRating": 1.00,
+                "MinMarginChange": 3,
+                "NotPairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Swap-TUSDT",
+            "Modifiers": {
+              "SwapEnabled": true,
+              "SwapSignalRules": [ "Buy-Safe", "Buy-Volume-Spike" ],
+              "SwapTimeout": 300
+            },
+            "Conditions": [
+              {
+                "MinGlobalRating": -0.10,
+                "MaxGlobalRating": 1.00,
+                "Pairs": [
+                  "TUSDBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Exclude-BNB",
+            "Modifiers": {
+              "BuyEnabled": false,
+              "BuyDCAEnabled": false,
+              "SellEnabled": false
+            },
+            "Conditions": [
+              {
+                "Pairs": [
+                  "BNBBTC"
+                ]
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "BNB-Top-Up",
+            "Modifiers": {
+              "BuyEnabled": true,
+              "BuyDCAEnabled": true,
+              "BuyDCASamePairTimeout": 0,
+              "BuyMaxCost": 0.003,
+              "RepeatLastDCALevel": true,
+              "DCALevels": [
+                {
+                  "Margin": 100
+                }
+              ]
+            },
+            "Conditions": [
+              {
+                "Pairs": [ "BNBBTC" ],
+                "MaxAmount": 1
+              }
+            ]
+          },
+          {
+            "Enabled": true,
+            "Name": "Exclude-Pairs",
+            "Modifiers": {
+              "BuyEnabled": false
+            },
+            "Conditions": [
+              {
+                "Pairs": [
+                  "ADABTC",
+                  "BCHBTC",
+                  "ETHBTC",
+                  "XRPBTC",
+                  "LTCBTC",
+                  "EOSBTC",
+                  "XMRBTC",
+                  "ZECBTC",
+                  "ICXBTC",
+                  "DASHBTC",
+                  "XLMBTC",
+                  "OAXBTC",
+                  "RCNBTC",
+                  "QSPBTC",
+                  "SUBBTC",
+                  "BNTBTC",
+                  "AEBTC",
+                  "TNBBTC",
+                  "XEMBTC",
+                  "TNTBTC",
+                  "TRXBTC",
+                  "IOTABTC",
+                  "AMBBTC",
+                  "DLTBTC",
+                  "CDTBTC",
+                  "CNDBTC",
+                  "CHATBTC",
+                  "REQBTC",
+                  "CVCBTC",
+                  "DNTBTC"
+                ],
+                "MaxGlobalRating": 0.3
+              }
+            ]
+          },
+          {
+            "Enabled": false,
             "Name": "Arbitrage",
             "Modifiers": {
               "ArbitrageEnabled": true,
@@ -42,7 +954,8 @@
               "ArbitrageBuyMultiplier": 0.99,
               "ArbitrageSellMultiplier": 0.99,
               "ArbitrageSignalRules": [ "Buy-Arbitrage" ]
-            }
+            },
+            "Conditions": []
           }
         ]
       }

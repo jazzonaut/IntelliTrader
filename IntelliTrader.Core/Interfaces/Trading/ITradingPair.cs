@@ -30,5 +30,6 @@ namespace IntelliTrader.Core
         decimal GetActualCost(decimal partialAmount);
         void OverrideActualCost(decimal? actualCostOverride);
         void SetCurrentValues(decimal currentPrice, decimal currentSpread);
+        void SetMetadata(OrderMetadata metadata);
     }
 }
