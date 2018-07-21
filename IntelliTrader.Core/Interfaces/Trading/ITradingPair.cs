@@ -14,9 +14,8 @@ namespace IntelliTrader.Core
         decimal Amount { get; }
         decimal AveragePrice { get; }
         decimal Fees { get; }
-        decimal RawCost { get; }
-        decimal ActualCost { get; }
-        decimal? ActualCostOverride { get; set; }
+        decimal Cost { get; }
+        decimal? CostOverride { get; set; }
         decimal CurrentCost { get; }
         decimal CurrentPrice { get; }
         decimal CurrentSpread { get; }
@@ -25,8 +24,8 @@ namespace IntelliTrader.Core
         double LastBuyAge { get; }
         OrderMetadata Metadata { get; }
 
-        decimal GetActualCost(decimal partialAmount);
-        void OverrideActualCost(decimal? actualCostOverride);
+        decimal GetPartialCost(decimal partialAmount);
+        void OverrideCost(decimal? costOverride);
         void SetCurrentValues(decimal currentPrice, decimal currentSpread);
         void SetMetadata(OrderMetadata metadata);
     }

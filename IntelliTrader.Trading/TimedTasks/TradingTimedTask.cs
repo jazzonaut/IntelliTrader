@@ -211,7 +211,7 @@ namespace IntelliTrader.Trading
                         {
                             var buyOptions = new BuyOptions(tradingPair.Pair)
                             {
-                                MaxCost = tradingPair.ActualCost * pairConfig.BuyMultiplier,
+                                MaxCost = tradingPair.Cost * pairConfig.BuyMultiplier,
                                 IgnoreExisting = true
                             };
 

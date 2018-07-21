@@ -208,9 +208,9 @@ namespace IntelliTrader.Web.Controllers
 
                         if (!trade.IsSwap)
                         {
-                            ruleStats.TotalCost += trade.ActualCost;
+                            ruleStats.TotalCost += trade.Cost;
                             ruleStats.TotalProfit += trade.Profit;
-                            decimal margin = trade.Profit / (trade.ActualCost + (trade.Metadata?.AdditionalCosts ?? 0)) * 100;
+                            decimal margin = trade.Profit / (trade.Cost + (trade.Metadata?.AdditionalCosts ?? 0)) * 100;
                             if (trade.OrderDates.Count == 1)
                             {
                                 ruleStats.Margin.Add(margin);
@@ -366,7 +366,7 @@ namespace IntelliTrader.Web.Controllers
                                    CurrentPrice = tradingPair.CurrentPrice.ToString("0.00000000"),
                                    CurrentSpread = tradingPair.CurrentSpread.ToString("0.00"),
                                    BoughtPrice = tradingPair.AveragePrice.ToString("0.00000000"),
-                                   Cost = tradingPair.ActualCost.ToString("0.00000000"),
+                                   Cost = tradingPair.Cost.ToString("0.00000000"),
                                    CurrentCost = tradingPair.CurrentCost.ToString("0.00000000"),
                                    Amount = tradingPair.Amount.ToString("0.########"),
                                    OrderDates = tradingPair.OrderDates.Select(d => d.ToOffset(TimeSpan.FromHours(coreService.Config.TimezoneOffset)).ToString("yyyy-MM-dd HH:mm:ss")),

@@ -282,7 +282,7 @@ namespace IntelliTrader.Trading
                         if (CanSell(sellOptions, out message))
                         {
                             decimal currentMargin = oldTradingPair.CurrentMargin;
-                            decimal additionalCosts = oldTradingPair.ActualCost - oldTradingPair.CurrentCost + (oldTradingPair.Metadata.AdditionalCosts ?? 0);
+                            decimal additionalCosts = oldTradingPair.Cost - oldTradingPair.CurrentCost + (oldTradingPair.Metadata.AdditionalCosts ?? 0);
                             int additionalDCALevels = oldTradingPair.DCALevel;
 
                             IOrderDetails sellOrderDetails = orderingService.PlaceSellOrder(sellOptions);
@@ -292,7 +292,7 @@ namespace IntelliTrader.Trading
                                 {
                                     Swap = true,
                                     ManualOrder = options.ManualOrder,
-                                    MaxCost = sellOrderDetails.RawCost,
+                                    MaxCost = sellOrderDetails.Cost,
                                     Metadata = options.Metadata
                                 };
                                 buyOptions.Metadata.LastBuyMargin = currentMargin;
@@ -447,9 +447,9 @@ namespace IntelliTrader.Trading
                         };
 
                         existingArbitragePair = Account.GetTradingPair(marketPair);
-                        existingArbitragePair.OverrideActualCost((buyArbitragePairOrderDetails.RawCost + buyArbitragePairFees + sellArbitragePairFees * 2) * sellArbitragePairMultiplier);
+                        existingArbitragePair.OverrideCost((buyArbitragePairOrderDetails.Cost + sellArbitragePairFees * 2) * sellArbitragePairMultiplier);
                         IOrderDetails sellMarketPairOrderDetails = orderingService.PlaceSellOrder(sellMarketPairOptions);
-                        existingArbitragePair.OverrideActualCost(null);
+                        existingArbitragePair.OverrideCost(null);
 
                         if (sellMarketPairOrderDetails.Result == OrderResult.Filled)
                         {
@@ -542,9 +542,9 @@ namespace IntelliTrader.Trading
                         };
 
                         TradingPair existingArbitragePair = Account.GetTradingPair(buyArbitragePairOrderDetails.Pair) as TradingPair;
-                        existingArbitragePair.OverrideActualCost(buyArbitragePairOrderDetails.RawCost + buyMarketPairFees + buyArbitragePairFees * 2);
+                        existingArbitragePair.OverrideCost(buyArbitragePairOrderDetails.Cost + buyArbitragePairFees * 2);
                         IOrderDetails sellArbitragePairOrderDetails = orderingService.PlaceSellOrder(sellArbitragePairOptions);
-                        existingArbitragePair.OverrideActualCost(null);
+                        existingArbitragePair.OverrideCost(null);
 
                         if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
                         {

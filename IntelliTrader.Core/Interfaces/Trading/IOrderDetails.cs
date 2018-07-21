@@ -20,7 +20,7 @@ namespace IntelliTrader.Core
         decimal AveragePrice { get; }
         decimal Fees { get; }
         string FeesCurrency { get; }
-        decimal RawCost { get; }
+        decimal Cost { get; }
         OrderMetadata Metadata { get; }
     }
 }

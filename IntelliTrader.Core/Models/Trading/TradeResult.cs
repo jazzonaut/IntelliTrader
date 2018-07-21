@@ -16,7 +16,7 @@ namespace IntelliTrader.Core
         public decimal AveragePrice { get; set; }
         public decimal Fees { get; set; }
         public decimal FeesTotal => Fees + (Metadata?.FeesNonDeductible ?? 0);
-        public decimal ActualCost => AveragePrice * Amount + Fees;
+        public decimal Cost => AveragePrice * Amount;
         public DateTimeOffset SellDate { get; set; }
         public decimal SellPrice { get; set; }
         public decimal SellCost => SellPrice * Amount;
