@@ -14,10 +14,9 @@ namespace IntelliTrader.Core
         public decimal Amount { get; set; }
         public List<DateTimeOffset> OrderDates { get; set; }
         public decimal AveragePrice { get; set; }
-        public decimal FeesPairCurrency { get; set; }
-        public decimal FeesMarketCurrency { get; set; }
-        public decimal FeesTotal => AveragePrice * FeesPairCurrency + FeesMarketCurrency + (Metadata?.FeesNonDeductible ?? 0);
-        public decimal ActualCost => AveragePrice * (Amount + FeesPairCurrency) + FeesMarketCurrency;
+        public decimal Fees { get; set; }
+        public decimal FeesTotal => Fees + (Metadata?.FeesNonDeductible ?? 0);
+        public decimal ActualCost => AveragePrice * Amount + Fees;
         public DateTimeOffset SellDate { get; set; }
         public decimal SellPrice { get; set; }
         public decimal SellCost => SellPrice * Amount;

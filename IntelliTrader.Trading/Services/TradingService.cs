@@ -304,7 +304,7 @@ namespace IntelliTrader.Trading
                                 var newTradingPair = Account.GetTradingPair(options.NewPair) as TradingPair;
                                 if (newTradingPair != null)
                                 {
-                                    newTradingPair.Metadata.AdditionalCosts += sellOrderDetails.Fees;
+                                    newTradingPair.Metadata.AdditionalCosts += CalculateOrderFees(sellOrderDetails);
                                     loggingService.Info($"Swap {oldTradingPair.FormattedName} for {newTradingPair.FormattedName}. " +
                                         $"Old margin: {oldTradingPair.CurrentMargin:0.00}, new margin: {newTradingPair.CurrentMargin:0.00}");
                                 }
@@ -412,7 +412,7 @@ namespace IntelliTrader.Trading
 
                 if (buyArbitragePairOrderDetails.Result == OrderResult.Filled)
                 {
-                    decimal buyArbitragePairFees = CalculateOrderMarketFees(buyArbitragePairOrderDetails);
+                    decimal buyArbitragePairFees = CalculateOrderFees(buyArbitragePairOrderDetails);
                     string flippedArbitragePair = Exchange.ChangeMarket(arbitragePair, options.Arbitrage.Market.ToString());
                     var sellArbitragePairOptions = new SellOptions(flippedArbitragePair)
                     {
@@ -429,8 +429,8 @@ namespace IntelliTrader.Trading
                     if (sellArbitragePairOrderDetails.Result == OrderResult.Filled)
                     {
                         decimal sellArbitragePairMultiplier = pairConfig.ArbitrageSellMultiplier ?? DEFAULT_ARBITRAGE_SELL_MULTIPLIER;
-                        decimal sellArbitragePairFees = CalculateOrderMarketFees(sellArbitragePairOrderDetails);
-                        options.Metadata.FeesNonDeductible = (buyArbitragePairFees + sellArbitragePairFees) * sellArbitragePairMultiplier;
+                        decimal sellArbitragePairFees = CalculateOrderFees(sellArbitragePairOrderDetails);
+                        options.Metadata.FeesNonDeductible = buyArbitragePairFees  * sellArbitragePairMultiplier;
                         decimal sellMarketPairAmount = sellArbitragePairOrderDetails.AmountFilled * GetPrice(flippedArbitragePair, TradePriceType.Bid, normalize: false) * sellArbitragePairMultiplier;
                         string marketPair = Exchange.GetArbitrageMarketPair(options.Arbitrage.Market);
 
@@ -514,7 +514,7 @@ namespace IntelliTrader.Trading
                 if (buyMarketPairOrderDetails.Result == OrderResult.Filled)
                 {
                     decimal buyArbitragePairMultiplier = pairConfig.ArbitrageBuyMultiplier ?? DEFAULT_ARBITRAGE_BUY_MULTIPLIER;
-                    decimal buyMarketPairFees = CalculateOrderMarketFees(buyMarketPairOrderDetails);
+                    decimal buyMarketPairFees = CalculateOrderFees(buyMarketPairOrderDetails);
                     string arbitragePair = Exchange.ChangeMarket(options.Pair, options.Arbitrage.Market.ToString());
                     decimal buyArbitragePairAmount = options.Arbitrage.Market == ArbitrageMarket.USDT ?
                         buyMarketPairOrderDetails.AmountFilled * GetPrice(buyMarketPairOrderDetails.Pair, TradePriceType.Ask, normalize: false) / GetPrice(arbitragePair, TradePriceType.Ask) :
@@ -531,8 +531,8 @@ namespace IntelliTrader.Trading
                     IOrderDetails buyArbitragePairOrderDetails = orderingService.PlaceBuyOrder(buyArbitragePairOptions);
                     if (buyArbitragePairOrderDetails.Result == OrderResult.Filled)
                     {
-                        decimal buyArbitragePairFees = CalculateOrderMarketFees(buyArbitragePairOrderDetails);
-                        options.Metadata.FeesNonDeductible = buyMarketPairFees * buyArbitragePairMultiplier + buyArbitragePairFees;
+                        decimal buyArbitragePairFees = CalculateOrderFees(buyArbitragePairOrderDetails);
+                        options.Metadata.FeesNonDeductible = buyMarketPairFees * buyArbitragePairMultiplier;
                         var sellArbitragePairOptions = new SellOptions(buyArbitragePairOrderDetails.Pair)
                         {
                             Arbitrage = true,
@@ -759,7 +759,7 @@ namespace IntelliTrader.Trading
             return Exchange.GetPrice(pair, priceType ?? Config.TradePriceType);
         }
 
-        public decimal CalculateOrderMarketFees(IOrderDetails order)
+        public decimal CalculateOrderFees(IOrderDetails order)
         {
             decimal orderFees = 0;
             if (order.Fees != 0 && order.FeesCurrency != null)

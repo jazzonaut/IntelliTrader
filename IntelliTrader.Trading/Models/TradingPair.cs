@@ -19,11 +19,7 @@ namespace IntelliTrader.Trading
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal AveragePrice { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal FeesPairCurrency { get; set; }
-        [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal FeesMarketCurrency { get; set; }
-        [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
-        public decimal FeesTotal => AveragePrice * FeesPairCurrency + FeesMarketCurrency;
+        public decimal Fees { get; set; }
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
         public decimal RawCost => AveragePrice * Amount;
         [JsonConverter(typeof(DecimalFormatJsonConverter), 8)]
@@ -52,7 +48,7 @@ namespace IntelliTrader.Trading
             }
             else
             {
-                return AveragePrice * (partialAmount + FeesPairCurrency) + FeesMarketCurrency;
+                return AveragePrice * partialAmount + Fees;
             }
         }
 

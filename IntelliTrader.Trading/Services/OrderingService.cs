@@ -47,7 +47,7 @@ namespace IntelliTrader.Trading
                     lock (tradingService.Account.SyncRoot)
                     {
                         loggingService.Info($"Place buy order for {tradingPair?.FormattedName ?? options.Pair}. " +
-                            $"Price: {buyOrder.Price:0.00000000}, Amount: {buyOrder.Amount:0.########}, Signal Rule: " + options.Metadata.SignalRule ?? "N/A");
+                            $"Price: {buyOrder.Price:0.00000000}, Amount: {buyOrder.Amount:0.########}, Signal Rule: " + (options.Metadata.SignalRule ?? "N/A"));
 
                         if (!tradingService.Config.VirtualTrading)
                         {
@@ -80,7 +80,7 @@ namespace IntelliTrader.Trading
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
-                        decimal fees = tradingService.CalculateOrderMarketFees(orderDetails);
+                        decimal fees = tradingService.CalculateOrderFees(orderDetails);
                         tradingPair = tradingService.Account.GetTradingPair(orderDetails.Pair, includeDust: true);
                         loggingService.Info("{@Trade}", orderDetails);
                         loggingService.Info($"Buy order result for {orderDetails.OriginalPair ?? tradingPair.FormattedName}: {orderDetails.Result} ({orderDetails.Message}). " +
@@ -171,7 +171,7 @@ namespace IntelliTrader.Trading
                         tradingService.Account.Save();
                         tradingService.LogOrder(orderDetails);
 
-                        decimal fees = tradingService.CalculateOrderMarketFees(orderDetails);
+                        decimal fees = tradingService.CalculateOrderFees(orderDetails);
                         decimal margin = (tradeResult.Profit / (tradeResult.ActualCost + (tradeResult.Metadata.AdditionalCosts ?? 0)) * 100);
                         string swapPair = options.Metadata.SwapPair != null ? $", Swap Pair: {options.Metadata.SwapPair}" : "";
                         string arbitrage = options.Metadata.Arbitrage != null ? $", Arbitrage: {options.Metadata.Arbitrage} ({options.Metadata.ArbitragePercentage:0.00})" : "";

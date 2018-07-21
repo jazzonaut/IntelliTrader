@@ -13,8 +13,7 @@ namespace IntelliTrader.Core
         decimal Amount { get; }
         List<DateTimeOffset> OrderDates { get; }
         decimal AveragePrice { get; }
-        decimal FeesPairCurrency { get; }
-        decimal FeesMarketCurrency { get; }
+        decimal Fees { get; }
         decimal FeesTotal { get; }
         decimal ActualCost { get; }
         DateTimeOffset SellDate { get; }
