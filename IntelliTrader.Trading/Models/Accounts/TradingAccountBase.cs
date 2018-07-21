@@ -133,10 +133,8 @@ namespace IntelliTrader.Trading
                             AddOrUpdatePair(order, normalizedMarket, feesMarketCurrency, feesPairCurrency, amount, price);
                         }
 
-                        tradingPair.Fees += feesMarketCurrency;
-                        decimal sellFees = tradingPair.Fees * amountDifference;
-                        tradingPair.Fees -= sellFees;
-
+                        decimal sellFees = feesMarketCurrency + tradingPair.Fees * amountDifference;
+                        tradingPair.Fees += feesMarketCurrency - sellFees;
                         decimal costDifference = order.RawCost - tradingPair.GetActualCost(order.AmountFilled) - (tradingPair.Metadata.AdditionalCosts ?? 0);
                         decimal profit = costDifference * amountDifference;
 
