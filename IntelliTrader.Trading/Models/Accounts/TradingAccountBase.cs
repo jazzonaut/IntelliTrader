@@ -62,7 +62,7 @@ namespace IntelliTrader.Trading
 
                     if (!order.IsNormalized || order.Pair.EndsWith(Constants.Markets.USDT))
                     {
-                        balanceOffset = -order.Cost;
+                        balanceOffset -= order.Cost;
                         AddBalance(balanceOffset);
                     }
                     else
@@ -119,7 +119,7 @@ namespace IntelliTrader.Trading
 
                         if (!order.IsNormalized || order.Pair.EndsWith(Constants.Markets.USDT))
                         {
-                            balanceOffset = order.Cost;
+                            balanceOffset += order.Cost;
                             AddBalance(balanceOffset);
                         }
                         else
@@ -136,7 +136,7 @@ namespace IntelliTrader.Trading
                         decimal sellFees = feesMarketCurrency + tradingPair.Fees * amountDifference;
                         tradingPair.Fees += feesMarketCurrency - sellFees;
                         decimal costDifference = order.Cost - tradingPair.GetPartialCost(order.AmountFilled) - (tradingPair.Metadata.AdditionalCosts ?? 0);
-                        decimal profit = costDifference * amountDifference;
+                        decimal profit = costDifference * amountDifference - feesMarketCurrency;
 
                         if (tradingPair.Amount > order.AmountFilled)
                         {
@@ -171,7 +171,7 @@ namespace IntelliTrader.Trading
         {
             decimal amount = amountOverride ?? order.AmountFilled;
             decimal amountAfterFees = amount - feesPairCurrency;
-            decimal averagePrice = averagePriceOverride ?? order.AveragePrice;
+            decimal averagePrice = averagePriceOverride ?? (order.AveragePrice + (feesMarketCurrency / amountAfterFees));
 
             if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair))
             {
@@ -180,7 +180,7 @@ namespace IntelliTrader.Trading
                     tradingPair.OrderIds.Add(order.OrderId);
                     tradingPair.OrderDates.Add(order.Date);
                 }
-                tradingPair.AveragePrice = (tradingPair.Cost + order.Cost) / (tradingPair.Amount + amountAfterFees);
+                tradingPair.AveragePrice = (tradingPair.Cost + amountAfterFees * averagePrice) / (tradingPair.Amount + amountAfterFees);
                 tradingPair.Amount += amountAfterFees;
                 tradingPair.Fees += feesMarketCurrency;
                 tradingPair.SetMetadata(tradingPair.Metadata.MergeWith(order.Metadata));
@@ -192,7 +192,7 @@ namespace IntelliTrader.Trading
                     Pair = pair,
                     OrderIds = new List<string> { order.OrderId },
                     OrderDates = new List<DateTimeOffset> { order.Date },
-                    AveragePrice = averagePrice + (feesMarketCurrency / amountAfterFees),
+                    AveragePrice = averagePrice,
                     Amount = amountAfterFees,
                     Fees = feesMarketCurrency,
                     Metadata = order.Metadata
