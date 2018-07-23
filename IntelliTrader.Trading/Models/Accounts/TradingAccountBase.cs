@@ -75,7 +75,7 @@ namespace IntelliTrader.Trading
                         {
                             if (normalizedMarketPair.Cost > order.Cost)
                             {
-                                decimal amount = order.Cost / tradingService.GetPrice(normalizedMarket, TradePriceType.Ask);
+                                decimal amount = order.Cost / tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
                                 normalizedMarketPair.Amount -= amount;
                                 if (normalizedMarketPair.Amount <= 0)
                                 {
@@ -128,8 +128,8 @@ namespace IntelliTrader.Trading
                                 tradingService.Config.Market + tradingService.Exchange.GetPairMarket(order.OriginalPair) :
                                 tradingService.Exchange.GetPairMarket(order.OriginalPair) + tradingService.Config.Market;
 
-                            decimal price = tradingService.GetPrice(normalizedMarket, TradePriceType.Bid);
-                            decimal amount = order.Cost / price;
+                            decimal price = tradingService.GetPrice(normalizedMarket, TradePriceType.Ask);
+                            decimal amount = (order.Cost - feesMarketCurrency) / price;
                             AddOrUpdatePair(order, normalizedMarket, feesMarketCurrency, feesPairCurrency, amount, price);
                         }
 
