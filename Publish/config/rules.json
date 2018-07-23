@@ -111,7 +111,7 @@
             ]
           },
           {
-            "Enabled": true,
+            "Enabled": false,
             "Name": "Buy-TUSDT",
             "Modifiers": {
               "CostMultiplier": 1

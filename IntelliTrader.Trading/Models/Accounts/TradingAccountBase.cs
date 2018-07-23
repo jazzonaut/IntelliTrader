@@ -141,6 +141,10 @@ namespace IntelliTrader.Trading
                         if (tradingPair.Amount > order.AmountFilled)
                         {
                             tradingPair.Amount -= order.AmountFilled;
+                            if (tradingPair.CurrentCost < tradingService.Config.MinCost)
+                            {
+                                tradingPair.OrderDates.Clear();
+                            }
                         }
                         else
                         {
@@ -171,7 +175,7 @@ namespace IntelliTrader.Trading
         {
             decimal amount = amountOverride ?? order.AmountFilled;
             decimal amountAfterFees = amount - feesPairCurrency;
-            decimal averagePrice = averagePriceOverride ?? (order.AveragePrice + (feesMarketCurrency / amountAfterFees));
+            decimal averagePrice = averagePriceOverride ?? (order.AveragePrice + (feesMarketCurrency / amount));
 
             if (tradingPairs.TryGetValue(pair, out TradingPair tradingPair))
             {

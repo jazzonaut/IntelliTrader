@@ -212,7 +212,7 @@ namespace IntelliTrader.Trading
                             IPairConfig tradingPairConfig = GetPairConfig(tradingPair.Pair);
                             return tradingPairConfig.SellEnabled && tradingPairConfig.SwapEnabled && tradingPairConfig.SwapSignalRules != null &&
                                    tradingPairConfig.SwapSignalRules.Contains(options.Metadata.SignalRule) &&
-                                   tradingPairConfig.SwapTimeout < (DateTimeOffset.Now - tradingPair.OrderDates.Max()).TotalSeconds;
+                                   tradingPairConfig.SwapTimeout < (DateTimeOffset.Now - tradingPair.OrderDates.DefaultIfEmpty().Max()).TotalSeconds;
                         });
 
                         if (swappedPair != null)
@@ -678,7 +678,7 @@ namespace IntelliTrader.Trading
                 message = $"Cancel sell request for {options.Pair}. Reason: dust";
                 return false;
             }
-            else if (!options.ManualOrder && !options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair, includeDust: true).OrderDates.Max()).
+            else if (!options.ManualOrder && !options.Arbitrage && (DateTimeOffset.Now - Account.GetTradingPair(options.Pair, includeDust: true).OrderDates.DefaultIfEmpty().Max()).
                 TotalMilliseconds < (MIN_INTERVAL_BETWEEN_BUY_AND_SELL / Application.Speed))
             {
                 message = $"Cancel sell request for {options.Pair}. Reason: pair just bought";
