@@ -35,10 +35,7 @@ namespace IntelliTrader.Web
                 options.Cookie.Name = $"{nameof(IntelliTrader)}_{coreService.Config.InstanceName}";
             });
 
-            services.AddMvc().AddJsonOptions(opts =>
-            {
-                opts.SerializerSettings.ContractResolver = new DefaultContractResolver();
-            });
+            services.AddMvc(opts => opts.EnableEndpointRouting = false);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
